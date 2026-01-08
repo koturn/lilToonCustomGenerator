@@ -1,0 +1,11 @@
+{
+  "name": "jp.koturn.liltooncustomgenerator",
+  "version": "0.1.0",
+  "displayName": "lilToonCustomGenerator",
+  "description": "lilToon custom shader generator.",
+  "unity": "2019.4",
+  "licensesUrl": "https://github.com/koturn/lilToonCustomGenerator/blob/master/LICENSE",
+  "license": "MIT",
+  "keywords": ["lilToon", "Shader", "Material"],
+  "url" : "https://github.com/koturn/lilToonCustomGenerator/releases/download/0.1.0/jp.koturn.liltooncustomgenerator-0.1.0.zip?"
+}

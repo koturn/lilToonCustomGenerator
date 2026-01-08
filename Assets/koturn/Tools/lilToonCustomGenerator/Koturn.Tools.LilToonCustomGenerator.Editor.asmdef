@@ -1,0 +1,16 @@
+{
+    "name": "Koturn.Tools.LilToonCustomGenerator.Editor",
+    "rootNamespace": "Koturn.Tools.LilToonCustomGenerator.Editor",
+    "references": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

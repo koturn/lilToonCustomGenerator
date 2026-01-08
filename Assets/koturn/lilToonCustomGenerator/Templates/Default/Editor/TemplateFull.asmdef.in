@@ -1,0 +1,22 @@
+{
+    "name": "%%NAMESPACE%%",
+    "rootNamespace": "",
+    "references": [
+        "lilToon.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+!!ifempty:ALLOW_UNSAFE_CODE!!
+    "allowUnsafeCode": false,
+!!else!!
+    "allowUnsafeCode": true,
+!!endif!!
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,24 @@
+{
+    "name": "Koturn.LilToonCustomGenerator.Editor",
+    "rootNamespace": "Koturn.LilToonCustomGenerator.Editor",
+    "references": [
+        "GUID:e7f0f8dffe955d640bbc76d1d4f4986e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "jp.lilxyzw.liltoon",
+            "expression": "",
+            "define": "LILTOON"
+        }
+    ],
+    "noEngineReferences": false
+}

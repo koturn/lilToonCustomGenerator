@@ -1,0 +1,27 @@
+{
+  "name": "%%PACKAGE_NAME%%",
+  "version": "%%PACKAGE_VERSION%%",
+  "displayName": "%%PACKAGE_DISPLAY_NAME%%",
+  "description": "%%PACKAGE_DESCRIPTION%%",
+  "unity": "%%PACKAGE_UNITY_VERSION%%",
+!!ifnotempty:PACKAGE_CHANGELOG_URL!!
+  "changelogUrl": "%%PACKAGE_CHANGELOG_URL%%",
+!!endif!!
+!!ifnotempty:PACKAGE_DOCUMENTATION_URL!!
+  "documentationUrl": "%%PACKAGE_DOCUMENTATION_URL%%",
+!!endif!!
+!!ifnotempty:PACKAGE_LICENSE_URL!!
+  "licensesUrl": "%%PACKAGE_LICENSE_URL%%",
+!!endif!!
+!!ifnotempty:PACKAGE_LICENSE!!
+  "license": "%%PACKAGE_LICENSE%%",
+!!endif!!
+!!ifempty:PACLAGE_AUTHOR_KEYVALUES!!
+  "keywords": [%%PACKAGE_KEYWORDS%%]
+!!else!!
+  "keywords": [%%PACKAGE_KEYWORDS%%],
+  "author": {
+    %%PACKAGE_AUTHOR_KEYVALUES:keepindent%%
+  }
+!!endif!!
+}

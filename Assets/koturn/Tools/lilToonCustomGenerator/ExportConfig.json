@@ -1,0 +1,13 @@
+{
+  "packages": [
+    {
+      "unityPackageName": "lilToonCustomGenerator.unitypackage",
+      "packageName": "jp.koturn.liltooncustomgenerator",
+      "assets": [
+        {
+          "basePath": "Assets/koturn/lilToonCustomGenerator"
+        }
+      ]
+    }
+  ]
+}
