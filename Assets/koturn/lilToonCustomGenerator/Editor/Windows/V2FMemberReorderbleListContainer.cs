@@ -24,6 +24,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private const float HeightPadding = 2.0f;
 
         /// <summary>
+        /// Label <see cref="GUIContent"/> for member name.
+        /// </summary>
+        private readonly GUIContent _labelMemberName = new GUIContent("Member name");
+
+        /// <summary>
         /// Duplicate property name list.
         /// </summary>
         private readonly List<string> _duplicatePropertyNameList = new List<string>();
@@ -139,20 +144,31 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             rect.y += HeightPadding;
 
             var row1 = new Rect(rect.x, rect.y, rect.width, line);
-            var nameWidth = row1.width * 0.5f;
-            var descWidth = row1.width * 0.5f;
+            var nameWidth = row1.width * 0.3f;
+            var typeWidth = row1.width * 0.35f;
+            var modifierWidth = row1.width * 0.35f;
 
             EditorGUI.PropertyField(
                 new Rect(row1.x, row1.y, nameWidth - WidthPadding, line),
                 element.FindPropertyRelative(nameof(V2FMember.name)),
-                new GUIContent("Member name"));
+                _labelMemberName);
 
             var propVariableType = element.FindPropertyRelative(nameof(V2FMember.variableType));
             propVariableType.intValue = EditorGUI.Popup(
-                new Rect(row1.x + nameWidth, row1.y, descWidth, line),
+                new Rect(row1.x + nameWidth, row1.y, typeWidth - WidthPadding, line),
                 "Variable type",
                 propVariableType.intValue,
                 V2FMember.VariableTypeSelections);
+
+            if (!V2FMember.IsIntegerType((ShaderVariableType)propVariableType.intValue))
+            {
+                var propInterpolationModifier = element.FindPropertyRelative(nameof(V2FMember.interpolationModifier));
+                propInterpolationModifier.intValue = EditorGUI.Popup(
+                    new Rect(row1.x + nameWidth + typeWidth, row1.y, modifierWidth - WidthPadding, line),
+                    "Interpolation Modifier",
+                    propInterpolationModifier.intValue,
+                    V2FMember.InterpolationModifierSelections);
+            }
         }
 
         /// <summary>

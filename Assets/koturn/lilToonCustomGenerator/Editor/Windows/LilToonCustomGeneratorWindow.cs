@@ -1040,6 +1040,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     sb.Append(@" \").AppendLine();
                 }
+                if (v2fMember.interpolationModifier != InterpolationModifier.Linear && !v2fMember.IsInteger)
+                {
+                    sb.Append(v2fMember.InterpolationModifierText).Append(' ');
+                }
                 sb.AppendFormat("{0} {1} : TEXCOORD ## id{2};", v2fMember.VariableTypeText, v2fMember.name, index);
                 index++;
             }
@@ -1058,6 +1062,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     if (sb.Length > 0)
                     {
                         sb.Append(@" \").AppendLine();
+                    }
+                    if (v2fMember.interpolationModifier != InterpolationModifier.Linear && !v2fMember.IsInteger)
+                    {
+                        sb.Append(v2fMember.InterpolationModifierText).Append(' ');
                     }
                     sb.AppendFormat("{0} {1} : TEXCOORD ## id{2};", v2fMember.VariableTypeText, v2fMember.name, index);
                     index++;
