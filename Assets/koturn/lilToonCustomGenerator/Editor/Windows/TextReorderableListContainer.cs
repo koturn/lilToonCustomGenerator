@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -21,6 +22,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         protected override ReorderableList CreateReorderableList(SerializedObject serializedObject, SerializedProperty serializedProperty)
         {
             return new ReorderableList(serializedObject, serializedProperty, true, true, true, true);
+        }
+
+
+        /// <summary>
+        /// Hidden ctor.
+        /// </summary>
+        [Obsolete("Should not be instanciated directly, Use ScriptableObject.CreateInstance()")]
+        private TextReorderableListContainer()
+        {
         }
 
 

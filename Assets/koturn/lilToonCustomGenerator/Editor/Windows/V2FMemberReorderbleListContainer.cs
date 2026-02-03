@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;
@@ -36,6 +37,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// Invalid property name list.
         /// </summary>
         private readonly List<string> _invalidPropertyNameList = new List<string>();
+
+
+        /// <summary>
+        /// Hidden ctor.
+        /// </summary>
+        [Obsolete("Should not be instanciated directly, Use ScriptableObject.CreateInstance()")]
+        private V2FMemberReorderbleListContainer()
+        {
+        }
 
 
         /// <summary>

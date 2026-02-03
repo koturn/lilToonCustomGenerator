@@ -65,6 +65,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
 
         /// <summary>
+        /// Hidden ctor.
+        /// </summary>
+        [Obsolete("Should not be instanciated directly, Use ScriptableObject.CreateInstance()")]
+        private PropertyReorderableListContainer()
+        {
+        }
+
+
+        /// <summary>
         /// Get duplicate property names.
         /// </summary>
         /// <returns><see cref="List{T}"/> of duplicate property names.</returns>
