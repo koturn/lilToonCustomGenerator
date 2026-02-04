@@ -56,15 +56,15 @@ namespace Koturn.Tools.LilKustomShaders.Editor
             }
 
             var jsonData = JsonData.LoadFromJsonFile(jsonPath);
-            foreach (var package in jsonData.packages)
+            foreach (var package in jsonData.Packages)
             {
                 ExportAsUnityPackage(
-                    Path.Combine(exportDirPath, package.unityPackageName),
-                    package.assets,
-                    package.dependAssets);
+                    Path.Combine(exportDirPath, package.UnityPackageName),
+                    package.Assets,
+                    package.DependAssets);
                 ExportAsZipArchive(
-                    Path.Combine(exportDirPath, $"{package.packageName}-{GetAssemblyVersionStringForExport()}.zip"),
-                    package.assets);
+                    Path.Combine(exportDirPath, $"{package.PackageName}-{GetAssemblyVersionStringForExport()}.zip"),
+                    package.Assets);
             }
         }
 
@@ -138,7 +138,7 @@ namespace Koturn.Tools.LilKustomShaders.Editor
             var index = 0;
             foreach (var asset in assets)
             {
-                var basePath = asset.basePath;
+                var basePath = asset.BasePath;
 
                 if (asset.RelativePaths == null || asset.RelativePaths.Length == 0)
                 {
@@ -173,7 +173,7 @@ namespace Koturn.Tools.LilKustomShaders.Editor
             {
                 foreach (var asset in assets)
                 {
-                    var baseAssetPath = asset.basePath;
+                    var baseAssetPath = asset.BasePath;
                     if (!baseAssetPath.EndsWith("/"))
                     {
                         baseAssetPath += "/";
@@ -288,7 +288,21 @@ namespace Koturn.Tools.LilKustomShaders.Editor
             /// <summary>
             /// Package infomation array.
             /// </summary>
-            public PackageInfo[] packages;
+            public PackageInfo[] Packages => packages;
+
+            /// <summary>
+            /// Backing field of <see cref="Packages"/>.
+            /// </summary>
+            [SerializeField]
+            private PackageInfo[] packages;
+
+            /// <summary>
+            /// Hidden ctor.
+            /// </summary>
+            [Obsolete("Should not be instanciated directly")]
+            private JsonData()
+            {
+            }
 
             /// <summary>
             /// Create instance from specified json file.
@@ -316,19 +330,48 @@ namespace Koturn.Tools.LilKustomShaders.Editor
             /// <summary>
             /// Unity package name for export.
             /// </summary>
-            public string unityPackageName;
+            public string UnityPackageName => unityPackageName;
             /// <summary>
             /// VPM name.
             /// </summary>
-            public string packageName;
+            public string PackageName => packageName;
             /// <summary>
             /// Asset path array.
             /// </summary>
-            public AssetFileInfo[] assets;
+            public AssetFileInfo[] Assets => assets;
             /// <summary>
             /// Asset path array.
             /// </summary>
-            public AssetFileInfo[] dependAssets;
+            public AssetFileInfo[] DependAssets => dependAssets;
+
+            /// <summary>
+            /// Backing field of <see cref="UnityPackageName"/>.
+            /// </summary>
+            [SerializeField]
+            private string unityPackageName;
+            /// <summary>
+            /// Backing field of <see cref="PackageName"/>.
+            /// </summary>
+            [SerializeField]
+            private string packageName;
+            /// <summary>
+            /// Backing field of <see cref="Assets"/>.
+            /// </summary>
+            [SerializeField]
+            private AssetFileInfo[] assets;
+            /// <summary>
+            /// Backing field of <see cref="DependAssets"/>.
+            /// </summary>
+            [SerializeField]
+            private AssetFileInfo[] dependAssets;
+
+            /// <summary>
+            /// Hidden ctor.
+            /// </summary>
+            [Obsolete("Should not be instanciated directly")]
+            private PackageInfo()
+            {
+            }
         }
 
         /// <summary>
@@ -340,11 +383,30 @@ namespace Koturn.Tools.LilKustomShaders.Editor
             /// <summary>
             /// Base asset path.
             /// </summary>
-            public string basePath;
+            public string BasePath => basePath;
             /// <summary>
             /// Relative asset path.
             /// </summary>
-            public string[] RelativePaths;
+            public string[] RelativePaths => relativePaths;
+
+            /// <summary>
+            /// Backing field of <see cref="BasePath"/>.
+            /// </summary>
+            [SerializeField]
+            private string basePath;
+            /// <summary>
+            /// Backing field of <see cref="RelativePaths"/>.
+            /// </summary>
+            [SerializeField]
+            private string[] relativePaths;
+
+            /// <summary>
+            /// Hidden ctor.
+            /// </summary>
+            [Obsolete("Should not be instanciated directly")]
+            private AssetFileInfo()
+            {
+            }
         }
     }
 }

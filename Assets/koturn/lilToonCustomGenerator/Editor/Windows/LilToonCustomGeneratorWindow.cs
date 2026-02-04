@@ -302,7 +302,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private void Awake()
         {
             _jsonRoot = DeserializeJson(AssetDatabase.GUIDToAssetPath("407d2dc27f05f774d9ca8d53fdef2047"));
-            _templateNames = _jsonRoot.configList.Select(config => config.name).ToArray();
+            _templateNames = _jsonRoot.ConfigList.Select(config => config.Name).ToArray();
 
             _propertyReorderableListContainer = CreateInstance<PropertyReorderableListContainer>();
             _v2fMemberReorderableListContainer = CreateInstance<V2FMemberReorderbleListContainer>();
@@ -678,11 +678,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("GUID_SHADER_DIR", guidShaderDir);
             }
 
-            var config = _jsonRoot.configList[_templateIndex];
-            Debug.LogFormat("Generate files from {0}", config.name);
+            var config = _jsonRoot.ConfigList[_templateIndex];
+            Debug.LogFormat("Generate files from {0}", config.Name);
 
             // Clone template list.
-            var templates = new List<TemplateFileConfig>(config.templates);
+            var templates = new List<TemplateFileConfig>(config.Templates);
 
             // Try to find `Editor/lang_custom.tsv`.
             var langCustomIndex = IndexOfDestination(templates, "Editor/lang_custom.tsv");
@@ -694,10 +694,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     var tfcLangCustom = templates[langCustomIndex];
 
-                    var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcLangCustom.destination);
+                    var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcLangCustom.Destination);
                     Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
 
-                    var path = AssetDatabase.GUIDToAssetPath(tfcLangCustom.guid);
+                    var path = AssetDatabase.GUIDToAssetPath(tfcLangCustom.Guid);
 
                     Debug.LogFormat("  {0} -> {1}", path, dstFilePath);
                     templateEngine.ExpandTemplate(path, dstFilePath);
@@ -749,12 +749,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     int asmdefIndex = 0;
                     foreach (var tfc in templates)
                     {
-                        if (tfc.destination.EndsWith(".asmdef"))
+                        if (tfc.Destination.EndsWith(".asmdef"))
                         {
-                            var asmdefPath = dstDirAssetPath + "/" + templateEngine.Replace(tfc.destination);
+                            var asmdefPath = dstDirAssetPath + "/" + templateEngine.Replace(tfc.Destination);
                             Directory.CreateDirectory(Path.GetDirectoryName(asmdefPath));
 
-                            var asmdefTemplatePath = AssetDatabase.GUIDToAssetPath(tfc.guid);
+                            var asmdefTemplatePath = AssetDatabase.GUIDToAssetPath(tfc.Guid);
 
                             Debug.LogFormat("  {0} -> {1}", asmdefTemplatePath, asmdefPath);
                             templateEngine.ExpandTemplate(asmdefTemplatePath, asmdefPath);
@@ -795,7 +795,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     }
 
                     // Overwrite empty file.
-                    var asmInfoTemplatePath = AssetDatabase.GUIDToAssetPath(templates[asmInfoIndex].guid);
+                    var asmInfoTemplatePath = AssetDatabase.GUIDToAssetPath(templates[asmInfoIndex].Guid);
 
                     Debug.LogFormat("  {0} -> {1}", asmInfoTemplatePath, asmInfoPath);
                     templateEngine.ExpandTemplate(asmInfoTemplatePath, asmInfoPath);
@@ -806,13 +806,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             foreach (var tfc in templates)
             {
-                var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfc.destination);
+                var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfc.Destination);
                 Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
 
-                var templateFilePath = AssetDatabase.GUIDToAssetPath(tfc.guid);
+                var templateFilePath = AssetDatabase.GUIDToAssetPath(tfc.Guid);
                 if (string.IsNullOrEmpty(templateFilePath))
                 {
-                    throw new InvalidOperationException(tfc.guid);
+                    throw new InvalidOperationException(tfc.Guid);
                 }
 
                 Debug.LogFormat("  {0} -> {1}", templateFilePath, dstFilePath);
@@ -1246,10 +1246,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             // Create list to resolve their parents.
             var inheritList = new List<TemplateConfig>();
-            foreach (var config in jsonRoot.configList)
+            foreach (var config in jsonRoot.ConfigList)
             {
-                nameConfigDict.Add(config.name, config);
-                if (config.basedOn != null)
+                nameConfigDict.Add(config.Name, config);
+                if (config.BasedOn != null)
                 {
                     inheritList.Add(config);
                 }
@@ -1261,29 +1261,29 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             foreach (var config in inheritList)
             {
                 dstSet.Clear();
-                foreach (var tfc in config.templates)
+                foreach (var tfc in config.Templates)
                 {
-                    dstSet.Add(tfc.destination);
+                    dstSet.Add(tfc.Destination);
                 }
 
                 visitSet.Clear();
-                visitSet.Add(config.name);
+                visitSet.Add(config.Name);
 
                 var parentConfig = config;
-                while (parentConfig.basedOn != null)
+                while (parentConfig.BasedOn != null)
                 {
-                    if (visitSet.Contains(parentConfig.basedOn))
+                    if (visitSet.Contains(parentConfig.BasedOn))
                     {
-                        throw new InvalidOperationException("Circular definition detected: " + config.name);
+                        throw new InvalidOperationException("Circular definition detected: " + config.Name);
                     }
 
-                    parentConfig = nameConfigDict[parentConfig.basedOn];
-                    foreach (var tfc in parentConfig.templates)
+                    parentConfig = nameConfigDict[parentConfig.BasedOn];
+                    foreach (var tfc in parentConfig.Templates)
                     {
-                        if (!dstSet.Contains(tfc.destination))
+                        if (!dstSet.Contains(tfc.Destination))
                         {
-                            config.templates.Add(tfc);
-                            dstSet.Add(tfc.destination);
+                            config.Templates.Add(tfc);
+                            dstSet.Add(tfc.Destination);
                         }
                     }
                 }
@@ -1355,7 +1355,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             int index = 0;
             foreach (var tfc in tfcList)
             {
-                if (tfc.destination == destination)
+                if (tfc.Destination == destination)
                 {
                     return index;
                 }
