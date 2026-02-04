@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 
 namespace Koturn.LilToonCustomGenerator.Editor.Json
@@ -13,10 +14,30 @@ namespace Koturn.LilToonCustomGenerator.Editor.Json
         /// <summary>
         /// Template file GUID.
         /// </summary>
-        public string guid = null;
+        public string Guid => guid;
         /// <summary>
         /// Destination file path.
         /// </summary>
-        public string destination = null;
+        public string Destination => destination;
+
+        /// <summary>
+        /// Backing field of <see cref="Guid"/>.
+        /// </summary>
+        [SerializeField]
+        private string guid;
+        /// <summary>
+        /// Backing field of <see cref="Destination"/>.
+        /// </summary>
+        [SerializeField]
+        private string destination;
+
+
+        /// <summary>
+        /// Hidden ctor.
+        /// </summary>
+        [Obsolete("Should not be instanciated directly")]
+        private TemplateFileConfig()
+        {
+        }
     }
 }

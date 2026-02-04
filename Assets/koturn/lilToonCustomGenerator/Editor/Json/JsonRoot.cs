@@ -14,9 +14,25 @@ namespace Koturn.LilToonCustomGenerator.Editor.Json
     internal sealed class JsonRoot
     {
         /// <summary>
-        /// <see cref="List{T}"/> of <see cref="ProxyConfig"/> instance.
+        /// <see cref="List{T}"/> of <see cref="TemplateConfig"/> instance.
         /// </summary>
-        public List<TemplateConfig> configList = null;
+        public List<TemplateConfig> ConfigList => configList;
+
+        /// <summary>
+        /// Backing field of <see cref="ConfigList"/>.
+        /// </summary>
+        [SerializeField]
+        private List<TemplateConfig> configList;
+
+
+        /// <summary>
+        /// Hidden ctor.
+        /// </summary>
+        [Obsolete("Should not be instanciated directly")]
+        private JsonRoot()
+        {
+        }
+
 
         /// <summary>
         /// Create instance from specified json file.
