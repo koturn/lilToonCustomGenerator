@@ -60,13 +60,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var set = new HashSet<string>();
             foreach (var item in List)
             {
-                if (set.Contains(item.name))
+                if (set.Contains(item.Name))
                 {
-                    dupNameList.Add(item.name);
+                    dupNameList.Add(item.Name);
                 }
                 else
                 {
-                    set.Add(item.name);
+                    set.Add(item.Name);
                 }
             }
 
@@ -84,9 +84,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             foreach (var item in List)
             {
-                if (!RegexProvider.IdentifierRegex.IsMatch(item.name))
+                if (!RegexProvider.IdentifierRegex.IsMatch(item.Name))
                 {
-                    invalidNameList.Add(item.name);
+                    invalidNameList.Add(item.Name);
                 }
             }
 
@@ -160,10 +160,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             EditorGUI.PropertyField(
                 new Rect(row1.x, row1.y, nameWidth - WidthPadding, line),
-                element.FindPropertyRelative(nameof(V2FMember.name)),
+                element.FindPropertyRelative(V2FMember.NameOfName),
                 _labelMemberName);
 
-            var propVariableType = element.FindPropertyRelative(nameof(V2FMember.variableType));
+            var propVariableType = element.FindPropertyRelative(V2FMember.NameOfVariableType);
             propVariableType.intValue = EditorGUI.Popup(
                 new Rect(row1.x + nameWidth, row1.y, typeWidth - WidthPadding, line),
                 "Variable type",
@@ -172,7 +172,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             if (!V2FMember.IsIntegerType((ShaderVariableType)propVariableType.intValue))
             {
-                var propInterpolationModifier = element.FindPropertyRelative(nameof(V2FMember.interpolationModifier));
+                var propInterpolationModifier = element.FindPropertyRelative(V2FMember.NameOfInterpolationModifier);
                 propInterpolationModifier.intValue = EditorGUI.Popup(
                     new Rect(row1.x + nameWidth + typeWidth, row1.y, modifierWidth - WidthPadding, line),
                     "Interpolation Modifier",
@@ -194,7 +194,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 var isFound = false;
                 foreach (var member in List)
                 {
-                    if (member.name == memberName)
+                    if (member.Name == memberName)
                     {
                         isFound = true;
                         break;

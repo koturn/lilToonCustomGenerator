@@ -13,6 +13,47 @@ namespace Koturn.LilToonCustomGenerator.Editor
     public sealed class ShaderPropertyDefinition
     {
         /// <summary>
+        /// Serialize name of backing field of <see cref="Name"/>.
+        /// </summary>
+        public const string NameOfName = nameof(_name);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="Description"/>.
+        /// </summary>
+        public const string NameOfDescription = nameof(_description);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="PropertyType"/>.
+        /// </summary>
+        public const string NameOfPropertyType = nameof(_propertyType);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="UniformType"/>.
+        /// </summary>
+        public const string NameOfUniformType = nameof(_uniformType);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="RangeMinMax"/>.
+        /// </summary>
+        public const string NameOfRangeMinMax = nameof(_rangeMinMax);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="DefaultFloat"/>.
+        /// </summary>
+        public const string NameOfDefaultFloat = nameof(_defaultFloat);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="DefaultInt"/>.
+        /// </summary>
+        public const string NameOfDefaultInt = nameof(_defaultInt);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="DefaultVector"/>.
+        /// </summary>
+        public const string NameOfDefaultVector = nameof(_defaultVector);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="DefaultColor"/>.
+        /// </summary>
+        public const string NameOfDefaultColor = nameof(_defaultColor);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="DefaultTextureIndex"/>.
+        /// </summary>
+        public const string NameOfDefaultTextureIndex = nameof(_defaultTextureIndex);
+
+        /// <summary>
         /// Property types.
         /// </summary>
         public static string[] PropertyTypeSelections { get; } =
@@ -146,44 +187,43 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// <summary>
         /// Property name.
         /// </summary>
-        public string name;
+        public string Name => _name;
         /// <summary>
         /// Property description.
         /// </summary>
-        public string description;
+        public string Description => _description;
         /// <summary>
         /// Property type.
         /// </summary>
-        public ShaderPropertyType propertyType;
+        public ShaderPropertyType PropertyType => _propertyType;
         /// <summary>
         /// Variable type in HLSL.
         /// </summary>
-        public ShaderVariableType uniformType;
+        public ShaderVariableType UniformType => _uniformType;
         /// <summary>
         /// Minimum and Maximum value of range property.
         /// </summary>
-        public Vector2 rangeMinMax;
+        public Vector2 RangeMinMax => _rangeMinMax;
         /// <summary>
         /// Default float value.
         /// </summary>
-        public float defaultFloat;
+        public float DefaultFloat => _defaultFloat;
         /// <summary>
         /// Default int value.
         /// </summary>
-        public int defaultInt;
+        public int DefaultInt => _defaultInt;
         /// <summary>
         /// Default vector value.
         /// </summary>
-        public Vector4 defaultVector;
+        public Vector4 DefaultVector => _defaultVector;
         /// <summary>
         /// Default color value.
         /// </summary>
-        public Color defaultColor;
+        public Color DefaultColor => _defaultColor;
         /// <summary>
         /// Default texture index (0 ~ 3).
         /// </summary>
-        public int defaultTextureIndex;
-
+        public int DefaultTextureIndex => _defaultTextureIndex;
         /// <summary>
         /// Property type string.
         /// </summary>
@@ -191,10 +231,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         {
             get
             {
-                var propTypeText = PropertyTypeSelections[(int)propertyType];
-                if (propertyType == ShaderPropertyType.Range)
+                var propTypeText = PropertyTypeSelections[(int)_propertyType];
+                if (_propertyType == ShaderPropertyType.Range)
                 {
-                    propTypeText = $"{propTypeText} ({rangeMinMax.x}, {rangeMinMax.y})";
+                    propTypeText = $"{propTypeText} ({_rangeMinMax.x}, {_rangeMinMax.y})";
                 }
                 return propTypeText;
             }
@@ -202,12 +242,12 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// <summary>
         /// Default texture name.
         /// </summary>
-        public string DefaultTextureName => DefaultTextureNames[defaultTextureIndex];
+        public string DefaultTextureName => DefaultTextureNames[_defaultTextureIndex];
         /// <summary>
-        /// True if <see cref="propertyType"/> is <see cref="ShaderPropertyType.Texture2D"/>,
+        /// True if <see cref="PropertyType"/> is <see cref="ShaderPropertyType.Texture2D"/>,
         /// <see cref="ShaderPropertyType.Texture3D"/> or <see cref="ShaderPropertyType.TextureCube"/>.
         /// </summary>
-        public bool IsTexture => propertyType == ShaderPropertyType.Texture2D || propertyType == ShaderPropertyType.Texture3D || propertyType == ShaderPropertyType.TextureCube;
+        public bool IsTexture => _propertyType == ShaderPropertyType.Texture2D || _propertyType == ShaderPropertyType.Texture3D || _propertyType == ShaderPropertyType.TextureCube;
         /// <summary>
         /// Texture declaration macro.
         /// </summary>
@@ -215,7 +255,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         {
             get
             {
-                switch (uniformType)
+                switch (_uniformType)
                 {
                     case ShaderVariableType.Texture2D:
                         return "TEXTURE2D";
@@ -237,17 +277,17 @@ namespace Koturn.LilToonCustomGenerator.Editor
         {
             get
             {
-                switch (propertyType)
+                switch (_propertyType)
                 {
                     case ShaderPropertyType.Float:
                     case ShaderPropertyType.Range:
-                        return defaultFloat.ToString();
+                        return _defaultFloat.ToString();
                     case ShaderPropertyType.Int:
-                        return defaultInt.ToString();
+                        return _defaultInt.ToString();
                     case ShaderPropertyType.Vector:
-                        return $"({defaultVector.x}, {defaultVector.y}, {defaultVector.z}, {defaultVector.w})";
+                        return $"({_defaultVector.x}, {_defaultVector.y}, {_defaultVector.z}, {_defaultVector.w})";
                     case ShaderPropertyType.Color:
-                        return $"({defaultColor.r}, {defaultColor.g}, {defaultColor.b}, {defaultColor.a})";
+                        return $"({_defaultColor.r}, {_defaultColor.g}, {_defaultColor.b}, {_defaultColor.a})";
                     case ShaderPropertyType.Texture2D:
                     case ShaderPropertyType.Texture3D:
                     case ShaderPropertyType.TextureCube:
@@ -257,6 +297,57 @@ namespace Koturn.LilToonCustomGenerator.Editor
                 }
             }
         }
+
+        /// <summary>
+        /// Backing field of <see cref="Name"/>.
+        /// </summary>
+        [SerializeField]
+        private string _name;
+        /// <summary>
+        /// Backing field of <see cref="Description"/>.
+        /// </summary>
+        [SerializeField]
+        private string _description;
+        /// <summary>
+        /// Backing field of <see cref="PropertyType"/>.
+        /// </summary>
+        [SerializeField]
+        private ShaderPropertyType _propertyType;
+        /// <summary>
+        /// Backing field of <see cref="UniformType"/>.
+        /// </summary>
+        [SerializeField]
+        private ShaderVariableType _uniformType;
+        /// <summary>
+        /// Backing field of <see cref="RangeMinMax"/>.
+        /// </summary>
+        [SerializeField]
+        private Vector2 _rangeMinMax;
+        /// <summary>
+        /// Backing field of <see cref="DefaultFloat"/>.
+        /// </summary>
+        [SerializeField]
+        private float _defaultFloat;
+        /// <summary>
+        /// Backing field of <see cref="DefaultInt"/>.
+        /// </summary>
+        [SerializeField]
+        private int _defaultInt;
+        /// <summary>
+        /// Backing field of <see cref="DefaultVector"/>.
+        /// </summary>
+        [SerializeField]
+        private Vector4 _defaultVector;
+        /// <summary>
+        /// Backing field of <see cref="DefaultColor"/>.
+        /// </summary>
+        [SerializeField]
+        public Color _defaultColor;
+        /// <summary>
+        /// Backing field of <see cref="DefaultTextureIndex"/>.
+        /// </summary>
+        [SerializeField]
+        public int _defaultTextureIndex;
 
 
         /// <summary>
@@ -268,16 +359,16 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// <param name="uniformType">Variable type in HLSL.</param>
         public ShaderPropertyDefinition(string name, string description, ShaderPropertyType propertyType, ShaderVariableType uniformType)
         {
-            this.name = name;
-            this.description = description;
-            this.propertyType = propertyType;
-            this.uniformType = uniformType;
-            this.rangeMinMax = new Vector2(0.0f, 1.0f);
-            this.defaultFloat = 0.0f;
-            this.defaultInt = 0;
-            this.defaultVector = default(Vector4);
-            this.defaultColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-            this.defaultTextureIndex = 0;
+            _name = name;
+            _description = description;
+            _propertyType = propertyType;
+            _uniformType = uniformType;
+            _rangeMinMax = new Vector2(0.0f, 1.0f);
+            _defaultFloat = 0.0f;
+            _defaultInt = 0;
+            _defaultVector = default(Vector4);
+            _defaultColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            _defaultTextureIndex = 0;
         }
 
 

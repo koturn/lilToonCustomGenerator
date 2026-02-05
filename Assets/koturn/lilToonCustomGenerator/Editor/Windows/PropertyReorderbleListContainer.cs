@@ -85,13 +85,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var set = new HashSet<string>();
             foreach (var item in List)
             {
-                if (set.Contains(item.name))
+                if (set.Contains(item.Name))
                 {
-                    dupNameList.Add(item.name);
+                    dupNameList.Add(item.Name);
                 }
                 else
                 {
-                    set.Add(item.name);
+                    set.Add(item.Name);
                 }
             }
 
@@ -109,9 +109,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             foreach (var item in List)
             {
-                if (!RegexProvider.IdentifierRegex.IsMatch(item.name))
+                if (!RegexProvider.IdentifierRegex.IsMatch(item.Name))
                 {
-                    invalidNameList.Add(item.name);
+                    invalidNameList.Add(item.Name);
                 }
             }
 
@@ -184,12 +184,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             EditorGUI.PropertyField(
                 new Rect(row1.x, row1.y, nameWidth - WidthPadding, line),
-                element.FindPropertyRelative(nameof(ShaderPropertyDefinition.name)),
+                element.FindPropertyRelative(ShaderPropertyDefinition.NameOfName),
                 new GUIContent("Property Name"));
 
             EditorGUI.PropertyField(
                 new Rect(row1.x + nameWidth, row1.y, descWidth, line),
-                element.FindPropertyRelative(nameof(ShaderPropertyDefinition.description)));
+                element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDescription));
 
             //
             // Second line.
@@ -201,8 +201,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var col2 = row2.width * 0.2f;
             var col3 = row2.width * 0.4f;
 
-            var propPropertyType = element.FindPropertyRelative(nameof(ShaderPropertyDefinition.propertyType));
-            var propUniformType = element.FindPropertyRelative(nameof(ShaderPropertyDefinition.uniformType));
+            var propPropertyType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfPropertyType);
+            var propUniformType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfUniformType);
             using (var ccScope = new EditorGUI.ChangeCheckScope())
             {
                 if ((ShaderPropertyType)propPropertyType.intValue == ShaderPropertyType.Range)
@@ -213,7 +213,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         propPropertyType.intValue,
                         ShaderPropertyDefinition.PropertyTypeSelections);
 
-                    var propRangeMinMax = element.FindPropertyRelative(nameof(ShaderPropertyDefinition.rangeMinMax));
+                    var propRangeMinMax = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfRangeMinMax);
                     var rangeMinMax = propRangeMinMax.vector2Value;
                     var rangeMinMaxArray = _rangeMinMaxArray;
 
@@ -279,16 +279,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 case ShaderPropertyType.Range:
                     EditorGUI.PropertyField(
                         rectDefaultValue,
-                        element.FindPropertyRelative(nameof(ShaderPropertyDefinition.defaultFloat)),
+                        element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultFloat),
                         _defaultValueLabel);
                     break;
                 case ShaderPropertyType.Int:
                     EditorGUI.PropertyField(
                         rectDefaultValue,
-                        element.FindPropertyRelative(nameof(ShaderPropertyDefinition.defaultInt)));
+                        element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultInt));
                     break;
                 case ShaderPropertyType.Vector:
-                    var propDefaultVector = element.FindPropertyRelative(nameof(ShaderPropertyDefinition.defaultVector));
+                    var propDefaultVector = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultVector);
                     var defaultVector = propDefaultVector.vector4Value;
                     var defaultVectorArray = _defaultVectorArray;
 
@@ -307,12 +307,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 case ShaderPropertyType.Color:
                     EditorGUI.PropertyField(
                         rectDefaultValue,
-                        element.FindPropertyRelative(nameof(ShaderPropertyDefinition.defaultColor)));
+                        element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultColor));
                     break;
                 case ShaderPropertyType.Texture2D:
                 case ShaderPropertyType.Texture3D:
                 case ShaderPropertyType.TextureCube:
-                    var propDefaultTextureIndex = element.FindPropertyRelative(nameof(ShaderPropertyDefinition.defaultTextureIndex));
+                    var propDefaultTextureIndex = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultTextureIndex);
                     propDefaultTextureIndex.intValue = EditorGUI.Popup(
                         rectDefaultValue,
                         "Default",
@@ -335,7 +335,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 var isFound = false;
                 foreach (var shaderProp in List)
                 {
-                    if (shaderProp.name == propName)
+                    if (shaderProp.Name == propName)
                     {
                         isFound = true;
                         break;

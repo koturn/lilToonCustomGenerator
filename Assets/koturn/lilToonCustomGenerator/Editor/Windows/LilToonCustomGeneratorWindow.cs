@@ -840,7 +840,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var index = 0;
             foreach (var shaderProp in shaderPropDefList)
             {
-                var m = RegexProvider.PropertyNameRegex.Match(shaderProp.name);
+                var m = RegexProvider.PropertyNameRegex.Match(shaderProp.Name);
                 if (m.Success)
                 {
                     var g = m.Groups;
@@ -876,7 +876,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             foreach (var shaderProp in shaderPropDefList)
             {
                 sb.AppendLine("/// <summary>")
-                    .AppendFormat("/// <see cref=\"MaterialProperty\" of \"{0}\".", shaderProp.name).AppendLine()
+                    .AppendFormat("/// <see cref=\"MaterialProperty\" of \"{0}\".", shaderProp.Name).AppendLine()
                     .AppendLine("/// </summary>")
                     .AppendFormat("private MaterialProperty {0};", materialPropNames[index])
                     .AppendLine();
@@ -888,7 +888,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             index = 0;
             foreach (var shaderProp in shaderPropDefList)
             {
-                sb.AppendFormat("{0} = FindProperty(\"{1}\", props);", materialPropNames[index], shaderProp.name)
+                sb.AppendFormat("{0} = FindProperty(\"{1}\", props);", materialPropNames[index], shaderProp.Name)
                     .AppendLine();
                 index++;
             }
@@ -921,7 +921,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 index = 0;
                 foreach (var shaderProp in shaderPropDefList)
                 {
-                    sb.AppendFormat("{0}\t{1}\t{1}\t{1}\t{1}\t{1}", langTags[index], shaderProp.description.Length == 0 ? langTags[index] : shaderProp.description)
+                    sb.AppendFormat("{0}\t{1}\t{1}\t{1}\t{1}\t{1}", langTags[index], shaderProp.Description.Length == 0 ? langTags[index] : shaderProp.Description)
                         .AppendLine();
                     index++;
                 }
@@ -970,7 +970,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     sb.AppendFormat(
                         "{0} (\"{1}\", {2}) = {3}",
-                        shaderProp.name,
+                        shaderProp.Name,
                         langTags[index],
                         shaderProp.PropertyTypeText,
                         shaderProp.DefaultValueString).AppendLine();
@@ -983,8 +983,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     sb.AppendFormat(
                         "{0} (\"{1}\", {2}) = {3}",
-                        shaderProp.name,
-                        shaderProp.description,
+                        shaderProp.Name,
+                        shaderProp.Description,
                         shaderProp.PropertyTypeText,
                         shaderProp.DefaultValueString).AppendLine();
                 }
@@ -1002,7 +1002,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     sb.Append(@" \").AppendLine();
                 }
-                sb.AppendFormat("{0} {1};", ShaderPropertyDefinition.VariableTypeSelections[(int)shaderProp.uniformType], shaderProp.name);
+                sb.AppendFormat("{0} {1};", ShaderPropertyDefinition.VariableTypeSelections[(int)shaderProp.UniformType], shaderProp.Name);
             }
             if (sb.Length > 0)
             {
@@ -1022,7 +1022,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     sb.Append(@" \").AppendLine();
                 }
-                sb.AppendFormat("{0}({1});", textureDeclarationMacro, shaderProp.name);
+                sb.AppendFormat("{0}({1});", textureDeclarationMacro, shaderProp.Name);
             }
             if (sb.Length > 0)
             {
@@ -1040,11 +1040,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     sb.Append(@" \").AppendLine();
                 }
-                if (v2fMember.interpolationModifier != InterpolationModifier.Linear && !v2fMember.IsInteger)
+                if (v2fMember.InterpolationModifier != InterpolationModifier.Linear && !v2fMember.IsInteger)
                 {
                     sb.Append(v2fMember.InterpolationModifierText).Append(' ');
                 }
-                sb.AppendFormat("{0} {1} : TEXCOORD ## id{2};", v2fMember.VariableTypeText, v2fMember.name, index);
+                sb.AppendFormat("{0} {1} : TEXCOORD ## id{2};", v2fMember.VariableTypeText, v2fMember.Name, index);
                 index++;
             }
             if (sb.Length > 0)
@@ -1063,11 +1063,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         sb.Append(@" \").AppendLine();
                     }
-                    if (v2fMember.interpolationModifier != InterpolationModifier.Linear && !v2fMember.IsInteger)
+                    if (v2fMember.InterpolationModifier != InterpolationModifier.Linear && !v2fMember.IsInteger)
                     {
                         sb.Append(v2fMember.InterpolationModifierText).Append(' ');
                     }
-                    sb.AppendFormat("{0} {1} : TEXCOORD ## id{2};", v2fMember.VariableTypeText, v2fMember.name, index);
+                    sb.AppendFormat("{0} {1} : TEXCOORD ## id{2};", v2fMember.VariableTypeText, v2fMember.Name, index);
                     index++;
                 }
                 if (sb.Length > 0)
@@ -1085,7 +1085,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     sb.Append(@" \").AppendLine();
                 }
-                sb.AppendFormat("output.{0} = ({1})0;  /* TODO: Initialize with the appropriate value. */", v2fMember.name, v2fMember.VariableTypeText);
+                sb.AppendFormat("output.{0} = ({1})0;  /* TODO: Initialize with the appropriate value. */", v2fMember.Name, v2fMember.VariableTypeText);
                 index++;
             }
             if (sb.Length > 0)

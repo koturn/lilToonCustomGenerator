@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using Koturn.LilToonCustomGenerator.Editor.Enums;
 
 
@@ -11,6 +12,19 @@ namespace Koturn.LilToonCustomGenerator.Editor
     [Serializable]
     public sealed class V2FMember
     {
+        /// <summary>
+        /// Serialize name of backing field of <see cref="Name"/>.
+        /// </summary>
+        public const string NameOfName = nameof(_name);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="VariableType"/>.
+        /// </summary>
+        public const string NameOfVariableType = nameof(_variableType);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="InterpolationModifier"/>.
+        /// </summary>
+        public const string NameOfInterpolationModifier = nameof(_interpolationModifier);
+
         /// <summary>
         /// Available type names for v2f struct.
         /// </summary>
@@ -52,7 +66,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             "sample"
         };
         /// <summary>
-        /// String representations of <see cref="InterpolationModifier"/>.
+        /// String representations of <see cref="Enums.InterpolationModifier"/>.
         /// </summary>
         public static readonly string[] _interpolationModifierTexts =
         {
@@ -65,31 +79,47 @@ namespace Koturn.LilToonCustomGenerator.Editor
         };
 
         /// <summary>
-        /// String representation of <see cref="interpolationModifier"/>.
+        /// String representation of <see cref="_interpolationModifier"/>.
         /// </summary>
-        public string InterpolationModifierText => _interpolationModifierTexts[(int)interpolationModifier];
+        public string InterpolationModifierText => _interpolationModifierTexts[(int)_interpolationModifier];
 
         /// <summary>
         /// Member name.
         /// </summary>
-        public string name;
+        public string Name => _name;
         /// <summary>
         /// Member type.
         /// </summary>
-        public ShaderVariableType variableType;
+        public ShaderVariableType VariableType => _variableType;
         /// <summary>
         /// Interpolation modifier.
         /// </summary>
-        public InterpolationModifier interpolationModifier;
+        public InterpolationModifier InterpolationModifier => _interpolationModifier;
+        /// <summary>
+        /// Determine whether <see cref="_variableType"/> value is integer type or not.
+        /// </summary>
+        public bool IsInteger => IsIntegerType(_variableType);
+        /// <summary>
+        /// Text representation of <see cref="_variableType"/>.
+        /// </summary>
+        public string VariableTypeText => VariableTypeSelections[(int)_variableType];
 
         /// <summary>
-        /// Determine whether <see cref="variableType"/> value is integer type or not.
+        /// Backing field of <see cref="Name"/>.
         /// </summary>
-        public bool IsInteger => IsIntegerType(variableType);
+        [SerializeField]
+        private string _name;
         /// <summary>
-        /// Text representation of <see cref="variableType"/>.
+        /// Backing field of <see cref="_variableType"/>.
         /// </summary>
-        public string VariableTypeText => VariableTypeSelections[(int)variableType];
+        [SerializeField]
+        private ShaderVariableType _variableType;
+        /// <summary>
+        /// Backing field of <see cref="InterpolationModifier"/>.
+        /// </summary>
+        [SerializeField]
+        private InterpolationModifier _interpolationModifier;
+
 
         /// <summary>
         /// Create instance with specified member name and variable type.
@@ -99,9 +129,9 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// <param name="interpolationModifier">Interpolation modifier.</param>
         public V2FMember(string name, ShaderVariableType variableType, InterpolationModifier interpolationModifier = InterpolationModifier.Linear)
         {
-            this.name = name;
-            this.variableType = variableType;
-            this.interpolationModifier = interpolationModifier;
+            _name = name;
+            _variableType = variableType;
+            _interpolationModifier = interpolationModifier;
         }
 
 
