@@ -58,7 +58,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// <param name="newLine">New line string.</param>
         public TemplateEngine(Dictionary<string, string> tagDictionary, string newLine)
         {
-            TagDictionary = tagDictionary == null ? new Dictionary<string, string>() : tagDictionary;
+            TagDictionary = tagDictionary ?? new Dictionary<string, string>();
             NewLine = newLine;
         }
 

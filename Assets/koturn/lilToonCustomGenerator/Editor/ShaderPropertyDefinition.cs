@@ -493,32 +493,32 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Backing field of <see cref="RangeMinMax"/>.
         /// </summary>
         [SerializeField]
-        private Vector2 _rangeMinMax;
+        private Vector2 _rangeMinMax = new Vector2(0.0f, 1.0f);
         /// <summary>
         /// Backing field of <see cref="DefaultFloat"/>.
         /// </summary>
         [SerializeField]
-        private float _defaultFloat;
+        private float _defaultFloat = default;
         /// <summary>
         /// Backing field of <see cref="DefaultInt"/>.
         /// </summary>
         [SerializeField]
-        private int _defaultInt;
+        private int _defaultInt = default;
         /// <summary>
         /// Backing field of <see cref="DefaultVector"/>.
         /// </summary>
         [SerializeField]
-        private Vector4 _defaultVector;
+        private Vector4 _defaultVector = default;
         /// <summary>
         /// Backing field of <see cref="DefaultColor"/>.
         /// </summary>
         [SerializeField]
-        public Color _defaultColor;
+        public Color _defaultColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         /// <summary>
         /// Backing field of <see cref="DefaultTextureIndex"/>.
         /// </summary>
         [SerializeField]
-        public int _defaultTextureIndex;
+        public int _defaultTextureIndex = 0;
         /// <summary>
         /// Backing field of <see cref="DrawerType"/>.
         /// </summary>
@@ -544,12 +544,6 @@ namespace Koturn.LilToonCustomGenerator.Editor
             _description = description;
             _propertyType = propertyType;
             _uniformType = uniformType;
-            _rangeMinMax = new Vector2(0.0f, 1.0f);
-            _defaultFloat = 0.0f;
-            _defaultInt = 0;
-            _defaultVector = default(Vector4);
-            _defaultColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-            _defaultTextureIndex = 0;
         }
 
 

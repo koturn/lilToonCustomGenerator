@@ -85,7 +85,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex IdentifierRegex();
 #else
-        public static Regex IdentifierRegex => _identifierRegex != null ? _identifierRegex : (_identifierRegex = new Regex(IdentifierPattern, Options));
+        public static Regex IdentifierRegex => _identifierRegex ?? (_identifierRegex = new Regex(IdentifierPattern, Options));
         /// <summary>
         /// Cache field of <see cref="IdentifierRegex"/>.
         /// </summary>
@@ -107,7 +107,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex NamespaceRegex();
 #else
-        public static Regex NamespaceRegex => _namespaceRegex != null ? _namespaceRegex : (_namespaceRegex = new Regex(NamespacePattern, Options));
+        public static Regex NamespaceRegex => _namespaceRegex ?? (_namespaceRegex = new Regex(NamespacePattern, Options));
         /// <summary>
         /// Cache field of <see cref="NamespaceRegex"/>.
         /// </summary>
@@ -129,7 +129,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex PackageNameRegex();
 #else
-        public static Regex PackageNameRegex => _packageName != null ? _packageName : (_packageName = new Regex(PackageNamePattern, Options));
+        public static Regex PackageNameRegex => _packageName ?? (_packageName = new Regex(PackageNamePattern, Options));
         /// <summary>
         /// Cache field of <see cref="PackageNameRegex"/>.
         /// </summary>
@@ -151,7 +151,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex PropertyNameRegex();
 #else
-        public static Regex PropertyNameRegex => _propertyNameRegex != null ? _propertyNameRegex : (_propertyNameRegex = new Regex(PropertyNamePattern, Options));
+        public static Regex PropertyNameRegex => _propertyNameRegex ?? (_propertyNameRegex = new Regex(PropertyNamePattern, Options));
         /// <summary>
         /// Cache field of <see cref="PropertyNameRegex"/>.
         /// </summary>
@@ -173,7 +173,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex VersionNumberRegex();
 #else
-        public static Regex VersionNumberRegex => _versionNumberRegex != null ? _versionNumberRegex : (_versionNumberRegex = new Regex(VersionNumberPattern, Options));
+        public static Regex VersionNumberRegex => _versionNumberRegex ?? (_versionNumberRegex = new Regex(VersionNumberPattern, Options));
         /// <summary>
         /// Cache field of <see cref="VersionNumberRegex"/>.
         /// </summary>
@@ -195,7 +195,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex SemVerRegex();
 #else
-        public static Regex SemVerRegex => _semVerRegex != null ? _semVerRegex : (_semVerRegex = new Regex(SemVerPattern, Options));
+        public static Regex SemVerRegex => _semVerRegex ?? (_semVerRegex = new Regex(SemVerPattern, Options));
         /// <summary>
         /// Cache field of <see cref="SemVerRegex"/>.
         /// </summary>
@@ -217,7 +217,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex TagIfemptyRegex();
 #else
-        public static Regex TagIfemptyRegex => _tagIfemptyRegex != null ? _tagIfemptyRegex : (_tagIfemptyRegex = new Regex(TagIfemptyPattern, Options));
+        public static Regex TagIfemptyRegex => _tagIfemptyRegex ?? (_tagIfemptyRegex = new Regex(TagIfemptyPattern, Options));
         /// <summary>
         /// Cache field of <see cref="TagIfemptyRegex"/>.
         /// </summary>
@@ -239,7 +239,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex TagElseRegex();
 #else
-        public static Regex TagElseRegex => _tagElseRegex != null ? _tagElseRegex : (_tagElseRegex = new Regex(TagElsePattern, Options));
+        public static Regex TagElseRegex => _tagElseRegex ?? (_tagElseRegex = new Regex(TagElsePattern, Options));
         /// <summary>
         /// Cache field of <see cref="TagElseRegex"/>.
         /// </summary>
@@ -261,7 +261,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex TagEndIfRegex();
 #else
-        public static Regex TagEndIfRegex => _tagEndIfRegex != null ? _tagEndIfRegex : (_tagEndIfRegex = new Regex(TagEndIfPattern, Options));
+        public static Regex TagEndIfRegex => _tagEndIfRegex ?? (_tagEndIfRegex = new Regex(TagEndIfPattern, Options));
         /// <summary>
         /// Cache field of <see cref="TagEndIfRegex"/>.
         /// </summary>
@@ -283,7 +283,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [GeneratedRegex(InstanceResetNotificationPattern, Options)]
         private static partial Regex TagRegex();
 #else
-        public static Regex TagRegex => _tagRegex != null ? _tagRegex : (_tagRegex = new Regex(TagPattern, Options));
+        public static Regex TagRegex => _tagRegex ?? (_tagRegex = new Regex(TagPattern, Options));
         /// <summary>
         /// Cache field of <see cref="TagRegex"/>.
         /// </summary>

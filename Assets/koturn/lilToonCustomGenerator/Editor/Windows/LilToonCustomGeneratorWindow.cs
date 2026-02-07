@@ -658,7 +658,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     Debug.LogFormat("Export dir: {0}", exportDirPath);
 
                     var assetPath = AssetPathHelper.AbsPathToAssetPath(exportDirPath);
-                    Generate(assetPath == null ? exportDirPath : assetPath);
+                    Generate(assetPath ?? exportDirPath);
                 }
             }
         }
