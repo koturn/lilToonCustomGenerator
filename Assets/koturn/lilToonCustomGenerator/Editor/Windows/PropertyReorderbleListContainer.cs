@@ -53,6 +53,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// Invalid property name list.
         /// </summary>
         private readonly List<string> _invalidPropertyNameList = new List<string>();
+        /// <summary>
+        /// List of property names with missing arguments.
+        /// </summary>
+        private readonly List<string> _missingDrawerArgumentPropertyNameList = new List<string>();
+        /// <summary>
+        /// List of property names with invalid arguments.
+        /// </summary>
+        private readonly List<string> _invalidDrawerArgumentPropertyNameList = new List<string>();
 
         /// <summary>
         /// Cache array of min/max values of the range property.
@@ -118,6 +126,46 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             return invalidNameList;
         }
 
+        /// <summary>
+        /// Get list of property names with missing arguments.
+        /// </summary>
+        /// <returns><see cref="List{T}"/> of property names with invalid arguments.</returns>
+        public List<string> GetMissingDrawerArgumentPropertyNames()
+        {
+            var missingDrawerArgumentPropertyNameList = _missingDrawerArgumentPropertyNameList;
+            missingDrawerArgumentPropertyNameList.Clear();
+
+            foreach (var item in List)
+            {
+                if (item.DrawerArgumentType == ArgumentType.Required && string.IsNullOrEmpty(item.DrawerArgument))
+                {
+                    missingDrawerArgumentPropertyNameList.Add(item.Name);
+                }
+            }
+
+            return missingDrawerArgumentPropertyNameList;
+        }
+
+        /// <summary>
+        /// Get list of property names with invalid arguments.
+        /// </summary>
+        /// <returns><see cref="List{T}"/> of property names with invalid arguments.</returns>
+        public List<string> GetInvalidDrawerArgumentPropertyNames()
+        {
+            var invalidDrawerArgumentPropertyNameList = _invalidDrawerArgumentPropertyNameList;
+            invalidDrawerArgumentPropertyNameList.Clear();
+
+            foreach (var item in List)
+            {
+                if (item.DrawerArgument.Contains('"'))
+                {
+                    invalidDrawerArgumentPropertyNameList.Add(item.Name);
+                }
+            }
+
+            return invalidDrawerArgumentPropertyNameList;
+        }
+
 
         /// <inheritdoc/>
         protected override ReorderableList CreateReorderableList(SerializedObject serializedObject, SerializedProperty serializedProperty)
@@ -156,7 +204,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <returns>Height of the element of the specified index.</returns>
         private float GetElementHeight(int index)
         {
-            return (EditorGUIUtility.singleLineHeight + HeightPadding) * 2.0f;
+            return (EditorGUIUtility.singleLineHeight + HeightPadding) * 3.0f;
         }
 
         /// <summary>
@@ -203,6 +251,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             var propPropertyType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfPropertyType);
             var propUniformType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfUniformType);
+            var propDrawerType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerType);
             using (var ccScope = new EditorGUI.ChangeCheckScope())
             {
                 if ((ShaderPropertyType)propPropertyType.intValue == ShaderPropertyType.Range)
@@ -261,6 +310,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             propUniformType.intValue = (int)ShaderVariableType.TextureCube;
                             break;
                     }
+                    propDrawerType.intValue = (int)DrawerType.None;
                 }
             }
 
@@ -319,6 +369,39 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         propDefaultTextureIndex.intValue,
                         ShaderPropertyDefinition.DefaultTextureNames);
                     break;
+            }
+
+            //
+            // Third line.
+            //
+            rect.y += line + HeightPadding;
+            var row3 = new Rect(rect.x, rect.y, rect.width, line);
+
+            col1 = row3.width * 0.3f;
+            col2 = row3.width * 0.7f;
+
+            var propDrawerArgument = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerArgument);
+            using (var ccScope = new EditorGUI.ChangeCheckScope())
+            {
+                var drawerSelections = ShaderPropertyDefinition.GetSuitableDrawerSelections((ShaderPropertyType)propPropertyType.intValue);
+                var drawerIndex = EditorGUI.Popup(
+                    new Rect(row3.x, row3.y, col1 - WidthPadding, line),
+                    "Drawer",
+                    Array.IndexOf(drawerSelections, ShaderPropertyDefinition.AllDrawerSelections[propDrawerType.intValue]),
+                    drawerSelections);
+                propDrawerType.intValue = Array.IndexOf(ShaderPropertyDefinition.AllDrawerSelections, drawerSelections[drawerIndex]);
+
+                if (ccScope.changed)
+                {
+                    propDrawerArgument.stringValue = "";
+                }
+            }
+
+            if (ShaderPropertyDefinition.GetDrawerArgumentType((DrawerType)propDrawerType.intValue) != ArgumentType.NotRequired)
+            {
+                EditorGUI.PropertyField(
+                    new Rect(row3.x + col1, row3.y, col2, line),
+                    propDrawerArgument);
             }
         }
 

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Koturn.LilToonCustomGenerator.Editor.Enums;
+using System.Text;
 
 
 namespace Koturn.LilToonCustomGenerator.Editor
@@ -52,6 +53,14 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Serialize name of backing field of <see cref="DefaultTextureIndex"/>.
         /// </summary>
         public const string NameOfDefaultTextureIndex = nameof(_defaultTextureIndex);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="DrawerType"/>.
+        /// </summary>
+        public const string NameOfDrawerType = nameof(_drawerType);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="NameOfDrawerArgument"/>.
+        /// </summary>
+        public const string NameOfDrawerArgument = nameof(_drawerArgument);
 
         /// <summary>
         /// Property types.
@@ -174,6 +183,53 @@ namespace Koturn.LilToonCustomGenerator.Editor
             "TextureCUBE"
         };
         /// <summary>
+        /// All drawer selections.
+        /// </summary>
+        public static string[] AllDrawerSelections { get; } =
+        {
+            "None",
+            "Toggle",
+            "ToggleOff",
+            "PowerSlider",
+            "IntRange",
+            "KeywordEnum",
+            "Enum",
+            "Gamma",
+            "HDR",
+            "NoScaleOffset",
+            "Normal",
+            "lilHDR",
+            "lilToggle",
+            "lilToggleLeft",
+            "lilAngle",
+            "lilLOD",
+            "lilBlink",
+            "lilVec2R",
+            "lilVec2",
+            "lilVec3",
+            "lilVec3Float",
+            "lilHSVG",
+            "lilUVAnim",
+            "lilDecalAnim",
+            "lilDecalSub",
+            "lilEnum",
+            "lilEnumLabel",
+            "lilColorMask",
+            "lil3Param",
+            "lilFF",
+            "lilFFFF",
+            "lilFFFB",
+            "lilFRFR",
+            "lilVec3BDrawer",
+            "lilALUVParams",
+            "lilALLocal",
+            "lilDissolve",
+            "lilDissolveP",
+            "lilOLWidth",
+            "lilGlitParam1",
+            "lilGlitParam2",
+        };
+        /// <summary>
         /// Default texture names.
         /// </summary>
         public static string[] DefaultTextureNames { get; } =
@@ -182,6 +238,84 @@ namespace Koturn.LilToonCustomGenerator.Editor
             "white",
             "gray",
             "bump"
+        };
+        /// <summary>
+        /// Suitable Drawers for Float property.
+        /// </summary>
+        public static string[] FloatDrawerSelections { get; } =
+        {
+            "None",
+            "Gamma",
+            "lilAngle",
+            "lilLOD"
+        };
+        /// <summary>
+        /// Suitable Drawers for Int property.
+        /// </summary>
+        public static string[] IntDrawerSelections { get; } =
+        {
+            "None",
+            "Toggle",
+            "ToggleOff",
+            "KeywordEnum",
+            "Enum",
+            "lilToggle",
+            "lilToggleLeft",
+            "lilEnum",
+            "lilEnumLabel",
+            "lilColorMask"
+        };
+        /// <summary>
+        /// Suitable Drawers for Range property.
+        /// </summary>
+        public static string[] RangeDrawerSelections { get; } =
+        {
+            "None",
+            "PowerSlider",
+            "IntRange",
+            "lilOLWidth"
+        };
+        /// <summary>
+        /// Suitable Drawers for Vector property.
+        /// </summary>
+        public static string[] VectorDrawerSelections { get; } =
+        {
+            "None",
+            "Gamma",
+            "lilBlink",
+            "lilVec2R",
+            "lilVec2",
+            "lilVec3",
+            "lilVec3Float",
+            "lilHSVG",
+            "lilUVAnim",
+            "lilDecalAnim",
+            "lilDecalSub",
+            "lil3Param",
+            "lilFF",
+            "lilFFFF",
+            "lilFFFB",
+            "lilFRFR",
+            "lilVec3BDrawer",
+            "lilALUVParams",
+            "lilALLocal",
+            "lilDissolve",
+            "lilDissolveP"
+        };
+        /// <summary>
+        /// Suitable Drawers for Color property.
+        /// </summary>
+        public static string[] ColorDrawerSelections { get; } =
+        {
+            "None",
+            "HDR",
+            "lilHDR"
+        };
+        public static string[] TextureDrawerSelections { get; } =
+        {
+            "None",
+            "NoScaleOffset",
+            "Normal"
         };
 
         /// <summary>
@@ -225,6 +359,14 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public int DefaultTextureIndex => _defaultTextureIndex;
         /// <summary>
+        /// Drawer type.
+        /// </summary>
+        public DrawerType DrawerType => _drawerType;
+        /// <summary>
+        /// Drawer argument.
+        /// </summary>
+        public string DrawerArgument => _drawerArgument;
+        /// <summary>
         /// Property type string.
         /// </summary>
         public string PropertyTypeText
@@ -234,7 +376,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
                 var propTypeText = PropertyTypeSelections[(int)_propertyType];
                 if (_propertyType == ShaderPropertyType.Range)
                 {
-                    propTypeText = $"{propTypeText} ({_rangeMinMax.x}, {_rangeMinMax.y})";
+                    propTypeText = $"{propTypeText}({_rangeMinMax.x}, {_rangeMinMax.y})";
                 }
                 return propTypeText;
             }
@@ -297,6 +439,35 @@ namespace Koturn.LilToonCustomGenerator.Editor
                 }
             }
         }
+        /// <summary>
+        /// Drawer part.
+        /// </summary>
+        public string Drawer
+        {
+            get
+            {
+                var drawerType = _drawerType;
+                if (drawerType == DrawerType.None)
+                {
+                    return "";
+                }
+
+                var sb = new StringBuilder();
+                sb.Append('[').Append(AllDrawerSelections[(int)drawerType]);
+
+                var arg = _drawerArgument;
+                if (GetDrawerArgumentType(drawerType) != ArgumentType.NotRequired && string.IsNullOrEmpty(arg))
+                {
+                    sb.Append('(').Append(arg).Append(')');
+                }
+
+                return sb.Append(']').ToString();
+            }
+        }
+        /// <summary>
+        /// Drawer argument type.
+        /// </summary>
+        public ArgumentType DrawerArgumentType => GetDrawerArgumentType(_drawerType);
 
         /// <summary>
         /// Backing field of <see cref="Name"/>.
@@ -348,6 +519,16 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         [SerializeField]
         public int _defaultTextureIndex;
+        /// <summary>
+        /// Backing field of <see cref="DrawerType"/>.
+        /// </summary>
+        [SerializeField]
+        public DrawerType _drawerType = DrawerType.None;
+        /// <summary>
+        /// Backing field of <see cref="DrawerArgument"/>.
+        /// </summary>
+        [SerializeField]
+        public string _drawerArgument = "";
 
 
         /// <summary>
@@ -399,6 +580,74 @@ namespace Koturn.LilToonCustomGenerator.Editor
                     return TextureCubePropertyVariableTypes;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(propertyType));
+            }
+        }
+
+        /// <summary>
+        /// Get suitable drawer selections.
+        /// </summary>
+        /// <param name="propertyType">Property type value.</param>
+        /// <returns>Selection string array for specified <see cref="PropertyType"/></returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="propertyType"/> is out of <see cref="ShaderPropertyType"/> values.</exception>
+        public static string[] GetSuitableDrawerSelections(ShaderPropertyType propertyType)
+        {
+            switch (propertyType)
+            {
+                case ShaderPropertyType.Float:
+                    return FloatDrawerSelections;
+                case ShaderPropertyType.Int:
+                    return IntDrawerSelections;
+                case ShaderPropertyType.Range:
+                    return RangeDrawerSelections;
+                case ShaderPropertyType.Vector:
+                    return VectorDrawerSelections;
+                case ShaderPropertyType.Color:
+                    return ColorDrawerSelections;
+                case ShaderPropertyType.Texture2D:
+                case ShaderPropertyType.Texture3D:
+                case ShaderPropertyType.TextureCube:
+                    return TextureDrawerSelections;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(propertyType));
+            }
+        }
+
+        /// <summary>
+        /// Get <see cref="ArgumentType"/> of specified drawer.
+        /// </summary>
+        /// <param name="drawerType">Drawer type value.</param>
+        /// <returns><see cref="ArgumentType"/> of specified drawer.</returns>
+        public static ArgumentType GetDrawerArgumentType(DrawerType drawerType)
+        {
+            switch (drawerType)
+            {
+                case DrawerType.Toggle:
+                case DrawerType.ToggleOff:
+                    return ArgumentType.Optional;
+                case DrawerType.PowerSlider:
+                case DrawerType.KeywordEnum:
+                case DrawerType.Enum:
+                case DrawerType.LilHSVG:
+                case DrawerType.LilUVAnim:
+                case DrawerType.LilDecalAnim:
+                case DrawerType.LilDecalSub:
+                case DrawerType.LilEnum:
+                case DrawerType.LilEnumLabel:
+                case DrawerType.LilFF:
+                case DrawerType.LilFFFF:
+                case DrawerType.LilFFFB:
+                case DrawerType.LilFRFR:
+                case DrawerType.LilVec3BDrawer:
+                case DrawerType.LilALUVParams:
+                case DrawerType.LilALLocal:
+                case DrawerType.LilDissolve:
+                case DrawerType.LilDissolveP:
+                case DrawerType.LilOLWidth:
+                case DrawerType.LilGlitParam1:
+                case DrawerType.LilGlitParam2:
+                    return ArgumentType.Required;
+                default:
+                    return ArgumentType.NotRequired;
             }
         }
     }

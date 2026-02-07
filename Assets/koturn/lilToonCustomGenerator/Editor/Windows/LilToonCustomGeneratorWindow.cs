@@ -436,6 +436,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             {
                                 _propertyReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join("\n", dupNameList));
                             }
+                            var missingDrawerArgPropList = _propertyReorderableListContainer.GetMissingDrawerArgumentPropertyNames();
+                            if (missingDrawerArgPropList.Count > 0)
+                            {
+                                _propertyReorderableListErrorMessages.Add("Argument missing for the drawer of the property.\n" + string.Join("\n", missingDrawerArgPropList));
+                            }
+                            var invalidDrawerArgPropList = _propertyReorderableListContainer.GetInvalidDrawerArgumentPropertyNames();
+                            if (invalidDrawerArgPropList.Count > 0)
+                            {
+                                _propertyReorderableListErrorMessages.Add("Invalid argument for the drawer of the property.\n" + string.Join("\n", invalidDrawerArgPropList));
+                            }
                         }
                     }
                     using (new EditorGUI.IndentLevelScope())
@@ -968,8 +978,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 index = 0;
                 foreach (var shaderProp in shaderPropDefList)
                 {
+                    var drawer = shaderProp.Drawer;
                     sb.AppendFormat(
-                        "{0} (\"{1}\", {2}) = {3}",
+                        "{0}{1}{2} (\"{3}\", {4}) = {5}",
+                        drawer,
+                        drawer.Length > 0 ? " " : "",
                         shaderProp.Name,
                         langTags[index],
                         shaderProp.PropertyTypeText,
@@ -981,8 +994,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 foreach (var shaderProp in shaderPropDefList)
                 {
+                    var drawer = shaderProp.Drawer;
                     sb.AppendFormat(
-                        "{0} (\"{1}\", {2}) = {3}",
+                        "{0}{1}{2} (\"{3}\", {4}) = {5}",
+                        drawer,
+                        drawer.Length > 0 ? " " : "",
                         shaderProp.Name,
                         shaderProp.Description,
                         shaderProp.PropertyTypeText,
