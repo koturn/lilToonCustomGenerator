@@ -426,25 +426,25 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         if (ccScope.changed)
                         {
                             _propertyReorderableListErrorMessages.Clear();
-                            var invalidNameList = _propertyReorderableListContainer.GetInvalidPropertyNames();
-                            if (invalidNameList.Count > 0)
+                            var invalidNameCollection = _propertyReorderableListContainer.GetInvalidPropertyNames();
+                            if (invalidNameCollection.Count > 0)
                             {
-                                _propertyReorderableListErrorMessages.Add("Following property names are invalid.\n" + string.Join("\n", invalidNameList));
+                                _propertyReorderableListErrorMessages.Add("Following property names are invalid.\n" + string.Join("\n", invalidNameCollection));
                             }
-                            var dupNameList = _propertyReorderableListContainer.GetDuplicatePropertyNames();
-                            if (dupNameList.Count > 0)
+                            var dupNameCollection = _propertyReorderableListContainer.GetDuplicatePropertyNames();
+                            if (dupNameCollection.Count > 0)
                             {
-                                _propertyReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join("\n", dupNameList));
+                                _propertyReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join("\n", dupNameCollection));
                             }
-                            var missingDrawerArgPropList = _propertyReorderableListContainer.GetMissingDrawerArgumentPropertyNames();
-                            if (missingDrawerArgPropList.Count > 0)
+                            var missingDrawerArgPropCollection = _propertyReorderableListContainer.GetMissingDrawerArgumentPropertyNames();
+                            if (missingDrawerArgPropCollection.Count > 0)
                             {
-                                _propertyReorderableListErrorMessages.Add("Argument missing for the drawer of the property.\n" + string.Join("\n", missingDrawerArgPropList));
+                                _propertyReorderableListErrorMessages.Add("Argument missing for the drawer of the property.\n" + string.Join("\n", missingDrawerArgPropCollection));
                             }
-                            var invalidDrawerArgPropList = _propertyReorderableListContainer.GetInvalidDrawerArgumentPropertyNames();
-                            if (invalidDrawerArgPropList.Count > 0)
+                            var invalidDrawerArgPropCollection = _propertyReorderableListContainer.GetInvalidDrawerArgumentPropertyNames();
+                            if (invalidDrawerArgPropCollection.Count > 0)
                             {
-                                _propertyReorderableListErrorMessages.Add("Invalid argument for the drawer of the property.\n" + string.Join("\n", invalidDrawerArgPropList));
+                                _propertyReorderableListErrorMessages.Add("Invalid argument for the drawer of the property.\n" + string.Join("\n", invalidDrawerArgPropCollection));
                             }
                         }
                     }
@@ -465,15 +465,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         if (ccScope.changed)
                         {
                             _v2fMemberReorderableListErrorMessages.Clear();
-                            var invalidNameList = _v2fMemberReorderableListContainer.GetInvalidMemberNames();
-                            if (invalidNameList.Count > 0)
+                            var invalidNameCollection = _v2fMemberReorderableListContainer.GetInvalidMemberNames();
+                            if (invalidNameCollection.Count > 0)
                             {
-                                _v2fMemberReorderableListErrorMessages.Add("Following member names are invalid.\n" + string.Join("\n", invalidNameList));
+                                _v2fMemberReorderableListErrorMessages.Add("Following member names are invalid.\n" + string.Join("\n", invalidNameCollection));
                             }
-                            var dupNameList = _v2fMemberReorderableListContainer.GetDuplicateMemberNames();
-                            if (dupNameList.Count > 0)
+                            var dupNameCollection = _v2fMemberReorderableListContainer.GetDuplicateMemberNames();
+                            if (dupNameCollection.Count > 0)
                             {
-                                _v2fMemberReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join("\n", dupNameList));
+                                _v2fMemberReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join("\n", dupNameCollection));
                             }
                         }
                     }

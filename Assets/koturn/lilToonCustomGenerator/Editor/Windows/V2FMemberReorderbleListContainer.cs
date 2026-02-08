@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -37,6 +38,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// Invalid property name list.
         /// </summary>
         private readonly List<string> _invalidPropertyNameList = new List<string>();
+        /// <summary>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_duplicatePropertyNameList"/>.
+        /// </summary>
+        private readonly ReadOnlyCollection<string> _duplicatePropertyNameCollection;
+        /// <summary>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_invalidPropertyNameCollection"/>
+        /// </summary>
+        private readonly ReadOnlyCollection<string> _invalidPropertyNameCollection;
 
 
         /// <summary>
@@ -45,14 +54,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         [Obsolete("Should not be instanciated directly, Use ScriptableObject.CreateInstance()")]
         private V2FMemberReorderbleListContainer()
         {
+            _duplicatePropertyNameCollection = _duplicatePropertyNameList.AsReadOnly();
+            _invalidPropertyNameCollection = _invalidPropertyNameList.AsReadOnly();
         }
 
 
         /// <summary>
         /// Get duplicate property names.
         /// </summary>
-        /// <returns><see cref="List{T}"/> of duplicate property names.</returns>
-        public List<string> GetDuplicateMemberNames()
+        /// <returns><see cref="ReadOnlyCollection{T}"/> of duplicate property names.</returns>
+        public ReadOnlyCollection<string> GetDuplicateMemberNames()
         {
             var dupNameList = _duplicatePropertyNameList;
             dupNameList.Clear();
@@ -70,14 +81,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
 
-            return dupNameList;
+            return _duplicatePropertyNameCollection;
         }
 
         /// <summary>
         /// Get invalid property names.
         /// </summary>
-        /// <returns><see cref="List{T}"/> of invalid property names.</returns>
-        public List<string> GetInvalidMemberNames()
+        /// <returns><see cref="ReadOnlyCollection{T}"/> of invalid property names.</returns>
+        public ReadOnlyCollection<string> GetInvalidMemberNames()
         {
             var invalidNameList = _invalidPropertyNameList;
             invalidNameList.Clear();
@@ -90,7 +101,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
 
-            return invalidNameList;
+            return _invalidPropertyNameCollection;
         }
 
 

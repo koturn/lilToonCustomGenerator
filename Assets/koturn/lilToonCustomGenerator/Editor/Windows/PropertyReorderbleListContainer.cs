@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -61,6 +62,23 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// List of property names with invalid arguments.
         /// </summary>
         private readonly List<string> _invalidDrawerArgumentPropertyNameList = new List<string>();
+        /// <summary>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_duplicatePropertyNameList"/>.
+        /// </summary>
+        private readonly ReadOnlyCollection<string> _duplicatePropertyNameCollection;
+        /// <summary>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_invalidPropertyNameList"/>.
+        /// </summary>
+        private readonly ReadOnlyCollection<string> _invalidPropertyNameCollection;
+        /// <summary>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_missingDrawerArgumentPropertyNameList"/>.
+        /// </summary>
+        private readonly ReadOnlyCollection<string> _missingDrawerArgumentPropertyCollection;
+        /// <summary>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_invalidDrawerArgumentPropertyNameList"/>.
+        /// </summary>
+        private readonly ReadOnlyCollection<string> _invalidDrawerArgumentPropertyNameCollection;
+
 
         /// <summary>
         /// Cache array of min/max values of the range property.
@@ -78,14 +96,18 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         [Obsolete("Should not be instanciated directly, Use ScriptableObject.CreateInstance()")]
         private PropertyReorderableListContainer()
         {
+            _duplicatePropertyNameCollection = _duplicatePropertyNameList.AsReadOnly();
+            _invalidPropertyNameCollection = _invalidPropertyNameList.AsReadOnly();
+            _missingDrawerArgumentPropertyCollection = _missingDrawerArgumentPropertyNameList.AsReadOnly();
+            _invalidDrawerArgumentPropertyNameCollection = _invalidDrawerArgumentPropertyNameList.AsReadOnly();
         }
 
 
         /// <summary>
         /// Get duplicate property names.
         /// </summary>
-        /// <returns><see cref="List{T}"/> of duplicate property names.</returns>
-        public List<string> GetDuplicatePropertyNames()
+        /// <returns><see cref="ReadOnlyCollection{T}"/> of duplicate property names.</returns>
+        public ReadOnlyCollection<string> GetDuplicatePropertyNames()
         {
             var dupNameList = _duplicatePropertyNameList;
             dupNameList.Clear();
@@ -103,14 +125,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
 
-            return dupNameList;
+            return _duplicatePropertyNameCollection;
         }
 
         /// <summary>
         /// Get invalid property names.
         /// </summary>
-        /// <returns><see cref="List{T}"/> of invalid property names.</returns>
-        public List<string> GetInvalidPropertyNames()
+        /// <returns><see cref="ReadOnlyCollection{T}"/> of invalid property names.</returns>
+        public ReadOnlyCollection<string> GetInvalidPropertyNames()
         {
             var invalidNameList = _invalidPropertyNameList;
             invalidNameList.Clear();
@@ -123,14 +145,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
 
-            return invalidNameList;
+            return _invalidPropertyNameCollection;
         }
 
         /// <summary>
         /// Get list of property names with missing arguments.
         /// </summary>
-        /// <returns><see cref="List{T}"/> of property names with invalid arguments.</returns>
-        public List<string> GetMissingDrawerArgumentPropertyNames()
+        /// <returns><see cref="ReadOnlyCollection{T}"/> of property names with invalid arguments.</returns>
+        public ReadOnlyCollection<string> GetMissingDrawerArgumentPropertyNames()
         {
             var missingDrawerArgumentPropertyNameList = _missingDrawerArgumentPropertyNameList;
             missingDrawerArgumentPropertyNameList.Clear();
@@ -143,14 +165,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
 
-            return missingDrawerArgumentPropertyNameList;
+            return _missingDrawerArgumentPropertyCollection;
         }
 
         /// <summary>
         /// Get list of property names with invalid arguments.
         /// </summary>
-        /// <returns><see cref="List{T}"/> of property names with invalid arguments.</returns>
-        public List<string> GetInvalidDrawerArgumentPropertyNames()
+        /// <returns><see cref="ReadOnlyCollection{T}"/> of property names with invalid arguments.</returns>
+        public ReadOnlyCollection<string> GetInvalidDrawerArgumentPropertyNames()
         {
             var invalidDrawerArgumentPropertyNameList = _invalidDrawerArgumentPropertyNameList;
             invalidDrawerArgumentPropertyNameList.Clear();
@@ -163,7 +185,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
 
-            return invalidDrawerArgumentPropertyNameList;
+            return _invalidDrawerArgumentPropertyNameCollection;
         }
 
 
