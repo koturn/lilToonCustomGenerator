@@ -450,6 +450,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     }
                     using (new EditorGUI.IndentLevelScope())
                     {
+                        errorCount += _propertyReorderableListErrorMessages.Count;
                         foreach (var errmsg in _propertyReorderableListErrorMessages)
                         {
                             EditorGUILayout.HelpBox(errmsg, MessageType.Error);
@@ -485,6 +486,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     }
                     using (new EditorGUI.IndentLevelScope())
                     {
+                        errorCount += _v2fMemberReorderableListErrorMessages.Count;
                         foreach (var errmsg in _v2fMemberReorderableListErrorMessages)
                         {
                             EditorGUILayout.HelpBox(errmsg, MessageType.Error);
