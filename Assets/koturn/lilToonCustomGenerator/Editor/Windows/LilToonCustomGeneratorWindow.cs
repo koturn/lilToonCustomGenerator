@@ -774,7 +774,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             var guidAsmdef = ReadOrGenerateGuid(asmdefPath, isInProject);
                             if (guidAsmdef.Length != 0)
                             {
-                                tagDict.Add("GUID_D_ASMDEF", new Guid(guidAsmdef).ToString("D"));
+                                tagDict.Add("GUID_D_ASMDEF", Guid.ParseExact(guidAsmdef, "N").ToString("D"));
                             }
 
                             break;
@@ -802,7 +802,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         var guidAsmInfo = ReadOrGenerateGuid(asmInfoPath, isInProject);
                         if (guidAsmInfo.Length != 0)
                         {
-                            tagDict.Add("GUID_D_ASSEMBLY_INFO", new Guid(guidAsmInfo).ToString("D"));
+                            tagDict.Add("GUID_D_ASSEMBLY_INFO", Guid.ParseExact(guidAsmInfo, "N").ToString("D"));
                         }
                     }
 

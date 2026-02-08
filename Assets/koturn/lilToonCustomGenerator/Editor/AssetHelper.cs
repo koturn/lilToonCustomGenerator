@@ -43,7 +43,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     if (line.StartsWith("guid: "))
                     {
-                        return new Guid(line.Substring(6));
+                        return Guid.ParseExact(line.Substring(6), "N");
                     }
                 }
             }
