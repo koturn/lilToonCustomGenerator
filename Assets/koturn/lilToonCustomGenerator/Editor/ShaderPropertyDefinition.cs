@@ -237,6 +237,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             "black",
             "white",
             "gray",
+            "red",
             "bump"
         };
         /// <summary>
