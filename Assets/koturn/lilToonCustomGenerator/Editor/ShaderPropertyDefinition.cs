@@ -127,6 +127,14 @@ namespace Koturn.LilToonCustomGenerator.Editor
             "bool",
             "lilBool"
         };
+        public static string[] RangePropertyVariableTypes { get; } =
+        {
+            "float",
+            "half",
+            "fixed",
+            "int",
+            "uint"
+        };
         /// <summary>
         /// Variable type names suitable for shader property <c>Vector</c>.
         /// </summary>
@@ -559,10 +567,11 @@ namespace Koturn.LilToonCustomGenerator.Editor
             switch (propertyType)
             {
                 case ShaderPropertyType.Float:
-                case ShaderPropertyType.Range:
                     return FloatPropertyVariableTypes;
                 case ShaderPropertyType.Int:
                     return IntPropertyVariableTypes;
+                case ShaderPropertyType.Range:
+                    return RangePropertyVariableTypes;
                 case ShaderPropertyType.Vector:
                     return VectorPropertyVariableTypes;
                 case ShaderPropertyType.Color:
