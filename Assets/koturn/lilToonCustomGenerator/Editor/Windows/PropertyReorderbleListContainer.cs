@@ -81,9 +81,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
 
         /// <summary>
-        /// Cache array of min/max values of the range property.
+        /// Cached array of min/max values of the range property.
         /// </summary>
         private readonly float[] _rangeMinMaxArray = new float[2];
+        /// <summary>
+        /// Cached array of min/max values of the int range property.
+        /// </summary>
+        private readonly int[] _rangeIntMinMaxArray = new int[2];
         /// <summary>
         /// Cache array of default vector components.
         /// </summary>
@@ -331,17 +335,29 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     ShaderPropertyDefinition.PropertyTypeSelections);
                 var propRangeMinMax = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfRangeMinMax);
                 var rangeMinMax = propRangeMinMax.vector2Value;
-                var rangeMinMaxArray = _rangeMinMaxArray;
 
-                rangeMinMaxArray[0] = rangeMinMax.x;
-                rangeMinMaxArray[1] = rangeMinMax.y;
-
-                EditorGUI.MultiFloatField(
-                    new Rect(row2.x + col1 * 0.5f, row2.y, col1 * 0.5f - WidthPadding, line),
-                    _rangeMinMaxLabel,
-                    rangeMinMaxArray);
-
-                propRangeMinMax.vector2Value = new Vector2(rangeMinMaxArray[0], rangeMinMaxArray[1]);
+                if ((DrawerType)propDrawerType.intValue == DrawerType.IntRange)
+                {
+                    var rangeIntMinMaxArray = _rangeIntMinMaxArray;
+                    rangeIntMinMaxArray[0] = (int)rangeMinMax.x;
+                    rangeIntMinMaxArray[1] = (int)rangeMinMax.y;
+                    EditorGUI.MultiIntField(
+                        new Rect(row2.x + col1 * 0.5f, row2.y, col1 * 0.5f - WidthPadding, line),
+                        _rangeMinMaxLabel,
+                        rangeIntMinMaxArray);
+                    propRangeMinMax.vector2Value = new Vector2(rangeIntMinMaxArray[0], rangeIntMinMaxArray[1]);
+                }
+                else
+                {
+                    var rangeMinMaxArray = _rangeMinMaxArray;
+                    rangeMinMaxArray[0] = rangeMinMax.x;
+                    rangeMinMaxArray[1] = rangeMinMax.y;
+                    EditorGUI.MultiFloatField(
+                        new Rect(row2.x + col1 * 0.5f, row2.y, col1 * 0.5f - WidthPadding, line),
+                        _rangeMinMaxLabel,
+                        rangeMinMaxArray);
+                    propRangeMinMax.vector2Value = new Vector2(rangeMinMaxArray[0], rangeMinMaxArray[1]);
+                }
             }
 
             var availableTypeNames = ShaderPropertyDefinition.GetSuitableVariableTypeNames((ShaderPropertyType)propPropertyType.intValue);
