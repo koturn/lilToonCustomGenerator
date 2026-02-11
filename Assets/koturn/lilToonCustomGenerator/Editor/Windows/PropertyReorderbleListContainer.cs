@@ -415,7 +415,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                 if (ccScope.changed)
                 {
-                    propDrawerArgument.stringValue = "";
+                    propDrawerArgument.stringValue = ShaderPropertyDefinition.GetDefaultDrawerArgument((DrawerType)propDrawerType.intValue);
                 }
             }
 

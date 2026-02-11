@@ -645,5 +645,55 @@ namespace Koturn.LilToonCustomGenerator.Editor
                     return ArgumentType.NotRequired;
             }
         }
+
+        /// <summary>
+        /// Get default drawer argument.
+        /// </summary>
+        /// <param name="drawerType">Drawer type value.</param>
+        /// <returns>Default drawer argument.</returns>
+        public static string GetDefaultDrawerArgument(DrawerType drawerType)
+        {
+            switch (drawerType)
+            {
+                case DrawerType.LilHSVG:
+                    return "sHSVGs";
+                case DrawerType.LilUVAnim:
+                    return "sScrollRotates";
+                case DrawerType.LilDecalAnim:
+                    return "sDecalAnimations";
+                case DrawerType.LilDecalSub:
+                    return "sDecalSubParams";
+                case DrawerType.LilEnum:
+                    return "UV Mode|UV0|UV1|UV2|UV3|MatCap";
+                case DrawerType.LilEnumLabel:
+                    return "sAlphaMaskModes";
+                case DrawerType.LilFF:
+                    return "3rd Scale|3rd Offset";
+                case DrawerType.LilFFFF:
+                    return "1st Scale|1st Offset|2nd Scale|2nd Offset";
+                case DrawerType.LilFFFB:
+                    return "sDistanceFadeSettings";
+                case DrawerType.LilFRFR:
+                    return "Strength|Blink Strength|Blink Speed|Blink Threshold";
+                case DrawerType.LilVec3BDrawer:
+                    return "sLightDirectionOverrides";
+                case DrawerType.LilALUVParams:
+                    return "Scale|Offset|sAngle|Band|Bass|Low Mid|High Mid|Treble";
+                case DrawerType.LilALLocal:
+                    return "sAudioLinkLocalMapParams";
+                case DrawerType.LilDissolve:
+                    return "sDissolveParams";
+                case DrawerType.LilDissolveP:
+                    return "Dissolve Position";
+                case DrawerType.LilOLWidth:
+                    return "Width";
+                case DrawerType.LilGlitParam1:
+                    return "Tiling|Particle Size|Contrast";
+                case DrawerType.LilGlitParam2:
+                    return "sGlitterParams2";
+                default:
+                    return string.Empty;
+            }
+        }
     }
 }
