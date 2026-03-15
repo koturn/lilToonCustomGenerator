@@ -43,9 +43,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             new GUIContent("W"),
         };
         /// <summary>
+        /// Label for Property Name.
+        /// </summary>
+        private static readonly GUIContent _labelPropertyName = new GUIContent("Property Name");
+        /// <summary>
         /// "Default" labels.
         /// </summary>
-        private static readonly GUIContent _defaultValueLabel = new GUIContent("Default");
+        private static readonly GUIContent _labelDefaultValue = new GUIContent("Default");
         /// <summary>
         /// Duplicate property name list.
         /// </summary>
@@ -259,7 +263,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             EditorGUI.PropertyField(
                 new Rect(row1.x, row1.y, nameWidth - WidthPadding, line),
                 element.FindPropertyRelative(ShaderPropertyDefinition.NameOfName),
-                new GUIContent("Property Name"));
+                _labelPropertyName);
 
             EditorGUI.PropertyField(
                 new Rect(row1.x + nameWidth, row1.y, descWidth, line),
@@ -376,7 +380,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     EditorGUI.PropertyField(
                         rectDefaultValue,
                         element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultFloat),
-                        _defaultValueLabel);
+                        _labelDefaultValue);
                     break;
                 case ShaderPropertyType.Int:
                     EditorGUI.PropertyField(
