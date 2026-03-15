@@ -170,6 +170,22 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         ///     <term><c>_VRChatPhotoCameraRot</c></term>
         ///     <description>World space rotation (quaternion) of photo camera.</description>
         ///   </item>
+        ///   <item>
+        ///     <term><c>_VRChatTimeUTCUnixSeconds</c></term>
+        ///     <description>The lower 32 bits of the current UTC time in seconds since the Unix epoch.</description>
+        ///   </item>
+        ///   <item>
+        ///     <term><c>_VRChatTimeNetworkMs</c></term>
+        ///     <description>Synchronized network time in milliseconds.</description>
+        ///   </item>
+        ///   <item>
+        ///     <term><c>_VRChatTimeEncoded1</c></term>
+        ///     <description>Hour, minute, second components bits of UTC and Local Time.</description>
+        ///   </item>
+        ///   <item>
+        ///     <term><c>_VRChatTimeEncoded2</c></term>
+        ///     <description>Millisecond and timezone offset component bits.</description>
+        ///   </item>
         /// </list>
         /// </para>
         /// </summary>
