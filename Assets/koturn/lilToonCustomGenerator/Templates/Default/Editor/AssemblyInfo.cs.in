@@ -6,7 +6,11 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("%%ASSEMBLY_TITLE%%")]
 [assembly: AssemblyDescription("%%ASSEMBLY_DESCRIPTION%%.")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
 [assembly: AssemblyConfiguration("Release")]
+#endif  // DEBUG
 [assembly: AssemblyCompany("%%ASSEMBLY_COMPANY%%")]
 [assembly: AssemblyProduct("%%ASSEMBLY_PRODUCT%%")]
 [assembly: AssemblyCopyright("%%ASSEMBLY_COPYRIGHT%%")]

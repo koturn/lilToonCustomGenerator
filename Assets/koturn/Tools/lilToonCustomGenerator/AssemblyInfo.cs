@@ -6,7 +6,11 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("Koturn.Tools.LilToonCustomGenerator.Editor")]
 [assembly: AssemblyDescription("Utilities for koturn/LilToonCustomGenerator.")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
 [assembly: AssemblyConfiguration("Release")]
+#endif  // DEBUG
 [assembly: AssemblyCompany("koturn")]
 [assembly: AssemblyProduct("Koturn.Tools.LilToonCustomGenerator.Editor")]
 [assembly: AssemblyCopyright("Copyright (C) 2026 koturn All Rights Reserverd.")]
