@@ -447,6 +447,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             {
                                 _propertyReorderableListErrorMessages.Add("Following property names are invalid.\n" + string.Join("\n", invalidNameCollection));
                             }
+                            var usedNameCollection = _propertyReorderableListContainer.GetNamesUsedInLilToon();
+                            if (usedNameCollection.Count > 0)
+                            {
+                                _propertyReorderableListErrorMessages.Add("Following property names are used in lilToon.\n" + string.Join("\n", usedNameCollection));
+                            }
                             var dupNameCollection = _propertyReorderableListContainer.GetDuplicatePropertyNames();
                             if (dupNameCollection.Count > 0)
                             {

@@ -67,6 +67,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private readonly List<string> _invalidDrawerArgumentPropertyNameList = new List<string>();
         /// <summary>
+        /// List of property names which is used in lilToon.
+        /// </summary>
+        private readonly List<string> _usedInlilToonPropertyNameList = new List<string>();
+        /// <summary>
         /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_duplicatePropertyNameList"/>.
         /// </summary>
         private readonly ReadOnlyCollection<string> _duplicatePropertyNameCollection;
@@ -82,6 +86,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_invalidDrawerArgumentPropertyNameList"/>.
         /// </summary>
         private readonly ReadOnlyCollection<string> _invalidDrawerArgumentPropertyNameCollection;
+        /// <summary>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_usedInlilToonPropertyNameList"/>.
+        /// </summary>
+        private readonly ReadOnlyCollection<string> _usedInlilToonPropertyNameCollection;
 
 
         /// <summary>
@@ -108,6 +116,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _invalidPropertyNameCollection = _invalidPropertyNameList.AsReadOnly();
             _missingDrawerArgumentPropertyCollection = _missingDrawerArgumentPropertyNameList.AsReadOnly();
             _invalidDrawerArgumentPropertyNameCollection = _invalidDrawerArgumentPropertyNameList.AsReadOnly();
+            _usedInlilToonPropertyNameCollection = _usedInlilToonPropertyNameList.AsReadOnly();
         }
 
 
@@ -194,6 +203,27 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
 
             return _invalidDrawerArgumentPropertyNameCollection;
+        }
+
+        /// <summary>
+        /// Get list of property names which is used in lilToon.
+        /// </summary>
+        /// <returns><see cref="ReadOnlyCollection{T}"/> of property names with invalid arguments.</returns>
+        public ReadOnlyCollection<string> GetNamesUsedInLilToon()
+        {
+            var usedInlilToonPropertyNameList = _usedInlilToonPropertyNameList;
+            usedInlilToonPropertyNameList.Clear();
+
+            var nameSet = ShaderPropertyDefinition.LilToonPropertyNameSet;
+            foreach (var item in List)
+            {
+                if (nameSet.Contains(item.Name))
+                {
+                    usedInlilToonPropertyNameList.Add(item.Name);
+                }
+            }
+
+            return _usedInlilToonPropertyNameCollection;
         }
 
 
