@@ -295,9 +295,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 element.FindPropertyRelative(ShaderPropertyDefinition.NameOfName),
                 _labelPropertyName);
 
+            var propDescription = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDescription);
             EditorGUI.PropertyField(
                 new Rect(row1.x + nameWidth, row1.y, descWidth, line),
-                element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDescription));
+                propDescription);
 
             //
             // Second line.
@@ -460,7 +461,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             col1 = row3.width * 0.3f;
             col2 = row3.width * 0.7f;
 
-            var propDrawerArgument = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerArgument);
             using (var ccScope = new EditorGUI.ChangeCheckScope())
             {
                 var drawerSelections = ShaderPropertyDefinition.GetSuitableDrawerSelections((ShaderPropertyType)propPropertyType.intValue);
@@ -471,9 +471,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     drawerSelections);
                 propDrawerType.intValue = Array.IndexOf(ShaderPropertyDefinition.AllDrawerSelections, drawerSelections[drawerIndex]);
 
-                if (ccScope.changed)
+                if (ccScope.changed && propDescription.stringValue.Length == 0)
                 {
-                    propDrawerArgument.stringValue = ShaderPropertyDefinition.GetDefaultDrawerArgument((DrawerType)propDrawerType.intValue);
+                    propDescription.stringValue = ShaderPropertyDefinition.GetDefaultDescription((DrawerType)propDrawerType.intValue);
                 }
             }
 
@@ -481,7 +481,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 EditorGUI.PropertyField(
                     new Rect(row3.x + col1, row3.y, col2, line),
-                    propDrawerArgument);
+                    element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerArgument));
             }
         }
 

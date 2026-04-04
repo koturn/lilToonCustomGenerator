@@ -1128,24 +1128,6 @@ namespace Koturn.LilToonCustomGenerator.Editor
                 case DrawerType.PowerSlider:
                 case DrawerType.KeywordEnum:
                 case DrawerType.Enum:
-                case DrawerType.LilHSVG:
-                case DrawerType.LilUVAnim:
-                case DrawerType.LilDecalAnim:
-                case DrawerType.LilDecalSub:
-                case DrawerType.LilEnum:
-                case DrawerType.LilEnumLabel:
-                case DrawerType.LilFF:
-                case DrawerType.LilFFFF:
-                case DrawerType.LilFFFB:
-                case DrawerType.LilFRFR:
-                case DrawerType.LilVec3BDrawer:
-                case DrawerType.LilALUVParams:
-                case DrawerType.LilALLocal:
-                case DrawerType.LilDissolve:
-                case DrawerType.LilDissolveP:
-                case DrawerType.LilOLWidth:
-                case DrawerType.LilGlitParam1:
-                case DrawerType.LilGlitParam2:
                     return ArgumentType.Required;
                 default:
                     return ArgumentType.NotRequired;
@@ -1157,7 +1139,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         /// <param name="drawerType">Drawer type value.</param>
         /// <returns>Default drawer argument.</returns>
-        public static string GetDefaultDrawerArgument(DrawerType drawerType)
+        public static string GetDefaultDescription(DrawerType drawerType)
         {
             switch (drawerType)
             {
