@@ -194,6 +194,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </remarks>
         private bool _shouldDeclareVRChatVariables = false;
         /// <summary>
+        /// Each VRChat variable flags.
+        /// </summary>
+        private VRChatVariableFlagBits _vrchatVariableFlagBits = default;
+        /// <summary>
         /// <para>True to declare following two variables in <c>Shaders/custom_insert.hlsl</c>.</para>
         /// <para>
         /// <list type="bullet">
@@ -553,6 +557,26 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         _shouldGenerateInsertPost = EditorGUILayout.ToggleLeft("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldGenerateInsertPost);
                     }
                     _shouldDeclareVRChatVariables = EditorGUILayout.ToggleLeft("Use VRChat variables", _shouldDeclareVRChatVariables);
+                    if (_shouldDeclareVRChatVariables)
+                    {
+                        using (new EditorGUI.IndentLevelScope())
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        {
+                            _vrchatVariableFlagBits.UseVRChatCameraMode = EditorGUILayout.ToggleLeft("_VRChatCameraMode", _vrchatVariableFlagBits.UseVRChatCameraMode);
+                            _vrchatVariableFlagBits.UseVRChatCameraMask = EditorGUILayout.ToggleLeft("_VRChatCameraMask", _vrchatVariableFlagBits.UseVRChatCameraMask);
+                            _vrchatVariableFlagBits.UseVRChatMirrorMode = EditorGUILayout.ToggleLeft("_VRChatMirrorMode", _vrchatVariableFlagBits.UseVRChatMirrorMode);
+                            _vrchatVariableFlagBits.UseVRChatFaceMirrorMode = EditorGUILayout.ToggleLeft("_VRChatFaceMirrorMode", _vrchatVariableFlagBits.UseVRChatFaceMirrorMode);
+                            _vrchatVariableFlagBits.UseVRChatMirrorCameraPos = EditorGUILayout.ToggleLeft("_VRChatMirrorCameraPos", _vrchatVariableFlagBits.UseVRChatMirrorCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatScreenCameraPos = EditorGUILayout.ToggleLeft("_VRChatScreenCameraPos", _vrchatVariableFlagBits.UseVRChatScreenCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatScreenCameraRot = EditorGUILayout.ToggleLeft("_VRChatScreenCameraRot", _vrchatVariableFlagBits.UseVRChatScreenCameraRot);
+                            _vrchatVariableFlagBits.UseVRChatPhotoCameraPos = EditorGUILayout.ToggleLeft("_VRChatPhotoCameraPos", _vrchatVariableFlagBits.UseVRChatPhotoCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatPhotoCameraRot = EditorGUILayout.ToggleLeft("_VRChatPhotoCameraRot", _vrchatVariableFlagBits.UseVRChatPhotoCameraRot);
+                            _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds = EditorGUILayout.ToggleLeft("_VRChatTimeUTCUnixSeconds", _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds);
+                            _vrchatVariableFlagBits.UseVRChatTimeNetworkMs = EditorGUILayout.ToggleLeft("_VRChatTimeNetworkMs", _vrchatVariableFlagBits.UseVRChatTimeNetworkMs);
+                            _vrchatVariableFlagBits.UseVRChatTimeEncoded1 = EditorGUILayout.ToggleLeft("_VRChatTimeEncoded1", _vrchatVariableFlagBits.UseVRChatTimeEncoded1);
+                            _vrchatVariableFlagBits.UseVRChatTimeEncoded2 = EditorGUILayout.ToggleLeft("_VRChatTimeEncoded2", _vrchatVariableFlagBits.UseVRChatTimeEncoded2);
+                        }
+                    }
                     _shouldDeclareAudioLinkVariables = EditorGUILayout.ToggleLeft("Use AudioLink variables", _shouldDeclareAudioLinkVariables);
                     _shouldDeclareProTVVariables = EditorGUILayout.ToggleLeft("Use ProTV variables", _shouldDeclareProTVVariables);
                 }
@@ -1252,7 +1276,58 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
             if (_shouldDeclareVRChatVariables)
             {
-                tagDict.Add("SHOULD_DECLARE_VRCHAT_VARIABLES", "true");
+                if (_vrchatVariableFlagBits.UseVRChatCameraMode)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_CAMERA_MODE", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatCameraMask)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_CAMERA_MASK", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatMirrorMode)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_MIRROR_MODE", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatFaceMirrorMode)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_FACE_MIRROR_MODE", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatMirrorCameraPos)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_MIRROR_CAMERA_POS", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatScreenCameraPos)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_SCREEN_CAMERA_POS", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatScreenCameraRot)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_SCREEN_CAMERA_ROT", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatPhotoCameraPos)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_PHOTO_CAMERA_POS", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatPhotoCameraRot)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_PHOTO_CAMERA_ROT", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_TIME_UTC_UNIX_SECONDS", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatTimeNetworkMs)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_TIME_NETWORK_MS", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatTimeEncoded1)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_TIME_ENCODED1", "true");
+                }
+                if (_vrchatVariableFlagBits.UseVRChatTimeEncoded2)
+                {
+                    tagDict.Add("SHOULD_DECLARE_VRCHAT_TIME_ENCODED2", "true");
+                }
             }
             if (_shouldDeclareAudioLinkVariables)
             {

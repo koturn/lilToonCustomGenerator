@@ -1,45 +1,60 @@
-!!ifnotempty:SHOULD_DECLARE_VRCHAT_VARIABLES!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_CAMERA_MODE!!
 // 0: Rendering normally
 // 1: Rendering in VR handheld camera
 // 2: Rendering in Desktop handheld camera
 // 3: Rendering for a screenshot
 float _VRChatCameraMode;
-
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_CAMERA_MASK!!
 // The cullingMask property of the active camera, available if _VRChatCameraMode != 0.
 uint _VRChatCameraMask;
-
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_MIRROR_MODE!!
 // 0: Rendering normally, not in a mirror
 // 1: Rendering in a mirror viewed in VR
 // 2: Rendering in a mirror viewed in desktop mode
 float _VRChatMirrorMode;
-
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_FACE_MIRROR_MODE!!
 // 1 when rendering the face mirror (VR and Desktop use different camera types!), 0 otherwise
 float _VRChatFaceMirrorMode;
-
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_MIRROR_CAMERA_POS!!
 // World space position of mirror camera (eye independent, "centered" in VR)
 // (0,0,0) when not rendering in a mirror.
 float _VRChatMirrorCameraPos;
-
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_SCREEN_CAMERA_POS!!
 // World space position of main screen camera.
 float3 _VRChatScreenCameraPos;
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_SCREEN_CAMERA_ROT!!
 // World space rotation (quaternion) of main screen camera.
 float4 _VRChatScreenCameraRot;
-
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_PHOTO_CAMERA_POS!!
 // World space position of handheld photo camera (first instance when using Dolly Multicam), (0,0,0) when camera is not active.
 float3 _VRChatPhotoCameraPos;
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_PHOTO_CAMERA_ROT!!
 // World space rotation (quaternion) of photo camera.
 float4 _VRChatPhotoCameraRot;
-
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_TIME_UTC_UNIX_SECONDS!!
 // The lower 32 bits of the current UTC time in seconds since the Unix epoch.
 // Note that this should be treated as an unsigned number and will thus not (yet) overflow in 2038.
 // If system time is set to pre-1970 this value is undefined.
 uint _VRChatTimeUTCUnixSeconds;
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_TIME_NETWORK_MS!!
 // Synchronized network time in milliseconds.
 // This is the same value as returned by `Networking.GetServerTimeInMilliseconds` in Udon.
 // This is technically a signed value, but may be treated as unsigned.
 // It should only be used for synchronization and offsets, as the absolute value does not represent any meaningful quantity.
 // This value can wrap.
 uint _VRChatTimeNetworkMs;
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_TIME_ENCODED1!!
 // bit 0-4: Hour component of the current time of day (UTC).
 // bit 5-10: Minute component of the current time of day (UTC).
 // bit 11-16: Second component of the current time of day (UTC & Local, shared).
@@ -47,6 +62,8 @@ uint _VRChatTimeNetworkMs;
 // bit 22-27: Minute component of the current time of day (Local).
 // bit 28-31: Reserved.
 uint _VRChatTimeEncoded1;
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_VRCHAT_TIME_ENCODED2!!
 // bit 0-9: Millisecond component of the current time of day (UTC & Local, shared).
 // bit 10: Sign bit of timezone offset. 1 if offset is negative.
 // bit 11-26: Timezone offset from UTC to Local time in seconds.
