@@ -39,13 +39,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private readonly List<string> _invalidPropertyNameList = new List<string>();
         /// <summary>
+        /// List of v2f member names which is used in lilToon.
+        /// </summary>
+        private readonly List<string> _usedInlilToonV2FMemberNameList = new List<string>();
+        /// <summary>
         /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_duplicatePropertyNameList"/>.
         /// </summary>
         private readonly ReadOnlyCollection<string> _duplicatePropertyNameCollection;
         /// <summary>
-        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_invalidPropertyNameCollection"/>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_invalidPropertyNameList"/>
         /// </summary>
         private readonly ReadOnlyCollection<string> _invalidPropertyNameCollection;
+        /// <summary>
+        /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_usedInlilToonV2FMemberNameList"/>
+        /// </summary>
+        private readonly ReadOnlyCollection<string> _usedInlilToonV2FMemberNameCollection;
 
 
         /// <summary>
@@ -56,6 +64,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         {
             _duplicatePropertyNameCollection = _duplicatePropertyNameList.AsReadOnly();
             _invalidPropertyNameCollection = _invalidPropertyNameList.AsReadOnly();
+            _usedInlilToonV2FMemberNameCollection = _usedInlilToonV2FMemberNameList.AsReadOnly();
         }
 
 
@@ -102,6 +111,27 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
 
             return _invalidPropertyNameCollection;
+        }
+
+        /// <summary>
+        /// Get list of property names which is used in lilToon.
+        /// </summary>
+        /// <returns><see cref="ReadOnlyCollection{T}"/> of property names with invalid arguments.</returns>
+        public ReadOnlyCollection<string> GetNamesUsedInLilToon()
+        {
+            var usedInlilToonV2FMemberNameList = _usedInlilToonV2FMemberNameList;
+            usedInlilToonV2FMemberNameList.Clear();
+
+            var nameSet = V2FMember.LilToonV2FMemberNameSet;
+            foreach (var item in List)
+            {
+                if (nameSet.Contains(item.Name))
+                {
+                    usedInlilToonV2FMemberNameList.Add(item.Name);
+                }
+            }
+
+            return _usedInlilToonV2FMemberNameCollection;
         }
 
 

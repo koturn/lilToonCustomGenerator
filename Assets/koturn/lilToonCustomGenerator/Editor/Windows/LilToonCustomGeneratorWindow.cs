@@ -491,6 +491,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             {
                                 _v2fMemberReorderableListErrorMessages.Add("Following member names are invalid.\n" + string.Join("\n", invalidNameCollection));
                             }
+                            var usedNameCollection = _v2fMemberReorderableListContainer.GetNamesUsedInLilToon();
+                            if (usedNameCollection.Count > 0)
+                            {
+                                _v2fMemberReorderableListErrorMessages.Add("Following member names are used in lilToon.\n" + string.Join("\n", usedNameCollection));
+                            }
                             var dupNameCollection = _v2fMemberReorderableListContainer.GetDuplicateMemberNames();
                             if (dupNameCollection.Count > 0)
                             {

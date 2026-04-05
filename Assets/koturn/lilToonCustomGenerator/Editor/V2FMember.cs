@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Koturn.LilToonCustomGenerator.Editor.Enums;
 
@@ -77,6 +78,36 @@ namespace Koturn.LilToonCustomGenerator.Editor
             "centroid noperspective",
             "sample"
         };
+        /// <summary>
+        /// V2F member names used in lilToon.
+        /// </summary>
+        public static HashSet<string> LilToonV2FMemberNameSet { get; } = new HashSet<string>(new[]
+        {
+            "_ShadowCoord",  // LIL_SHADOW_COORDS()
+            "furLayer",
+            "indLightColor",  // LIL_INDLIGHTCOLOR_COORDS()
+            "instanceID",  // LIL_VERTEX_INPUT_INSTANCE_ID
+            "lightColor",  // LIL_LIGHTCOLOR_COORDS()
+            "lightCoord",
+            "lightDirection",  // LIL_LIGHTDIRECTION_COORDS()
+            "normalWS",
+            "pos",  // LIL_V2F_SHADOW_CASTER_OUTPUT
+            "positionCS",
+            "positionCSNoJitter",
+            "positionOSdissolve",
+            "positionWS",
+            "previousPositionCS",
+            "shadowCoord",  // LIL_SHADOW_COORDS()
+            "stereoTargetEyeIndex",  // LIL_VERTEX_OUTPUT_STEREO
+            "tangentWS",
+            "uv0",
+            "uv01",
+            "uv23",
+            "uvMat",
+            "vec",  // LIL_V2F_SHADOW_CASTER_OUTPUT
+            "vizUV",
+            "vlf"  // LIL_VERTEXLIGHT_FOG_COORDS()
+        });
 
         /// <summary>
         /// String representation of <see cref="_interpolationModifier"/>.
