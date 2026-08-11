@@ -35,6 +35,17 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private static readonly char[] _invalidShaderNameChars = { '\n', '\r', '"' };
         /// <summary>
+        /// Labels for version number field.
+        /// </summary>
+        private static readonly GUIContent[] _versionNumberLabels = new[]
+        {
+            new GUIContent("Major"),
+            new GUIContent("Minor"),
+            new GUIContent("Patch"),
+            new GUIContent("Build")
+
+        };
+        /// <summary>
         /// <see cref="ReorderableListContainer{T}"/> for <see cref="ShaderPropertyDefinition"/>.
         /// </summary>
         private PropertyReorderableListContainer _propertyReorderableListContainer;
@@ -254,9 +265,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private string _assemblyCulture;
         /// <summary>
-        /// Text for <see cref="System.Reflection.AssemblyVersionAttribute"/>.
+        /// Version number array for <see cref="System.Reflection.AssemblyVersionAttribute"/>.
         /// </summary>
-        private string _assemblyVersion;
+        private int[] _assemblyVersionNumbers;
         /// <summary>
         /// True to generate package.json.
         /// </summary>
@@ -345,7 +356,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyCopyright = $"Copyright (C) {DateTime.Now.Year} {userName} All Rights Reserverd.";
             _assemblyTrademark = "";
             _assemblyCulture = "";
-            _assemblyVersion = "1.0.0.0";
+            _assemblyVersionNumbers = new[] { 1, 0, 0, 0 };
 
             _packageVersion = "1.0.0";
             _packageDisplayName = "MyCustomShader";
@@ -608,16 +619,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _assemblyCopyright = EditorGUILayout.TextField("AssemblyCopyright", _assemblyCopyright);
                             _assemblyTrademark = EditorGUILayout.TextField("AssemblyTrademark", _assemblyTrademark);
                             _assemblyCulture = EditorGUILayout.TextField("AssemblyCulture", _assemblyCulture);
-                            _assemblyVersion = EditorGUILayout.TextField("AssemblyVersion", _assemblyVersion);
-                            if (!RegexProvider.VersionNumberRegex.IsMatch(_assemblyVersion))
+
+                            var asmVerFieldRect = EditorGUI.PrefixLabel(
+                                EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight),
+                                new GUIContent("AssemblyVersion"));
+                            var assemblyVersionNumbers = _assemblyVersionNumbers;
+                            EditorGUI.MultiIntField(asmVerFieldRect, _versionNumberLabels, assemblyVersionNumbers);
+                            for (int i = 0; i < assemblyVersionNumbers.Length; i++)
                             {
-                                errorCount++;
-                                using (new EditorGUI.IndentLevelScope())
-                                {
-                                    EditorGUILayout.HelpBox(
-                                        "Version numbers must consist of one to four numeric parts separated by periods.",
-                                        MessageType.Error);
-                                }
+                                assemblyVersionNumbers[i] = Math.Max(0, assemblyVersionNumbers[i]);
                             }
                         }
                     }
@@ -929,7 +939,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("ASSEMBLY_COPYRIGHT", EscapeString(_assemblyCopyright));
                 tagDict.Add("ASSEMBLY_TRADEMARK", EscapeString(_assemblyTrademark));
                 tagDict.Add("ASSEMBLY_CULTURE", EscapeString(_assemblyCulture));
-                tagDict.Add("ASSEMBLY_VERSION", EscapeString(_assemblyVersion));
+                tagDict.Add("ASSEMBLY_VERSION", string.Join(".", _assemblyVersionNumbers));
             }
 
             var sb = new StringBuilder();
