@@ -654,7 +654,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             var toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
-                                _isAssemblyTitleEditable = EditorGUI.ToggleLeft(toggleRect, "AssemblyTitle", _isAssemblyTitleEditable);
+                                _isAssemblyTitleEditable = EditorGUI.ToggleLeft(toggleRect, "Title", _isAssemblyTitleEditable);
                                 if ((ccScope.changed || isNamespaceChanged) && !_isAssemblyTitleEditable)
                                 {
                                     _assemblyTitle = _namespace;
@@ -667,14 +667,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     _assemblyTitle);
                             }
 
-                            _assemblyDescription = EditorGUILayout.TextField("AssemblyDescription", _assemblyDescription);
-                            _assemblyCompany = EditorGUILayout.TextField("AssemblyCompany", _assemblyCompany);
+                            _assemblyDescription = EditorGUILayout.TextField("Description", _assemblyDescription);
+                            _assemblyCompany = EditorGUILayout.TextField("Company", _assemblyCompany);
 
                             rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
                             toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
-                                _isAssemblyProductEditable = EditorGUI.ToggleLeft(toggleRect, "AssemblyProduct", _isAssemblyProductEditable);
+                                _isAssemblyProductEditable = EditorGUI.ToggleLeft(toggleRect, "Product", _isAssemblyProductEditable);
                                 if ((ccScope.changed || isNamespaceChanged) && !_isAssemblyProductEditable)
                                 {
                                     _assemblyProduct = _namespace;
@@ -687,13 +687,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     _assemblyProduct);
                             }
 
-                            _assemblyCopyright = EditorGUILayout.TextField("AssemblyCopyright", _assemblyCopyright);
-                            _assemblyTrademark = EditorGUILayout.TextField("AssemblyTrademark", _assemblyTrademark);
-                            _assemblyCulture = EditorGUILayout.TextField("AssemblyCulture", _assemblyCulture);
+                            _assemblyCopyright = EditorGUILayout.TextField("Copyright", _assemblyCopyright);
+                            _assemblyTrademark = EditorGUILayout.TextField("Trademark", _assemblyTrademark);
+                            _assemblyCulture = EditorGUILayout.TextField("Culture", _assemblyCulture);
 
                             var asmVerFieldRect = EditorGUI.PrefixLabel(
                                 EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight),
-                                new GUIContent("AssemblyVersion"));
+                                new GUIContent("Version"));
                             var assemblyVersionNumbers = _assemblyVersionNumbers;
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
