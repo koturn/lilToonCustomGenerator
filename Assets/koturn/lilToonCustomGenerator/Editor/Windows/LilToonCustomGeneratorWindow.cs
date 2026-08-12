@@ -349,6 +349,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _isPackageVersionEditable;
         /// <summary>
+        /// True to edit value for display name in package.json
+        /// </summary>
+        private bool _isPackageDisplayNameEditable;
+        /// <summary>
         /// Last export directory.
         /// </summary>
         private string _lastExportDirectoryPath;
@@ -389,7 +393,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyInformationVersion = "1.0.0.0";
 
             _packageVersion = "1.0.0";
-            _packageDisplayName = "MyCustomShader";
+            _packageDisplayName = _shaderTitle;
             _packageDescription = "My custom shader";
             _packageUnityVersion = "2019.4";
             _packageChangeLogUrl = "";
@@ -423,6 +427,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
 
             var errorCount = 0;
+            var isShaderTitleChanged = false;
             var isNamespaceChanged = false;
 
             using (new EditorGUILayout.VerticalScope(GUI.skin.box))
@@ -819,7 +824,24 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                         MessageType.Error);
                                 }
                             }
-                            _packageDisplayName = EditorGUILayout.TextField("Display name", _packageDisplayName);
+
+                            rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
+                            toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
+                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            {
+                                _isPackageDisplayNameEditable = EditorGUI.ToggleLeft(toggleRect, "Display name", _isPackageDisplayNameEditable);
+                                if ((ccScope.changed || isShaderTitleChanged) && !_isPackageDisplayNameEditable)
+                                {
+                                    _packageDisplayName = _shaderTitle;
+                                }
+                            }
+                            using (new EditorGUI.DisabledScope(!_isPackageDisplayNameEditable))
+                            {
+                                _packageDisplayName = EditorGUI.TextField(
+                                    new Rect(rowRect.x + toggleRect.width - 30.0f, rowRect.y, rowRect.width - toggleRect.width + 30.0f, rowRect.height),
+                                    _packageDisplayName);
+                            }
+
                             _packageDescription = EditorGUILayout.TextField("Description", _packageDescription);
                             _packageUnityVersion = EditorGUILayout.TextField("Minimal Unity version", _packageUnityVersion);
                             _packageChangeLogUrl = EditorGUILayout.TextField("Change log URL", _packageChangeLogUrl);
