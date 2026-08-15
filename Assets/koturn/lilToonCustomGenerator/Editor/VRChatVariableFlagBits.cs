@@ -12,7 +12,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// <summary>
         /// Flag value.
         /// </summary>
-        VRChatVariableFlags Value { get; set; }
+        public VRChatVariableFlags Value { get; set; }
 
         /// <summary>
         /// True to declare the uniform variable `UseVRChatCameraMode`.
