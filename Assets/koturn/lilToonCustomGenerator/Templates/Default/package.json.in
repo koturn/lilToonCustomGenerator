@@ -16,7 +16,7 @@
 !!ifnotempty:PACKAGE_LICENSE!!
   "license": "%%PACKAGE_LICENSE%%",
 !!endif!!
-!!ifempty:PACLAGE_AUTHOR_KEYVALUES!!
+!!ifempty:PACKAGE_AUTHOR_KEYVALUES!!
   "keywords": [%%PACKAGE_KEYWORDS%%]
 !!else!!
   "keywords": [%%PACKAGE_KEYWORDS%%],
