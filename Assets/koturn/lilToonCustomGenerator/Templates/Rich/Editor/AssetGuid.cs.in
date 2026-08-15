@@ -16,7 +16,7 @@ namespace %%NAMESPACE%%
         /// </summary>
         public const string ShaderDir = "%%GUID_SHADER_DIR%%";
         /// <summary>
-        /// GUID of "Assets/lilToon/Shader/".
+        /// GUID of "Packages/jp.lilxyzw.liltoon/Shader/".
         /// </summary>
         public const string LilToonShaderDir = "ac0a8f602b5e72f458f4914bf08f0269";
     }
