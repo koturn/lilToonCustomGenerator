@@ -17,11 +17,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private const float HeightPadding = 2.0f;
 
-        /// <summary>
-        /// Label for each keyword elements.
-        /// </summary>
-        private static readonly GUIContent _labelKeyword = new GUIContent("Keyword");
-
 
         /// <inheritdoc/>
         protected override ReorderableList CreateReorderableList(SerializedObject serializedObject, SerializedProperty serializedProperty)
@@ -87,7 +82,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             EditorGUI.PropertyField(
                 new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
                 element,
-                _labelKeyword);
+                GUIContent.none);
         }
 
         /// <summary>
