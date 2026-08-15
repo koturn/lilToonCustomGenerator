@@ -115,7 +115,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to allow unsafe code.
         /// </summary>
-        private bool _allowUnsafeCode = false;
+        private bool _allowUnsafeCode = true;
         /// <summary>
         /// True to generate <c>Editor/lang_custom.tsv</c>.
         /// </summary>
@@ -210,7 +210,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// Each VRChat variable flags.
         /// </summary>
-        private VRChatVariableFlagBits _vrchatVariableFlagBits = default;
+        private VRChatVariableFlagBits _vrchatVariableFlagBits = new VRChatVariableFlagBits(VRChatVariableFlags.All);
         /// <summary>
         /// <para>True to declare following two variables in <c>Shaders/custom_insert.hlsl</c>.</para>
         /// <para>
