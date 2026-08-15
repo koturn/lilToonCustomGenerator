@@ -1,7 +1,7 @@
 lilToonCustomGenerator
 ======================
 
-lilToon custom shader generator.
+[lilToon](https://github.com/lilxyzw/lilToon "lilxyzw/lilToon") custom shader generator.
 
 ## Description
 
