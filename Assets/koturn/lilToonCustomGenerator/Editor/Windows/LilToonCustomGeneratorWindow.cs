@@ -47,7 +47,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             new GUIContent("Minor"),
             new GUIContent("Patch"),
             new GUIContent("Build")
-
         };
         /// <summary>
         /// <see cref="ReorderableListContainer{T}"/> for <see cref="ShaderPropertyDefinition"/>.
@@ -398,7 +397,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             _packageVersion = "1.0.0";
             _packageDisplayName = _shaderTitle;
-            _packageDescription = "My custom shader";
+            _packageDescription = "My custom shader of lilToon.";
             _packageUnityVersion = "2019.4";
             _packageChangeLogUrl = "";
             _packageDocumentationUrl = "";
