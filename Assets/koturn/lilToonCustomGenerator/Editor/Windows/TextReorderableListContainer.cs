@@ -53,6 +53,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <param name="rect">Header region.</param>
         private void DrawHeader(Rect rect)
         {
+            rect.x -= IndentOffset * EditorGUI.indentLevel;
+            rect.width -= IndentOffset * EditorGUI.indentLevel;
             EditorGUI.LabelField(rect, "Keywords");
         }
 

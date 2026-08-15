@@ -15,6 +15,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
     public abstract class ReorderableListContainer<T> : ScriptableObject
     {
         /// <summary>
+        /// Offset width per indent level.
+        /// </summary>
+        public const float IndentOffset = 15.0f;
+
+        /// <summary>
         /// Actual list.
         /// </summary>
         public List<T> List => _list;
@@ -40,7 +45,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         public void Draw()
         {
             _serializedObject.Update();
-            _reorderableList.DoLayoutList();
+
+            var rect = EditorGUILayout.GetControlRect(false, _reorderableList.GetHeight());
+            var offset = IndentOffset * EditorGUI.indentLevel;
+            rect.x += offset;
+            rect.width -= offset;
+            _reorderableList.DoList(rect);
+
             _serializedObject.ApplyModifiedProperties();
         }
 
