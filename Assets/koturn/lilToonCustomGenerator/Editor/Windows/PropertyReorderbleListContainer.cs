@@ -319,7 +319,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     propPropertyType.intValue = EditorGUI.Popup(
                         new Rect(row2.x, row2.y, col1 * 0.5f - WidthPadding, line),
-                        "Variable type",
+                        "Property type",
                         propPropertyType.intValue,
                         ShaderPropertyDefinition.PropertyTypeSelections);
                 }
@@ -327,7 +327,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     propPropertyType.intValue = EditorGUI.Popup(
                         new Rect(row2.x, row2.y, col1 - WidthPadding, line),
-                        "Variable type",
+                        "Property type",
                         propPropertyType.intValue,
                         ShaderPropertyDefinition.PropertyTypeSelections);
                 }
