@@ -22,6 +22,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
     public sealed class LilToonCustomGeneratorWindow : EditorWindow
     {
         /// <summary>
+        /// The width of a single-level indent.
+        /// </summary>
+        private const float IndentSpaceUnit = 16.0f;
+        /// <summary>
         /// New line string selections.
         /// </summary>
         private static readonly string[] _newLineSelections =
@@ -652,11 +656,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     _shouldGenerateAssemblyInfo = EditorGUILayout.ToggleLeft("Generate AssemblyInfo.cs", _shouldGenerateAssemblyInfo);
                     if (_shouldGenerateAssemblyInfo)
                     {
-                        using (new EditorGUI.IndentLevelScope())
+                        using (new EditorGUI.IndentLevelScope(2))
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box))
                         {
                             var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            var toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
+                            var toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
                                 _isAssemblyTitleEditable = EditorGUI.ToggleLeft(toggleRect, "Title", _isAssemblyTitleEditable);
@@ -668,7 +672,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             using (new EditorGUI.DisabledScope(!_isAssemblyTitleEditable))
                             {
                                 _assemblyTitle = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - 30.0f, rowRect.y, rowRect.width - toggleRect.width + 30.0f, rowRect.height),
+                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
                                     _assemblyTitle);
                             }
 
@@ -676,7 +680,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _assemblyCompany = EditorGUILayout.TextField("Company", _assemblyCompany);
 
                             rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
+                            toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
                                 _isAssemblyProductEditable = EditorGUI.ToggleLeft(toggleRect, "Product", _isAssemblyProductEditable);
@@ -688,7 +692,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             using (new EditorGUI.DisabledScope(!_isAssemblyProductEditable))
                             {
                                 _assemblyProduct = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - 30.0f, rowRect.y, rowRect.width - toggleRect.width + 30.0f, rowRect.height),
+                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
                                     _assemblyProduct);
                             }
 
@@ -714,7 +718,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             }
 
                             rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
+                            toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
                                 _isAssemblyFileVersionEditable = EditorGUI.ToggleLeft(toggleRect, "FileVersion", _isAssemblyFileVersionEditable);
@@ -729,13 +733,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             using (new EditorGUI.DisabledScope(!_isAssemblyFileVersionEditable))
                             {
                                 EditorGUI.MultiIntField(
-                                    new Rect(rowRect.x + toggleRect.width - 14.0f, rowRect.y, rowRect.width - toggleRect.width + 14.0f, rowRect.height),
+                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit - 2.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit - 2.0f), rowRect.height),
                                     _versionNumberLabels,
                                     _assemblyFileVersionNumbers);
                             }
 
                             rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
+                            toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
                                 _isAssemblyInformationVersionEditable = EditorGUI.ToggleLeft(toggleRect, "InformationVersion", _isAssemblyInformationVersionEditable);
@@ -747,7 +751,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             using (new EditorGUI.DisabledScope(!_isAssemblyInformationVersionEditable))
                             {
                                 _assemblyInformationVersion = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - 30.0f, rowRect.y, rowRect.width - toggleRect.width + 30.0f, rowRect.height),
+                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
                                     _assemblyInformationVersion);
                             }
                         }
@@ -760,7 +764,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     _shouldGeneratePackageJson = EditorGUILayout.ToggleLeft("Generate package.json", _shouldGeneratePackageJson);
                     if (_shouldGeneratePackageJson)
                     {
-                        using (new EditorGUI.IndentLevelScope())
+                        using (new EditorGUI.IndentLevelScope(2))
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box))
                         {
                             _packageName = EditorGUILayout.TextField("Name", _packageName);
@@ -788,7 +792,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             }
 
                             var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            var toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
+                            var toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
                                 _isPackageVersionEditable = EditorGUI.ToggleLeft(toggleRect, "Version", _isPackageVersionEditable);
@@ -800,7 +804,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             using (new EditorGUI.DisabledScope(!_isPackageVersionEditable))
                             {
                                 _packageVersion = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - 30.0f, rowRect.y, rowRect.width - toggleRect.width + 30.0f, rowRect.height),
+                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
                                     _packageVersion);
                             }
 
@@ -826,7 +830,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             }
 
                             rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            toggleRect = new Rect(rowRect.x - 18.0f, rowRect.y, EditorGUIUtility.labelWidth + 16.0f, rowRect.height);
+                            toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
                                 _isPackageDisplayNameEditable = EditorGUI.ToggleLeft(toggleRect, "Display name", _isPackageDisplayNameEditable);
@@ -838,7 +842,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             using (new EditorGUI.DisabledScope(!_isPackageDisplayNameEditable))
                             {
                                 _packageDisplayName = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - 30.0f, rowRect.y, rowRect.width - toggleRect.width + 30.0f, rowRect.height),
+                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
                                     _packageDisplayName);
                             }
 
