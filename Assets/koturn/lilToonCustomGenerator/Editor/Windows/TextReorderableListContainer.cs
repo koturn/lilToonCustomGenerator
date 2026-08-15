@@ -92,7 +92,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <param name="reorderableList">Source <see cref="ReorderableList"/>. (Unused)</param>
         private void OnAdd(ReorderableList reorderableList)
         {
-            List.Add("hoge");
+            List.Add("New keyword");
         }
     }
 }
