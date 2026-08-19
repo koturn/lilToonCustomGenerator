@@ -7,6 +7,7 @@ using UnityEngine;
 using Koturn.LilToonCustomGenerator.Editor.Enums;
 using Koturn.LilToonCustomGenerator.Editor.Json;
 using Koturn.LilToonCustomGenerator.Editor.Internals;
+using Koturn.LilToonCustomGenerator.Editor.Internals.UI;
 using System.Linq;
 #if LILTOON
 using lilToon;
@@ -21,10 +22,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
     [System.Runtime.InteropServices.Guid("86433750-bf75-6434-fad1-5cc9da8420b0")]
     public sealed class LilToonCustomGeneratorWindow : EditorWindow
     {
-        /// <summary>
-        /// The width of a single-level indent.
-        /// </summary>
-        private const float IndentSpaceUnit = 16.0f;
         /// <summary>
         /// New line string selections.
         /// </summary>
@@ -272,6 +269,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private int[] _assemblyVersionNumbers;
         /// <summary>
+        /// <see cref="string"/> representation of <see cref="_assemblyVersionNumbers"/>.
+        /// </summary>
+        private string _assemblyVersionString;
+        /// <summary>
+        /// Semantic version format of <see cref="_assemblyVersionNumbers"/>.
+        /// </summary>
+        private string _assemblyVersionSemVer;
+        /// <summary>
         /// Version number array for <see cref="System.Reflection.AssemblyFileVersionAttribute"/>.
         /// </summary>
         private int[] _assemblyFileVersionNumbers;
@@ -392,6 +397,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyTrademark = "";
             _assemblyCulture = "";
             _assemblyVersionNumbers = new[] { 1, 0, 0, 0 };
+            _assemblyVersionString = "1.0.0.0";
+            _assemblyVersionSemVer = "1.0.0";
             _assemblyFileVersionNumbers = new[] { 1, 0, 0, 0 };
             _assemblyInformationVersion = "1.0.0.0";
 
@@ -454,7 +461,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         EditorGUILayout.HelpBox("Invalid shader name.", MessageType.Error);
                     }
                 }
-                _shaderTitle = EditorGUILayout.TextField("Shader title", _shaderTitle);
+
+                using (var ccScope = new EditorGUI.ChangeCheckScope())
+                {
+                    _shaderTitle = EditorGUILayout.TextField("Shader title", _shaderTitle);
+                    isShaderTitleChanged = ccScope.changed;
+                }
 
                 using (var ccScope = new EditorGUI.ChangeCheckScope())
                 {
@@ -658,43 +670,18 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         using (new EditorGUI.IndentLevelScope(2))
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box))
                         {
-                            var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            var toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            _assemblyTitle = CustomEditorGUILayout.ToggleTextField("Title", _assemblyTitle, _namespace, ref _isAssemblyTitleEditable);
+                            if (!_isAssemblyTitleEditable && isNamespaceChanged)
                             {
-                                _isAssemblyTitleEditable = EditorGUI.ToggleLeft(toggleRect, "Title", _isAssemblyTitleEditable);
-                                if ((ccScope.changed || isNamespaceChanged) && !_isAssemblyTitleEditable)
-                                {
-                                    _assemblyTitle = _namespace;
-                                }
+                                _assemblyTitle = _namespace;
                             }
-                            using (new EditorGUI.DisabledScope(!_isAssemblyTitleEditable))
-                            {
-                                _assemblyTitle = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
-                                    _assemblyTitle);
-                            }
-
                             _assemblyDescription = EditorGUILayout.TextField("Description", _assemblyDescription);
                             _assemblyCompany = EditorGUILayout.TextField("Company", _assemblyCompany);
-
-                            rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            _assemblyProduct = CustomEditorGUILayout.ToggleTextField("Product", _assemblyProduct, _namespace, ref _isAssemblyProductEditable);
+                            if (!_isAssemblyProductEditable && isNamespaceChanged)
                             {
-                                _isAssemblyProductEditable = EditorGUI.ToggleLeft(toggleRect, "Product", _isAssemblyProductEditable);
-                                if ((ccScope.changed || isNamespaceChanged) && !_isAssemblyProductEditable)
-                                {
-                                    _assemblyProduct = _namespace;
-                                }
+                                _assemblyProduct = _namespace;
                             }
-                            using (new EditorGUI.DisabledScope(!_isAssemblyProductEditable))
-                            {
-                                _assemblyProduct = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
-                                    _assemblyProduct);
-                            }
-
                             _assemblyCopyright = EditorGUILayout.TextField("Copyright", _assemblyCopyright);
                             _assemblyTrademark = EditorGUILayout.TextField("Trademark", _assemblyTrademark);
                             _assemblyCulture = EditorGUILayout.TextField("Culture", _assemblyCulture);
@@ -713,45 +700,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     {
                                         assemblyVersionNumbers[i] = Math.Max(0, assemblyVersionNumbers[i]);
                                     }
+                                    _assemblyVersionString = string.Join(".", assemblyVersionNumbers);
+                                    _assemblyVersionSemVer = string.Format("{0}.{1}.{2}", assemblyVersionNumbers[0], assemblyVersionNumbers[1], assemblyVersionNumbers[2]);
                                 }
                             }
 
-                            rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            CustomEditorGUILayout.ToggleMultiIntField("FileVersion", _versionNumberLabels, _assemblyFileVersionNumbers, assemblyVersionNumbers, ref _isAssemblyFileVersionEditable);
+                            if (!_isAssemblyFileVersionEditable && isAssemblyVersionChanged)
                             {
-                                _isAssemblyFileVersionEditable = EditorGUI.ToggleLeft(toggleRect, "FileVersion", _isAssemblyFileVersionEditable);
-                                if ((ccScope.changed || isAssemblyVersionChanged) && !_isAssemblyFileVersionEditable)
-                                {
-                                    for (int i = 0; i < _assemblyFileVersionNumbers.Length; i++)
-                                    {
-                                        _assemblyFileVersionNumbers[i] = assemblyVersionNumbers[i];
-                                    }
-                                }
-                            }
-                            using (new EditorGUI.DisabledScope(!_isAssemblyFileVersionEditable))
-                            {
-                                EditorGUI.MultiIntField(
-                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit - 2.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit - 2.0f), rowRect.height),
-                                    _versionNumberLabels,
-                                    _assemblyFileVersionNumbers);
+                                Buffer.BlockCopy(assemblyVersionNumbers, 0, _assemblyFileVersionNumbers, 0, _assemblyFileVersionNumbers.Length);
                             }
 
-                            rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            _assemblyInformationVersion = CustomEditorGUILayout.ToggleTextField("InformationVersion", _assemblyInformationVersion, _assemblyVersionString, ref _isAssemblyInformationVersionEditable);
+                            if (!_isAssemblyInformationVersionEditable && isAssemblyVersionChanged)
                             {
-                                _isAssemblyInformationVersionEditable = EditorGUI.ToggleLeft(toggleRect, "InformationVersion", _isAssemblyInformationVersionEditable);
-                                if ((ccScope.changed || isAssemblyVersionChanged) && !_isAssemblyInformationVersionEditable)
-                                {
-                                    _assemblyInformationVersion = string.Join(".", _assemblyVersionNumbers);
-                                }
-                            }
-                            using (new EditorGUI.DisabledScope(!_isAssemblyInformationVersionEditable))
-                            {
-                                _assemblyInformationVersion = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
-                                    _assemblyInformationVersion);
+                                _assemblyInformationVersion = _assemblyVersionString;
                             }
                         }
                     }
@@ -790,23 +753,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                             }
 
-                            var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            var toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, _assemblyVersionSemVer, ref _isPackageVersionEditable);
+                            if (!_isPackageVersionEditable && isAssemblyVersionChanged)
                             {
-                                _isPackageVersionEditable = EditorGUI.ToggleLeft(toggleRect, "Version", _isPackageVersionEditable);
-                                if ((ccScope.changed || isAssemblyVersionChanged) && !_isPackageVersionEditable)
-                                {
-                                    _packageVersion = string.Format("{0}.{1}.{2}", _assemblyVersionNumbers[0], _assemblyVersionNumbers[1], _assemblyVersionNumbers[2]);
-                                }
+                                _packageVersion = _assemblyVersionSemVer;
                             }
-                            using (new EditorGUI.DisabledScope(!_isPackageVersionEditable))
-                            {
-                                _packageVersion = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
-                                    _packageVersion);
-                            }
-
                             if (string.IsNullOrEmpty(_packageVersion))
                             {
                                 errorCount++;
@@ -828,23 +779,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                             }
 
-                            rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
-                            toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            _packageDisplayName = CustomEditorGUILayout.ToggleTextField("Display name", _packageDisplayName, _shaderTitle, ref _isPackageDisplayNameEditable);
+                            if (!_isPackageDisplayNameEditable && isShaderTitleChanged)
                             {
-                                _isPackageDisplayNameEditable = EditorGUI.ToggleLeft(toggleRect, "Display name", _isPackageDisplayNameEditable);
-                                if ((ccScope.changed || isShaderTitleChanged) && !_isPackageDisplayNameEditable)
-                                {
-                                    _packageDisplayName = _shaderTitle;
-                                }
+                                _packageDisplayName = _shaderTitle;
                             }
-                            using (new EditorGUI.DisabledScope(!_isPackageDisplayNameEditable))
-                            {
-                                _packageDisplayName = EditorGUI.TextField(
-                                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
-                                    _packageDisplayName);
-                            }
-
                             _packageDescription = EditorGUILayout.TextField("Description", _packageDescription);
                             _packageUnityVersion = EditorGUILayout.TextField("Minimal Unity version", _packageUnityVersion);
                             _packageChangeLogUrl = EditorGUILayout.TextField("Change log URL", _packageChangeLogUrl);
