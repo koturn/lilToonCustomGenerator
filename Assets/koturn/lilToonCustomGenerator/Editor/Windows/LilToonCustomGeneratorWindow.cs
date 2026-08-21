@@ -283,7 +283,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// Version string for <see cref="System.Reflection.AssemblyInformationalVersionAttribute"/>.
         /// </summary>
-        private string _assemblyInformationVersion;
+        private string _assemblyInformationalVersion;
         /// <summary>
         /// True to edit value for <see cref="System.Reflection.AssemblyTitleAttribute"/>.
         /// </summary>
@@ -299,7 +299,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to edit value for <see cref="System.Reflection.AssemblyInformationalVersionAttribute"/>.
         /// </summary>
-        private bool _isAssemblyInformationVersionEditable = false;
+        private bool _isAssemblyInformationalVersionEditable = false;
         /// <summary>
         /// True to generate package.json.
         /// </summary>
@@ -400,7 +400,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyVersionString = "1.0.0.0";
             _assemblyVersionSemVer = "1.0.0";
             _assemblyFileVersionNumbers = new[] { 1, 0, 0, 0 };
-            _assemblyInformationVersion = "1.0.0.0";
+            _assemblyInformationalVersion = "1.0.0.0";
 
             _packageVersion = "1.0.0";
             _packageDisplayName = _shaderTitle;
@@ -711,10 +711,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 Buffer.BlockCopy(assemblyVersionNumbers, 0, _assemblyFileVersionNumbers, 0, _assemblyFileVersionNumbers.Length);
                             }
 
-                            _assemblyInformationVersion = CustomEditorGUILayout.ToggleTextField("InformationVersion", _assemblyInformationVersion, _assemblyVersionString, ref _isAssemblyInformationVersionEditable);
-                            if (!_isAssemblyInformationVersionEditable && isAssemblyVersionChanged)
+                            _assemblyInformationalVersion = CustomEditorGUILayout.ToggleTextField("InformationalVersion", _assemblyInformationalVersion, _assemblyVersionString, ref _isAssemblyInformationalVersionEditable);
+                            if (!_isAssemblyInformationalVersionEditable && isAssemblyVersionChanged)
                             {
-                                _assemblyInformationVersion = _assemblyVersionString;
+                                _assemblyInformationalVersion = _assemblyVersionString;
                             }
                         }
                     }
