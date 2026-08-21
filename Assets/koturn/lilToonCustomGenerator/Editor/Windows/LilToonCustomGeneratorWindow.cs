@@ -1605,7 +1605,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
             else
             {
-                return AssetHelper.CreateMetaFileIfNotExists(path).ToString("N");
+                return AssetHelper.CreateMetaFileIfNotExists(path).ToString();
             }
         }
     }

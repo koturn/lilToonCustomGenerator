@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using UnityEditor;
 
 
 namespace Koturn.LilToonCustomGenerator.Editor.Windows
@@ -16,16 +17,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private const int CsScriptFileId = 11500000;
         /// <summary>
-        /// <see cref="Guid"/> of lilShaderContainerImporter.
+        /// <see cref="GUID"/> of lilShaderContainerImporter.
         /// </summary>
-        private static readonly Guid LilShaderContainerImporterGuid = Guid.ParseExact("3089979ac9fdd004ba564a7e5418ee8d", "N");
+        private static readonly GUID LilShaderContainerImporterGuid = new GUID("3089979ac9fdd004ba564a7e5418ee8d");
 
         /// <summary>
         /// Create meta file if not exists.
         /// </summary>
         /// <param name="path">File path or directory path for which meta file is to be created.</param>
-        /// <returns><see cref="Guid"/> of meta file.</returns>
-        public static Guid CreateMetaFileIfNotExists(string path)
+        /// <returns><see cref="GUID"/> of meta file.</returns>
+        public static GUID CreateMetaFileIfNotExists(string path)
         {
             var metaFilePath = path + ".meta";
             if (File.Exists(metaFilePath))
@@ -43,7 +44,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         /// <param name="metaFilePath">Meta file path.</param>
         /// <returns>If found, <see cref="Guid"/> in metafile. <see cref="Guid.Empty"/> if not found.</returns>
-        public static Guid ReadMetaFileGuid(string metaFilePath)
+        public static GUID ReadMetaFileGuid(string metaFilePath)
         {
             using (var fs = new FileStream(metaFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, 512, FileOptions.SequentialScan))
             using (var reader = new StreamReader(fs, Encoding.UTF8, false, 512))
@@ -53,11 +54,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     if (line.StartsWith("guid: "))
                     {
-                        return Guid.ParseExact(line.Substring(6), "N");
+                        if (GUID.TryParse(line.Substring(6), out var guid))
+                        {
+                            return guid;
+                        }
                     }
                 }
             }
-            return Guid.Empty;
+            throw new InvalidDataException("GUID not found in " + metaFilePath);
         }
 
         /// <summary>
@@ -65,19 +69,19 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         /// <param name="path">File path or directory path for which meta file is to be created.</param>
         /// <returns><see cref="Guid"/> of meta file.</returns>
-        public static Guid CreateMetaFile(string path)
+        public static GUID CreateMetaFile(string path)
         {
-            var guid = Guid.NewGuid();
+            var guid = GUID.Generate();
             CreateMetaFile(path, guid);
             return guid;
         }
 
         /// <summary>
-        /// Create meta file with specified <see cref="Guid"/>.
+        /// Create meta file with specified <see cref="GUID"/>.
         /// </summary>
         /// <param name="path">File path or directory path for which meta file is to be created.</param>
-        /// <param name="guid"><see cref="Guid"/> for meta file.</param>
-        public static void CreateMetaFile(string path, Guid guid)
+        /// <param name="guid"><see cref="GUID"/> for meta file.</param>
+        public static void CreateMetaFile(string path, GUID guid)
         {
             if (Directory.Exists(path))
             {
@@ -109,22 +113,22 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         }
 
         /// <summary>
-        /// Create default meta file with specified <see cref="Guid"/>.
+        /// Create default meta file with specified <see cref="GUID"/>.
         /// </summary>
         /// <param name="path">File path or directory path for which meta file is to be created.</param>
-        /// <param name="guid"><see cref="Guid"/> for meta file.</param>
-        private static void CreateDefaultMetaFile(string path, Guid guid)
+        /// <param name="guid"><see cref="GUID"/> for meta file.</param>
+        private static void CreateDefaultMetaFile(string path, GUID guid)
         {
             CreateDefaultMetaFile(path, guid, "DefaultImporter");
         }
 
         /// <summary>
-        /// Create default meta file with specified <see cref="Guid"/>.
+        /// Create default meta file with specified <see cref="GUID"/>.
         /// </summary>
         /// <param name="path">File path or directory path for which meta file is to be created.</param>
-        /// <param name="guid"><see cref="Guid"/> for meta file.</param>
+        /// <param name="guid"><see cref="GUID"/> for meta file.</param>
         /// <param name="importerName">Importer name.</param>
-        private static void CreateDefaultMetaFile(string path, Guid guid, string importerName)
+        private static void CreateDefaultMetaFile(string path, GUID guid, string importerName)
         {
             using (var targetStream = new FileStream(path + ".meta", FileMode.Create, FileAccess.Write, FileShare.Read, 256, FileOptions.SequentialScan))
             using (var writer = new StreamWriter(targetStream, Encoding.ASCII, 256)
@@ -147,11 +151,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         }
 
         /// <summary>
-        /// Create meta file for C# script with specified <see cref="Guid"/>.
+        /// Create meta file for C# script with specified <see cref="GUID"/>.
         /// </summary>
         /// <param name="filePath">File path for which meta file is to be created.</param>
-        /// <param name="guid"><see cref="Guid"/> for meta file.</param>
-        private static void CreateMonoMetaFile(string filePath, Guid guid)
+        /// <param name="guid"><see cref="GUID"/> for meta file.</param>
+        private static void CreateMonoMetaFile(string filePath, GUID guid)
         {
             using (var targetStream = new FileStream(filePath + ".meta", FileMode.Create, FileAccess.Write, FileShare.Read, 256, FileOptions.SequentialScan))
             using (var writer = new StreamWriter(targetStream, Encoding.ASCII, 256)
@@ -174,11 +178,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         }
 
         /// <summary>
-        /// Create meta file for file using ScriptedImporter with specified <see cref="Guid"/>.
+        /// Create meta file for file using ScriptedImporter with specified <see cref="GUID"/>.
         /// </summary>
         /// <param name="filePath">File path for which meta file is to be created.</param>
-        /// <param name="guid"><see cref="Guid"/> for meta file.</param>
-        private static void CreateScriptedMetaFile(string filePath, Guid guid, int fileId, Guid importerGuid)
+        /// <param name="guid"><see cref="GUID"/> for meta file.</param>
+        private static void CreateScriptedMetaFile(string filePath, GUID guid, int fileId, GUID importerGuid)
         {
             using (var targetStream = new FileStream(filePath + ".meta", FileMode.Create, FileAccess.Write, FileShare.Read, 256, FileOptions.SequentialScan))
             using (var writer = new StreamWriter(targetStream, Encoding.ASCII, 256)
