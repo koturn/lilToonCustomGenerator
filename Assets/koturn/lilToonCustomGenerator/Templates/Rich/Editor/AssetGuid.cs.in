@@ -1,23 +1,31 @@
 namespace %%NAMESPACE%%
 {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
     /// <summary>
     /// Provides Asset GUIDs.
     /// </summary>
+!!endif!!
     internal static class AssetGuid
     {
 !!ifnotempty:GUID_LANG_CUSTOM!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// GUID of "%%BASE_DIRECTORY%%Editor/lang_custom.tsv".
         /// </summary>
+!!  endif!!
         public const string LangCustom = "%%GUID_LANG_CUSTOM%%";
 !!endif!!
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// GUID of "%%BASE_DIRECTORY%%Shaders/".
         /// </summary>
+!!endif!!
         public const string ShaderDir = "%%GUID_SHADER_DIR%%";
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// GUID of "Packages/jp.lilxyzw.liltoon/Shader/".
         /// </summary>
         public const string LilToonShaderDir = "ac0a8f602b5e72f458f4914bf08f0269";
+!!endif!!
     }
 }

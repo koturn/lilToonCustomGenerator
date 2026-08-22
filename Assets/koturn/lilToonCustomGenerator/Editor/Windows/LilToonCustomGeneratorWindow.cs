@@ -301,6 +301,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _isAssemblyInformationalVersionEditable = false;
         /// <summary>
+        /// True to emit documentation comments.
+        /// </summary>
+        private bool _shouldEmitDocComments = true;
+        /// <summary>
         /// True to generate package.json.
         /// </summary>
         private bool _shouldGeneratePackageJson = true;
@@ -718,6 +722,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             }
                         }
                     }
+
+                    _shouldEmitDocComments = EditorGUILayout.ToggleLeft("Emit documentation comments", _shouldEmitDocComments);
                 }
 
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box))
@@ -1040,16 +1046,23 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("ASSEMBLY_FILE_VERSION", string.Join(".", _assemblyFileVersionNumbers));
                 tagDict.Add("ASSEMBLY_INFORMATIONAL_VERSION", EscapeString(_assemblyInformationalVersion));
             }
+            if (_shouldEmitDocComments)
+            {
+                tagDict.Add("SHOULD_EMIT_DOC_COMMENTS", "true");
+            }
 
             var sb = new StringBuilder();
 
             index = 0;
             foreach (var shaderProp in shaderPropDefList)
             {
-                sb.AppendLine("/// <summary>")
-                    .AppendFormat("/// <see cref=\"MaterialProperty\" of \"{0}\".", shaderProp.Name).AppendLine()
-                    .AppendLine("/// </summary>")
-                    .AppendFormat("private MaterialProperty {0};", materialPropNames[index])
+                if (_shouldEmitDocComments)
+                {
+                    sb.AppendLine("/// <summary>")
+                        .AppendFormat("/// <see cref=\"MaterialProperty\" of \"{0}\".", shaderProp.Name).AppendLine()
+                        .AppendLine("/// </summary>");
+                }
+                sb.AppendFormat("private MaterialProperty {0};", materialPropNames[index])
                     .AppendLine();
                 index++;
             }

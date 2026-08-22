@@ -11,21 +11,28 @@ using lilToon;
 
 namespace %%NAMESPACE%%
 {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
     /// <summary>
     /// Startup method provider.
     /// </summary>
+!!endif!!
     internal sealed class Startup : AssetPostprocessor
     {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Buffer size of streams.
         /// </summary>
+!!endif!!
         private const int DefaultBufferSize = 1024;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// GUID of "%%BASE_DIRECTORY%%Shaders/".
         /// </summary>
+!!endif!!
         private const string GuidShaderDir = "%%GUID_SHADER_DIR%%";
 
 #if UNITY_2021_2_OR_NEWER
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// This is called after importing of any number of assets is complete.
         /// </summary>
@@ -37,8 +44,10 @@ namespace %%NAMESPACE%%
         /// <remarks>
         /// <seealso href="https://docs.unity3d.com/2022.3/Documentation/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html"/>
         /// </remarks>
+!!endif!!
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths, bool didDomainReload)
 #else
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// This is called after importing of any number of assets is complete.
         /// </summary>
@@ -49,15 +58,18 @@ namespace %%NAMESPACE%%
         /// <remarks>
         /// <seealso href="https://docs.unity3d.com/2019.4/Documentation/ScriptReference/AssetPostprocessor.OnPostprocessAllAssets.html"/>
         /// </remarks>
+!!endif!!
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
 #endif  // UNITY_2021_2_OR_NEWER
         {
             UpdateVersionDefFile();
         }
 
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Update definition file of version value of lilToon, lil_current_version_value.hlsl.
         /// </summary>
+!!endif!!
         [MenuItem("Assets/" + %%INSPECTOR_NAME%%.shaderName + "/Regenerate include files", false, 9000)]
         private static void UpdateVersionDefFile()
         {
@@ -75,12 +87,14 @@ namespace %%NAMESPACE%%
             UpdateVersionDefFile(Path.Combine(dstDirPath, "lil_current_version.hlsl"));
         }
 
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Update definition file of version value of lilToon, lil_current_version_value.hlsl.
         /// </summary>
         /// <param name="filePath">Destination file path.</param>
         /// <param name="bufferSize">Buffer size for temporary buffer and <see cref="FileStream"/>,
         /// and initial capacity of <see cref="MemoryStream"/>.</param>
+!!endif!!
         public static void UpdateVersionDefFile(string filePath, int bufferSize = DefaultBufferSize)
         {
             using (var ms = new MemoryStream(bufferSize))
@@ -103,11 +117,13 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Write version file content to <see cref="s"/>.
         /// </summary>
         /// <param name="s">Destination stream.</param>
         /// <param name="bufferSize">Buffer size for <see cref="StreamWriter"/>.</param>
+!!endif!!
         private static void WriteVersionFileBytes(Stream s, int bufferSize = DefaultBufferSize)
         {
             using (var writer = new StreamWriter(s, Encoding.ASCII, bufferSize, true)
@@ -134,6 +150,7 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Compare file content with specified byte sequence.
         /// </summary>
@@ -143,6 +160,7 @@ namespace %%NAMESPACE%%
         /// <param name="count">Length of <paramref name="contentData"/>.</param>
         /// <param name="bufferSize">Buffer size for temporary buffer and <see cref="FileStream"/>.</param>
         /// <returns>True if file content is same to <see cref="contentData"/>, otherwise false.</returns>
+!!endif!!
         private static bool CompareFileBytes(string filePath, byte[] contentData, int offset, int count, int bufferSize = DefaultBufferSize)
         {
             if (!File.Exists(filePath))
@@ -173,6 +191,7 @@ namespace %%NAMESPACE%%
         }
 
 !!ifempty:ALLOW_UNSAFE_CODE!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Compare two byte data.
         /// </summary>
@@ -182,6 +201,7 @@ namespace %%NAMESPACE%%
         /// <param name="offset2">Offset of second byte data array.</param>
         /// <param name="count">Number of bytes comparing <paramref name="data1"/> and <paramref name="data2"/>.</param>
         /// <returns>True if two byte data is same, otherwise false.</returns>
+!!  endif!!
         private static bool CompareMemory(byte[] data1, int offset1, byte[] data2, int offset2, int count)
         {
             for (int i = 0; i < count; i++)
@@ -195,6 +215,7 @@ namespace %%NAMESPACE%%
             return true;
         }
 !!else!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Compare two byte data.
         /// </summary>
@@ -204,6 +225,7 @@ namespace %%NAMESPACE%%
         /// <param name="offset2">Offset of second byte data array.</param>
         /// <param name="count">Number of bytes comparing <paramref name="data1"/> and <paramref name="data2"/>.</param>
         /// <returns>True if two byte data is same, otherwise false.</returns>
+!!  endif!!
         private static bool CompareMemory(byte[] data1, int offset1, byte[] data2, int offset2, int count)
         {
             if (Environment.Is64BitProcess)
@@ -216,6 +238,7 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Compare two byte data for x64 environment.
         /// </summary>
@@ -225,6 +248,7 @@ namespace %%NAMESPACE%%
         /// <param name="offset2">Offset of second byte data array.</param>
         /// <param name="count">Number of bytes comparing <paramref name="data1"/> and <paramref name="data2"/>.</param>
         /// <returns>True if two byte data is same, otherwise false.</returns>
+!!  endif!!
         private static bool CompareMemoryX64(byte[] data1, int offset1, byte[] data2, int offset2, int count)
         {
             unsafe
@@ -237,6 +261,7 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Compare two byte data for x64 environment.
         /// </summary>
@@ -244,6 +269,7 @@ namespace %%NAMESPACE%%
         /// <param name="pData2">Second pointer to byte data array.</param>
         /// <param name="count">Number of bytes comparing <paramref name="pData1"/> and <paramref name="pData2"/>.</param>
         /// <returns>True if two byte data is same, otherwise false.</returns>
+!!  endif!!
         private static unsafe bool CompareMemoryX64(byte* pData1, byte* pData2, ulong count)
         {
             const ulong stride = sizeof(ulong);
@@ -268,6 +294,7 @@ namespace %%NAMESPACE%%
             return true;
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Compare two byte data for x86 environment.
         /// </summary>
@@ -277,6 +304,7 @@ namespace %%NAMESPACE%%
         /// <param name="offset2">Offset of second byte data array.</param>
         /// <param name="count">Number of bytes comparing <paramref name="data1"/> and <paramref name="data2"/>.</param>
         /// <returns>True if two byte data is same, otherwise false.</returns>
+!!  endif!!
         private static bool CompareMemoryX86(byte[] data1, int offset1, byte[] data2, int offset2, int count)
         {
             unsafe
@@ -289,6 +317,7 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Compare two byte data for x86 environment.
         /// </summary>
@@ -296,6 +325,7 @@ namespace %%NAMESPACE%%
         /// <param name="pData2">Second pointer to byte data array.</param>
         /// <param name="count">Number of bytes comparing <paramref name="pData1"/> and <paramref name="pData2"/>.</param>
         /// <returns>True if two byte data is same, otherwise false.</returns>
+!!  endif!!
         private static unsafe bool CompareMemoryX86(byte* pData1, byte* pData2, uint count)
         {
             const uint stride = sizeof(uint);

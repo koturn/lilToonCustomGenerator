@@ -12,34 +12,46 @@ using lilToon;
 
 namespace %%NAMESPACE%%
 {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
     /// <summary>
     /// <see cref="ShaderGUI"/> for the custom shader variations of lilToon.
     /// </summary>
+!!endif!!
     public sealed class %%INSPECTOR_NAME%% : lilToonInspector
     {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Name of this custom shader.
         /// </summary>
+!!endif!!
         public const string ShaderName = "%%SHADER_NAME%%";
 
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// A flag whether to fold custom properties or not.
         /// </summary>
+!!endif!!
         private static bool isShowCustomProperties;
 !!ifnotempty:GUID_LANG_CUSTOM!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// A language name when the language file was last loaded.
         /// </summary>
+!!  endif!!
         private static string prevLanguageName;
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// A flag indicating whether the language file needs to be loaded.
         /// </summary>
+!!  endif!!
         private bool _shouldLoadLanguage;
 !!endif!!
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// <see cref="List{T}"/> of <see cref="MaterialProperty"/> about elapsed time.
         /// </summary>
+!!endif!!
         private readonly List<MaterialProperty> _propertyList = new List<MaterialProperty>();
 !!ifempty:DECLARE_MATERIAL_PROPERTIES!!
         // MaterialProperty _customVariable;
@@ -49,11 +61,13 @@ namespace %%NAMESPACE%%
 
 
 !!ifnotempty:GUID_LANG_CUSTOM!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Draw property items.
         /// </summary>
         /// <param name="materialEditor">The <see cref="MaterialEditor"/> that are calling this <see cref="OnGUI(MaterialEditor, MaterialProperty[])"/> (the 'owner').</param>
         /// <param name="props">Material properties of the current selected shader.</param>
+!!  endif!!
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
         {
             _shouldLoadLanguage = lts == null || lts.name != ShaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
@@ -62,11 +76,13 @@ namespace %%NAMESPACE%%
         }
 
 !!endif!!
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Load custom language file and make cache of shader properties.
         /// </summary>
         /// <param name="props">Properties of the material.</param>
         /// <param name="material">Target material.</param>
+!!endif!!
         protected override void LoadCustomProperties(MaterialProperty[] props, Material material)
         {
             isCustomShader = true;
@@ -101,10 +117,12 @@ namespace %%NAMESPACE%%
 !!endif!!
         }
 
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Draw custom properties.
         /// </summary>
         /// <param name="material">Target material.</param>
+!!endif!!
         protected override void DrawCustomProperties(Material material)
         {
             // GUIStyles Name   Description
@@ -141,9 +159,11 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Replace shaders to custom shaders.
         /// </summary>
+!!endif!!
         protected override void ReplaceToCustomShaders()
         {
             lts         = Shader.Find(ShaderName + "/lilToon");
@@ -211,9 +231,11 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Try to replace the shader of the selected material to custom lilToon shader.
         /// </summary>
+!!  endif!!
         [MenuItem("Assets/" + ShaderName + "/Convert material to custom shader", false, 1100)]
 #pragma warning disable IDE0052 // Remove unread private members
         private static void ConvertMaterialToCustomShaderMenu()
@@ -244,10 +266,12 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Menu validation method for <see cref="ConvertMaterialToCustomShaderMenu"/>.
         /// </summary>
         /// <returns>True if <see cref="ConvertMaterialToCustomShaderMenu"/> works, otherwise false.</returns>
+!!  endif!!
         [MenuItem("Assets/" + ShaderName + "/Convert material to custom shader", true)]
 #pragma warning disable IDE0051 // Remove unused private members
         private static bool ValidateConvertMaterialToCustomShaderMenu()
@@ -271,9 +295,11 @@ namespace %%NAMESPACE%%
             return false;
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Try to replace the shader of the material to original lilToon shader.
         /// </summary>
+!!  endif!!
         [MenuItem("Assets/" + ShaderName + "/Convert material to original shader", false, 1101)]
 #pragma warning disable IDE0051 // Remove unused private members
         private static void ConvertMaterialToOriginalShaderMenu()
@@ -304,10 +330,12 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Menu validation method for <see cref="ValidateConvertMaterialToOriginalShaderMenu"/>.
         /// </summary>
         /// <returns>True if <see cref="ValidateConvertMaterialToOriginalShaderMenu"/> works, otherwise false.</returns>
+!!  endif!!
         [MenuItem("Assets/" + ShaderName + "/Convert material to original shader", true)]
 #pragma warning disable IDE0051 // Remove unused private members
         private static bool ValidateConvertMaterialToOriginalShader()
@@ -333,9 +361,11 @@ namespace %%NAMESPACE%%
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Callback method for menu item which refreshes shader cache and reimport.
         /// </summary>
+!!  endif!!
         [MenuItem("Assets/" + ShaderName + "/Refresh shader cache", false, 2000)]
 #pragma warning disable IDE0052 // Remove unread private members
         private static void RefreshShaderCacheMenu()
@@ -389,10 +419,12 @@ namespace %%NAMESPACE%%
             AssetDatabase.ImportAsset(lilToonShaderDir, ImportAssetOptions.ImportRecursive);
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Menu validation method for <see cref="RefreshShaderCacheMenu"/>.
         /// </summary>
         /// <returns>True if <see cref="RefreshShaderCacheMenu"/> works, otherwise false.</returns>
+!!  endif!!
         [MenuItem("Assets/" + ShaderName + "/Refresh shader cache", true)]
 #pragma warning disable IDE0051 // Remove unused private members
         private static bool ValidateRefreshShaderCacheMenu()
@@ -411,11 +443,13 @@ namespace %%NAMESPACE%%
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Identify whether the property block should be drawn or not.
         /// </summary>
         /// <param name="propertyList">Target property list.</param>
         /// <returns>True when the property block should be drawn, otherwise false.</returns>
+!!  endif!!
         private static bool ShouldDrawBlock(List<MaterialProperty> propertyList)
         {
             foreach (var property in propertyList)
@@ -428,22 +462,26 @@ namespace %%NAMESPACE%%
             return false;
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Get a custom lilToon shader which is corresponding to specified original lilToon shader.
         /// </summary>
         /// <param name="originalShader">Original lilToon shader.</param>
         /// <returns>null if no custom lilToon shader is found, otherwise the one found.</returns>
+!!  endif!!
         private static Shader GetCorrespondingCustomShader(Shader originalShader)
         {
             var customShaderName = GetCorrespondingCustomShaderName(originalShader.name);
             return customShaderName == null ? null : Shader.Find(customShaderName);
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Get a custom lilToon shader name which is corresponding to specified original lilToon shader name.
         /// </summary>
         /// <param name="originalShaderName">Original lilToon shader name.</param>
         /// <returns>null if no custom lilToon shader name is found, otherwise the one found.</returns>
+!!  endif!!
         private static string GetCorrespondingCustomShaderName(string originalShaderName)
         {
             switch (originalShaderName)
@@ -504,22 +542,26 @@ namespace %%NAMESPACE%%
             }
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Get a original lilToon shader which is corresponding to specified custom lilToon shader.
         /// </summary>
         /// <param name="customShader">Custom lilToon shader.</param>
         /// <returns>null if no original lilToon shader is found, otherwise the one found.</returns>
+!!  endif!!
         private static Shader GetCorrespondingOriginalShader(Shader customShader)
         {
             var customShaderName = GetCorrespondingOriginalShaderName(customShader.name);
             return customShaderName == null ? null : Shader.Find(customShaderName);
         }
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Get a original lilToon shader name which is corresponding to specified custom lilToon shader name.
         /// </summary>
         /// <param name="customShaderName">Custom lilToon shader name.</param>
         /// <returns>null if no original lilToon shader name is found, otherwise the one found.</returns>
+!!  endif!!
         private static string GetCorrespondingOriginalShaderName(string customShaderName)
         {
             switch (customShaderName)
@@ -583,31 +625,42 @@ namespace %%NAMESPACE%%
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Provides some native methods of SQLite3.
         /// </summary>
+!!  endif!!
         [SuppressUnmanagedCodeSecurity]
         internal static class SafeNativeMethods
         {
 #if UNITY_EDITOR && !UNITY_EDITOR_WIN
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
             /// Native library name of SQLite3.
             /// </summary>
+!!  endif!!
             private const string LibraryName = "sqlite3";
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
             /// Calling convention of library functions.
             /// </summary>
+!!  endif!!
             private const CallingConvention CallConv = CallingConvention.Cdecl;
 #else
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
             /// Native library name of SQLite3.
             /// </summary>
+!!  endif!!
             private const string LibraryName = "winsqlite3";
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
             /// Calling convention of library functions.
             /// </summary>
+!!  endif!!
             private const CallingConvention CallConv = CallingConvention.StdCall;
 #endif
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
             /// Open database.
             /// </summary>
@@ -617,9 +670,11 @@ namespace %%NAMESPACE%%
             /// <remarks>
             /// <seealso href="https://www.sqlite.org/c3ref/open.html"/>
             /// </remarks>
+!!  endif!!
             [DllImport(LibraryName, EntryPoint = "sqlite3_open16", ExactSpelling = true, CallingConvention = CallConv, CharSet = CharSet.Unicode)]
             public static extern int Open(string filePath, out IntPtr pDb);
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
             /// Close database.
             /// </summary>
@@ -628,9 +683,11 @@ namespace %%NAMESPACE%%
             /// <remarks>
             /// <seealso href="https://www.sqlite.org/c3ref/close.html"/>
             /// </remarks>
+!!  endif!!
             [DllImport(LibraryName, EntryPoint = "sqlite3_close", ExactSpelling = true, CallingConvention = CallConv)]
             public static extern int Close(IntPtr pDb);
 
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
             /// Execute specified SQL.
             /// </summary>
@@ -643,6 +700,7 @@ namespace %%NAMESPACE%%
             /// <remarks>
             /// <seealso href="https://www.sqlite.org/c3ref/exec.html"/>
             /// </remarks>
+!!  endif!!
             [DllImport(LibraryName, EntryPoint = "sqlite3_exec", ExactSpelling = true, CallingConvention = CallConv)]
             public static extern int Execute(IntPtr pDb, string sql, IntPtr pCallback = default(IntPtr), IntPtr pCallbackArg = default(IntPtr), IntPtr pErrMsg = default(IntPtr));
         }
