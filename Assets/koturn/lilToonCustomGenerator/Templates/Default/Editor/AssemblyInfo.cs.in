@@ -4,18 +4,46 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+!!ifnotempty:ASSEMBLY_TITLE!!
 [assembly: AssemblyTitle("%%ASSEMBLY_TITLE%%")]
-[assembly: AssemblyDescription("%%ASSEMBLY_DESCRIPTION%%.")]
+!!else!!
+// [assembly: AssemblyTitle("")]
+!!endif!!
+!!ifnotempty:ASSEMBLY_DESCRIPTION!!
+[assembly: AssemblyDescription("%%ASSEMBLY_DESCRIPTION%%")]
+!!else!!
+// [assembly: AssemblyDescription("")]
+!!endif!!
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
 [assembly: AssemblyConfiguration("Release")]
 #endif  // DEBUG
+!!ifnotempty:ASSEMBLY_COMPANY!!
 [assembly: AssemblyCompany("%%ASSEMBLY_COMPANY%%")]
+!!else!!
+// [assembly: AssemblyCompany("")]
+!!endif!!
+!!ifnotempty:ASSEMBLY_PRODUCT!!
 [assembly: AssemblyProduct("%%ASSEMBLY_PRODUCT%%")]
+!!else!!
+// [assembly: AssemblyProduct("")]
+!!endif!!
+!!ifnotempty:ASSEMBLY_COPYRIGHT!!
 [assembly: AssemblyCopyright("%%ASSEMBLY_COPYRIGHT%%")]
+!!else!!
+// [assembly: AssemblyCopyright("")]
+!!endif!!
+!!ifnotempty:ASSEMBLY_TRADEMARK!!
 [assembly: AssemblyTrademark("%%ASSEMBLY_TRADEMARK%%")]
+!!else!!
+// [assembly: AssemblyTrademark("")]
+!!endif!!
+!!ifnotempty:ASSEMBLY_CULTURE!!
 [assembly: AssemblyCulture("%%ASSEMBLY_CULTURE%%")]
+!!else!!
+// [assembly: AssemblyCulture("")]
+!!endif!!
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
@@ -28,6 +56,8 @@ using System.Runtime.InteropServices;
 !!elifnotempty:GUID_D_ASSEMBLY_INFO!!
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("%%GUID_D_ASSEMBLY_INFO%%")]
+!!else!!
+// [assembly: Guid("")]
 !!endif!!
 
 // Version information for an assembly consists of the following four values:
