@@ -1036,7 +1036,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("ASSEMBLY_COPYRIGHT", EscapeString(_assemblyCopyright));
                 tagDict.Add("ASSEMBLY_TRADEMARK", EscapeString(_assemblyTrademark));
                 tagDict.Add("ASSEMBLY_CULTURE", EscapeString(_assemblyCulture));
-                tagDict.Add("ASSEMBLY_VERSION", string.Join(".", _assemblyVersionNumbers));
+                tagDict.Add("ASSEMBLY_VERSION", _assemblyVersionString);
+                tagDict.Add("ASSEMBLY_FILE_VERSION", string.Join(".", _assemblyFileVersionNumbers));
+                tagDict.Add("ASSEMBLY_INFORMATIONAL_VERSION", EscapeString(_assemblyInformationalVersion));
             }
 
             var sb = new StringBuilder();

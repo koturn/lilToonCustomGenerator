@@ -37,9 +37,25 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
+!!ifnotempty:ASSEMBLY_VERSION!!
 [assembly: AssemblyVersion("%%ASSEMBLY_VERSION%%")]
+!!else!!
+// [assembly: AssemblyVersion("1.0.0.0")]
+!!endif!!
+!!ifnotempty:ASSEMBLY_FILE_VERSION!!
+[assembly: AssemblyFileVersion("%%ASSEMBLY_FILE_VERSION%%")]
+!!elifnotempty:ASSEMBLY_VERSION!!
 [assembly: AssemblyFileVersion("%%ASSEMBLY_VERSION%%")]
+!!else!!
+// [assembly: AssemblyFileVersion("1.0.0.0")]
+!!endif!!
+!!ifnotempty:ASSEMBLY_INFORMATIONAL_VERSION!!
+[assembly: AssemblyInformationalVersion("%%ASSEMBLY_INFORMATIONAL_VERSION%%")]
+!!elifnotempty:ASSEMBLY_VERSION!!
 [assembly: AssemblyInformationalVersion("%%ASSEMBLY_VERSION%%")]
+!!else!!
+// [assembly: AssemblyInformationalVersion("1.0.0.0")]
+!!endif!!
 
 // Metadata
 // [assembly: AssemblyMetadata("RepositoryUrl", "https://github.com/YOURNAME/REPOSITORY")]
