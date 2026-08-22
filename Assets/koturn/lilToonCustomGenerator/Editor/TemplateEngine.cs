@@ -220,7 +220,15 @@ namespace Koturn.LilToonCustomGenerator.Editor
 
             if (stateStack.Count > 0)
             {
-                throw new InvalidOperationException("Non closed if");
+                var fs = reader.BaseStream as FileStream;
+                if (fs == null)
+                {
+                    throw new InvalidOperationException("Non closed if detected");
+                }
+                else
+                {
+                    throw new InvalidOperationException("Non closed if detected: " + fs.Name);
+                }
             }
         }
 
