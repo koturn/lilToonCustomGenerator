@@ -102,18 +102,12 @@ namespace %%NAMESPACE%%
             }
 
 !!endif!!
-!!ifempty:INITIALIZE_MATERIAL_PROPERTIES!!
-            // _customVariable = FindProperty("_CustomVariable", props);
-!!else!!
-            %%INITIALIZE_MATERIAL_PROPERTIES:keepindent%%
-!!endif!!
-
             var propertyList = _propertyList;
             propertyList.Clear();
-!!ifempty:INITIALIZE_MATERIAL_PROPERTY_LIST!!
-            // propertyList.Add(_customVariable);
+!!ifempty:INITIALIZE_MATERIAL_PROPERTIES_AND_LIST!!
+            // propertyList.Add(_customVariable = FindProperty("_CustomVariable", props));
 !!else!!
-            %%INITIALIZE_MATERIAL_PROPERTY_LIST:keepindent%%
+            %%INITIALIZE_MATERIAL_PROPERTIES_AND_LIST:keepindent%%
 !!endif!!
         }
 

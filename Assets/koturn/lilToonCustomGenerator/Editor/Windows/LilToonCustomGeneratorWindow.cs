@@ -1109,11 +1109,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             index = 0;
             foreach (var shaderProp in shaderPropDefList)
             {
-                sb.AppendFormat("propertyList.Add({0});", materialPropNames[index])
+                sb.AppendFormat("propertyList.Add({0} = FindProperty(\"{1}\", props));", materialPropNames[index], shaderProp.Name)
                     .AppendLine();
                 index++;
             }
-            tagDict.Add("INITIALIZE_MATERIAL_PROPERTY_LIST", sb.ToString());
+            tagDict.Add("INITIALIZE_MATERIAL_PROPERTIES_AND_LIST", sb.ToString());
 
             if (_shouldGenerateLangTsv)
             {
