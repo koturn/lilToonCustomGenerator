@@ -1,4 +1,3 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,6 +15,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         /// </summary>
         private const float IndentSpaceUnit = 16.0f;
 
+        /// <summary>
+        /// Draws a toggle with a text field next to it.
+        /// The text field is disabled when the toggle is unchecked.
+        /// </summary>
+        /// <param name="label">Label to display next to the toggle.</param>
+        /// <param name="text">Text to display in the text field.</param>
+        /// <param name="isChecked">Indicates whether the toggle is checked.</param>
+        /// <returns>The text entered by the user.</returns>
         public static string ToggleTextField(string label, string text, ref bool isChecked)
         {
             var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
@@ -31,6 +38,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
             return text;
         }
 
+        /// <summary>
+        /// Draws a toggle with multiple integer fields next to it.
+        /// The fields are disabled when the toggle is unchecked.
+        /// </summary>
+        /// <param name="label">Label to display next to the toggle.</param>
+        /// <param name="subLabels">Labels for each sub-field.</param>
+        /// <param name="values">Values for each sub-field.</param>
+        /// <param name="isChecked">Indicates whether the toggle is checked.</param>
         public static void ToggleMultiIntField(string label, GUIContent[] subLabels, int[] values, ref bool isChecked)
         {
             var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
