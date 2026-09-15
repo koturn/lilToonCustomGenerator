@@ -245,6 +245,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private string _assemblyTitle;
         /// <summary>
+        /// Default text for <see cref="System.Reflection.AssemblyDescriptionAttribute"/>.
+        /// </summary>
+        private string _assemblyDescriptionDefault;
+        /// <summary>
         /// Text for <see cref="System.Reflection.AssemblyDescriptionAttribute"/>.
         /// </summary>
         private string _assemblyDescription;
@@ -292,6 +296,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// True to edit value for <see cref="System.Reflection.AssemblyTitleAttribute"/>.
         /// </summary>
         private bool _isAssemblyTitleEditable = false;
+        /// <summary>
+        /// True to edit value for <see cref="System.Reflection.AssemblyDescriptionAttribute"/>.
+        /// </summary>
+        private bool _isAssemblyDescriptionEditable = false;
         /// <summary>
         /// True to edit value for <see cref="System.Reflection.AssemblyProductAttribute"/>.
         /// </summary>
@@ -399,7 +407,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
 
             _assemblyTitle = _namespace;
-            _assemblyDescription = $"Material inspector of {_shaderName}.";
+            _assemblyDescriptionDefault = $"Material inspector for {_shaderName}.";
+            _assemblyDescription = _assemblyDescriptionDefault;
             _assemblyCompany = userName;
             _assemblyProduct = _namespace;
             _assemblyCopyright = $"Copyright (C) {DateTime.Now.Year} {userName} All Rights Reserverd.";
@@ -446,6 +455,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
 
             var errorCount = 0;
+            var isShaderNameChanged = false;
             var isShaderTitleChanged = false;
             var isNamespaceChanged = false;
 
@@ -453,7 +463,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 EditorGUILayout.LabelField("Basic configuration", EditorStyles.boldLabel);
                 _templateIndex = EditorGUILayout.Popup("Template", _templateIndex, _templateNames);
-                _shaderName = EditorGUILayout.TextField("Shader name", _shaderName);
+
+                using (var ccScope = new EditorGUI.ChangeCheckScope())
+                {
+                    _shaderName = EditorGUILayout.TextField("Shader name", _shaderName);
+                    isShaderNameChanged = ccScope.changed;
+                    if (isShaderNameChanged)
+                    {
+                        _assemblyDescriptionDefault = $"Material inspector for {_shaderName}.";
+                    }
+                }
                 if (string.IsNullOrEmpty(_shaderName))
                 {
                     errorCount++;
@@ -684,7 +703,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             {
                                 _assemblyTitle = _namespace;
                             }
-                            _assemblyDescription = EditorGUILayout.TextField("Description", _assemblyDescription);
+
+                            _assemblyDescription = CustomEditorGUILayout.ToggleTextField("Description", _assemblyDescription, _assemblyDescriptionDefault, ref _isAssemblyDescriptionEditable);
+                            if (!_isAssemblyDescriptionEditable && isShaderNameChanged)
+                            {
+                                _assemblyDescription = _assemblyDescriptionDefault;
+                            }
+
                             _assemblyCompany = EditorGUILayout.TextField("Company", _assemblyCompany);
                             _assemblyProduct = CustomEditorGUILayout.ToggleTextField("Product", _assemblyProduct, _namespace, ref _isAssemblyProductEditable);
                             if (!_isAssemblyProductEditable && isNamespaceChanged)
