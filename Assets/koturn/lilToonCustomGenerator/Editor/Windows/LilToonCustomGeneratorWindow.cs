@@ -1354,7 +1354,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     }
                     if (index > 0)
                     {
-                        sb.Append(", ");
+                        sb.Append(",\n");
                     }
                     sb.AppendFormat("\"{0}\": \"{1}\"", kv.Item1, kv.Item2);
                     index++;
