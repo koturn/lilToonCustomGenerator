@@ -455,9 +455,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
 
             var errorCount = 0;
-            var isShaderNameChanged = false;
-            var isShaderTitleChanged = false;
-            var isNamespaceChanged = false;
 
             using (new EditorGUILayout.VerticalScope(GUI.skin.box))
             {
@@ -467,8 +464,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 using (var ccScope = new EditorGUI.ChangeCheckScope())
                 {
                     _shaderName = EditorGUILayout.TextField("Shader name", _shaderName);
-                    isShaderNameChanged = ccScope.changed;
-                    if (isShaderNameChanged)
+                    if (ccScope.changed)
                     {
                         _assemblyDescriptionDefault = $"Material inspector for {_shaderName}.";
                     }
@@ -490,17 +486,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     }
                 }
 
-                using (var ccScope = new EditorGUI.ChangeCheckScope())
-                {
-                    _shaderTitle = EditorGUILayout.TextField("Shader title", _shaderTitle);
-                    isShaderTitleChanged = ccScope.changed;
-                }
+                _shaderTitle = EditorGUILayout.TextField("Shader title", _shaderTitle);
+                _namespace = EditorGUILayout.TextField("Inspector Namespace", _namespace);
 
-                using (var ccScope = new EditorGUI.ChangeCheckScope())
-                {
-                    _namespace = EditorGUILayout.TextField("Inspector Namespace", _namespace);
-                    isNamespaceChanged = ccScope.changed;
-                }
                 if (!RegexProvider.NamespaceRegex.IsMatch(_namespace))
                 {
                     errorCount++;
@@ -676,8 +664,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     _shouldDeclareProTVVariables = EditorGUILayout.ToggleLeft("Use ProTV variables", _shouldDeclareProTVVariables);
                 }
 
-                var isAssemblyVersionChanged = false;
-
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box))
                 {
                     EditorGUILayout.LabelField("Inspector options", EditorStyles.boldLabel);
@@ -698,21 +684,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         using (new EditorGUI.IndentLevelScope(2))
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box))
                         {
-                            _assemblyTitle = CustomEditorGUILayout.ToggleTextField("Title", _assemblyTitle, _namespace, ref _isAssemblyTitleEditable);
-                            if (!_isAssemblyTitleEditable && isNamespaceChanged)
+                            _assemblyTitle = CustomEditorGUILayout.ToggleTextField("Title", _assemblyTitle, ref _isAssemblyTitleEditable);
+                            if (!_isAssemblyTitleEditable)
                             {
                                 _assemblyTitle = _namespace;
                             }
 
-                            _assemblyDescription = CustomEditorGUILayout.ToggleTextField("Description", _assemblyDescription, _assemblyDescriptionDefault, ref _isAssemblyDescriptionEditable);
-                            if (!_isAssemblyDescriptionEditable && isShaderNameChanged)
+                            _assemblyDescription = CustomEditorGUILayout.ToggleTextField("Description", _assemblyDescription, ref _isAssemblyDescriptionEditable);
+                            if (!_isAssemblyDescriptionEditable)
                             {
                                 _assemblyDescription = _assemblyDescriptionDefault;
                             }
 
                             _assemblyCompany = EditorGUILayout.TextField("Company", _assemblyCompany);
-                            _assemblyProduct = CustomEditorGUILayout.ToggleTextField("Product", _assemblyProduct, _namespace, ref _isAssemblyProductEditable);
-                            if (!_isAssemblyProductEditable && isNamespaceChanged)
+                            _assemblyProduct = CustomEditorGUILayout.ToggleTextField("Product", _assemblyProduct, ref _isAssemblyProductEditable);
+                            if (!_isAssemblyProductEditable)
                             {
                                 _assemblyProduct = _namespace;
                             }
@@ -729,7 +715,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 EditorGUI.MultiIntField(asmVerFieldRect, _versionNumberLabels, assemblyVersionNumbers);
                                 if (ccScope.changed)
                                 {
-                                    isAssemblyVersionChanged = true;
                                     for (int i = 0; i < assemblyVersionNumbers.Length; i++)
                                     {
                                         assemblyVersionNumbers[i] = Math.Max(0, assemblyVersionNumbers[i]);
@@ -739,14 +724,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                             }
 
-                            CustomEditorGUILayout.ToggleMultiIntField("FileVersion", _versionNumberLabels, _assemblyFileVersionNumbers, assemblyVersionNumbers, ref _isAssemblyFileVersionEditable);
-                            if (!_isAssemblyFileVersionEditable && isAssemblyVersionChanged)
+                            CustomEditorGUILayout.ToggleMultiIntField("FileVersion", _versionNumberLabels, _assemblyFileVersionNumbers, ref _isAssemblyFileVersionEditable);
+                            if (!_isAssemblyFileVersionEditable)
                             {
-                                Buffer.BlockCopy(assemblyVersionNumbers, 0, _assemblyFileVersionNumbers, 0, _assemblyFileVersionNumbers.Length);
+                                Buffer.BlockCopy(assemblyVersionNumbers, 0, _assemblyFileVersionNumbers, 0, sizeof(int) * _assemblyFileVersionNumbers.Length);
                             }
 
-                            _assemblyInformationalVersion = CustomEditorGUILayout.ToggleTextField("InformationalVersion", _assemblyInformationalVersion, _assemblyVersionString, ref _isAssemblyInformationalVersionEditable);
-                            if (!_isAssemblyInformationalVersionEditable && isAssemblyVersionChanged)
+                            _assemblyInformationalVersion = CustomEditorGUILayout.ToggleTextField("InformationalVersion", _assemblyInformationalVersion, ref _isAssemblyInformationalVersionEditable);
+                            if (!_isAssemblyInformationalVersionEditable)
                             {
                                 _assemblyInformationalVersion = _assemblyVersionString;
                             }
@@ -791,8 +776,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                             }
 
-                            _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, _assemblyVersionSemVer, ref _isPackageVersionEditable);
-                            if (!_isPackageVersionEditable && isAssemblyVersionChanged)
+                            _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, ref _isPackageVersionEditable);
+                            if (!_isPackageVersionEditable)
                             {
                                 _packageVersion = _assemblyVersionSemVer;
                             }
@@ -817,8 +802,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                             }
 
-                            _packageDisplayName = CustomEditorGUILayout.ToggleTextField("Display name", _packageDisplayName, _shaderTitle, ref _isPackageDisplayNameEditable);
-                            if (!_isPackageDisplayNameEditable && isShaderTitleChanged)
+                            _packageDisplayName = CustomEditorGUILayout.ToggleTextField("Display name", _packageDisplayName, ref _isPackageDisplayNameEditable);
+                            if (!_isPackageDisplayNameEditable)
                             {
                                 _packageDisplayName = _shaderTitle;
                             }

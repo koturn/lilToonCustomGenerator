@@ -16,18 +16,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         /// </summary>
         private const float IndentSpaceUnit = 16.0f;
 
-        public static string ToggleTextField(string label, string text, string disabledText, ref bool isChecked)
+        public static string ToggleTextField(string label, string text, ref bool isChecked)
         {
             var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
             var toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-            using (var ccScope = new EditorGUI.ChangeCheckScope())
-            {
-                isChecked = EditorGUI.ToggleLeft(toggleRect, label, isChecked);
-                if (ccScope.changed && !isChecked)
-                {
-                    text = disabledText;
-                }
-            }
+            isChecked = EditorGUI.ToggleLeft(toggleRect, label, isChecked);
             using (new EditorGUI.DisabledScope(!isChecked))
             {
                 text = EditorGUI.TextField(
@@ -38,18 +31,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
             return text;
         }
 
-        public static void ToggleMultiIntField(string label, GUIContent[] subLabels, int[] values, int[] disabledValues, ref bool isChecked)
+        public static void ToggleMultiIntField(string label, GUIContent[] subLabels, int[] values, ref bool isChecked)
         {
             var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
             var toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-            using (var ccScope = new EditorGUI.ChangeCheckScope())
-            {
-                isChecked = EditorGUI.ToggleLeft(toggleRect, label, isChecked);
-                if (ccScope.changed  && !isChecked)
-                {
-                    Buffer.BlockCopy(disabledValues, 0, values, 0, values.Length);
-                }
-            }
+            isChecked = EditorGUI.ToggleLeft(toggleRect, label, isChecked);
             using (new EditorGUI.DisabledScope(!isChecked))
             {
                 EditorGUI.MultiIntField(
