@@ -88,11 +88,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// Custom shader name.
         /// </summary>
-        private string _shaderName = "MyCustomShader";
+        private string _shaderName = "lilToonCustom";
         /// <summary>
         /// Custom shader title displaying on the inspector.
         /// </summary>
-        private string _shaderTitle = "My Custom Shader";
+        private string _shaderTitle = "lilToon Custom";
         /// <summary>
         /// Namespace and assembly name.
         /// </summary>
@@ -410,11 +410,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 var g = m.Groups;
                 _namespace = g[1].Value.ToUpperInvariant() + g[2].Value + ".LilToonCustom.Editor";
-                _shaderName = g[0].Value + "/MyCustomShader";
+                _shaderName = g[0].Value + "/lilToonCustom";
             }
 
             _assemblyTitle = _namespace;
-            _assemblyDescriptionDefault = $"Material inspector for {_shaderName}.";
+            _assemblyDescriptionDefault = $"Material inspector for \"{_shaderName}/*\".";
             _assemblyDescription = _assemblyDescriptionDefault;
             _assemblyCompany = userName;
             _assemblyProduct = _namespace;
@@ -431,7 +431,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _packageName = _packageNameDefault;
             _packageVersion = "1.0.0";
             _packageDisplayName = _shaderTitle;
-            _packageDescription = "My custom shader of lilToon.";
+            _packageDescription = "Customized lilToon shaders.";
             _packageUnityVersion = "2019.4";
             _packageChangeLogUrl = "";
             _packageDocumentationUrl = "";
@@ -475,7 +475,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     _shaderName = EditorGUILayout.TextField("Shader name", _shaderName);
                     if (ccScope.changed)
                     {
-                        _assemblyDescriptionDefault = $"Material inspector for {_shaderName}.";
+                        _assemblyDescriptionDefault = $"Material inspector for \"{_shaderName}/*\".";
                         _packageNameDefault = ConvertShaderNameToPackageName(_shaderName);
                     }
                 }
