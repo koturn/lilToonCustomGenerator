@@ -55,15 +55,16 @@ namespace Koturn.Tools.LilKustomShaders.Editor
                 return;
             }
 
+            var asmver = GetAssemblyVersionStringForExport();
             var jsonData = JsonData.LoadFromJsonFile(jsonPath);
             foreach (var package in jsonData.Packages)
             {
                 ExportAsUnityPackage(
-                    Path.Combine(exportDirPath, package.UnityPackageName),
+                    Path.Combine(exportDirPath, $"{package.UnityPackageBaseName}-{asmver}.unitypackage"),
                     package.Assets,
                     package.DependAssets);
                 ExportAsZipArchive(
-                    Path.Combine(exportDirPath, $"{package.PackageName}-{GetAssemblyVersionStringForExport()}.zip"),
+                    Path.Combine(exportDirPath, $"{package.PackageName}-{asmver}.zip"),
                     package.Assets);
             }
         }
@@ -330,7 +331,7 @@ namespace Koturn.Tools.LilKustomShaders.Editor
             /// <summary>
             /// Unity package name for export.
             /// </summary>
-            public string UnityPackageName => unityPackageName;
+            public string UnityPackageBaseName => unityPackageBaseName;
             /// <summary>
             /// VPM name.
             /// </summary>
@@ -345,10 +346,10 @@ namespace Koturn.Tools.LilKustomShaders.Editor
             public AssetFileInfo[] DependAssets => dependAssets;
 
             /// <summary>
-            /// Backing field of <see cref="UnityPackageName"/>.
+            /// Backing field of <see cref="UnityPackageBaseName"/>.
             /// </summary>
             [SerializeField]
-            private string unityPackageName;
+            private string unityPackageBaseName;
             /// <summary>
             /// Backing field of <see cref="PackageName"/>.
             /// </summary>
