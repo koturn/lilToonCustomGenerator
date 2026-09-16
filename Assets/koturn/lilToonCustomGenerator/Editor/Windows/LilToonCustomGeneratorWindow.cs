@@ -86,6 +86,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private int _templateIndex;
         /// <summary>
+        /// Default text cache dictionary.
+        /// </summary>
+        private readonly Dictionary<string, string> _defaultTextCacheDict = new Dictionary<string, string>();
+        /// <summary>
         /// Custom shader name.
         /// </summary>
         private string _shaderName = "lilToonCustom";
@@ -101,6 +105,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// Inspector class name.
         /// </summary>
         private string _inspectorName = "CustomInspector";
+        /// <summary>
+        /// True to edit <see cref="_namespace"/>.
+        /// </summary>
+        private bool _isNamespaceEditable = false;
         /// <summary>
         /// New line type.
         /// </summary>
@@ -245,10 +253,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private string _assemblyTitle;
         /// <summary>
-        /// Default text for <see cref="System.Reflection.AssemblyDescriptionAttribute"/>.
-        /// </summary>
-        private string _assemblyDescriptionDefault;
-        /// <summary>
         /// Text for <see cref="System.Reflection.AssemblyDescriptionAttribute"/>.
         /// </summary>
         private string _assemblyDescription;
@@ -320,10 +324,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// True to generate package.json.
         /// </summary>
         private bool _shouldGeneratePackageJson = true;
-        /// <summary>
-        /// Default value of "name" in package.json.
-        /// </summary>
-        private string _packageNameDefault;
         /// <summary>
         /// Value of "name" in package.json.
         /// </summary>
@@ -409,13 +409,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             if (m.Success)
             {
                 var g = m.Groups;
-                _namespace = g[1].Value.ToUpperInvariant() + g[2].Value + ".LilToonCustom.Editor";
                 _shaderName = g[0].Value + "/lilToonCustom";
             }
+            _namespace = ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor";
 
             _assemblyTitle = _namespace;
-            _assemblyDescriptionDefault = $"Material inspector for \"{_shaderName}/*\".";
-            _assemblyDescription = _assemblyDescriptionDefault;
+            _assemblyDescription = $"Material inspector for \"{_shaderName}/*\".";
             _assemblyCompany = userName;
             _assemblyProduct = _namespace;
             _assemblyCopyright = $"Copyright (C) {DateTime.Now.Year} {userName} All Rights Reserverd.";
@@ -427,8 +426,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyFileVersionNumbers = new[] { 1, 0, 0, 0 };
             _assemblyInformationalVersion = "1.0.0.0";
 
-            _packageNameDefault = ConvertShaderNameToPackageName(_shaderName);
-            _packageName = _packageNameDefault;
+            _packageName = ConvertShaderNameToPackageName(_shaderName);
             _packageVersion = "1.0.0";
             _packageDisplayName = _shaderTitle;
             _packageDescription = "Customized lilToon shaders.";
@@ -449,6 +447,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _packageAuthorName = Environment.UserName;
             _packageAuthorEmail = "";
             _packageAuthorUrl = "";
+
+            _defaultTextCacheDict[nameof(_namespace)] = _namespace;
+            _defaultTextCacheDict[nameof(_assemblyDescription)] = _assemblyDescription;
+            _defaultTextCacheDict[nameof(_packageName)] = _packageName;
         }
 
 
@@ -468,63 +470,73 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             using (new EditorGUILayout.VerticalScope(GUI.skin.box))
             {
                 EditorGUILayout.LabelField("Basic configuration", EditorStyles.boldLabel);
-                _templateIndex = EditorGUILayout.Popup("Template", _templateIndex, _templateNames);
+                using (new EditorGUI.IndentLevelScope())
+                {
+                    _templateIndex = EditorGUILayout.Popup("Template", _templateIndex, _templateNames);
 
-                using (var ccScope = new EditorGUI.ChangeCheckScope())
-                {
-                    _shaderName = EditorGUILayout.TextField("Shader name", _shaderName);
-                    if (ccScope.changed)
+                    using (var ccScope = new EditorGUI.ChangeCheckScope())
                     {
-                        _assemblyDescriptionDefault = $"Material inspector for \"{_shaderName}/*\".";
-                        _packageNameDefault = ConvertShaderNameToPackageName(_shaderName);
+                        _shaderName = EditorGUILayout.TextField("Shader name", _shaderName);
+                        if (ccScope.changed)
+                        {
+                            _defaultTextCacheDict[nameof(_namespace)] = ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor";
+                            _defaultTextCacheDict[nameof(_assemblyDescription)] = $"Material inspector for \"{_shaderName}/*\".";
+                            _defaultTextCacheDict[nameof(_packageName)] = ConvertShaderNameToPackageName(_shaderName);
+                        }
                     }
-                }
-                if (string.IsNullOrEmpty(_shaderName))
-                {
-                    errorCount++;
-                    using (new EditorGUI.IndentLevelScope())
+                    if (string.IsNullOrEmpty(_shaderName))
                     {
-                        EditorGUILayout.HelpBox("Shader name must not be null.", MessageType.Error);
+                        errorCount++;
+                        using (new EditorGUI.IndentLevelScope())
+                        {
+                            EditorGUILayout.HelpBox("Shader name must not be null.", MessageType.Error);
+                        }
                     }
-                }
-                else if (_shaderName.IndexOfAny(_invalidShaderNameChars) > 0)
-                {
-                    errorCount++;
-                    using (new EditorGUI.IndentLevelScope())
+                    else if (_shaderName.IndexOfAny(_invalidShaderNameChars) > 0)
                     {
-                        EditorGUILayout.HelpBox("Invalid shader name.", MessageType.Error);
+                        errorCount++;
+                        using (new EditorGUI.IndentLevelScope())
+                        {
+                            EditorGUILayout.HelpBox("Invalid shader name.", MessageType.Error);
+                        }
                     }
-                }
 
-                _shaderTitle = EditorGUILayout.TextField("Shader title", _shaderTitle);
-                _namespace = EditorGUILayout.TextField("Inspector Namespace", _namespace);
+                    _shaderTitle = EditorGUILayout.TextField("Shader title", _shaderTitle);
 
-                if (!RegexProvider.NamespaceRegex.IsMatch(_namespace))
-                {
-                    errorCount++;
-                    using (new EditorGUI.IndentLevelScope())
+                    _namespace = CustomEditorGUILayout.ToggleTextField("Inspector Namespace", _namespace, ref _isNamespaceEditable);
+                    if (!_isNamespaceEditable)
                     {
-                        EditorGUILayout.HelpBox(
-                            "Invalid namespace. Namespace names must be identifiers separated by periods.\n"
-                                + "The first character of an identifier must be an alphabetical character or an underscore.\n"
-                                + "Subsequent characters must be alphabetical characters, underscores, or digits.",
-                            MessageType.Error);
+                        _namespace = _defaultTextCacheDict.GetValueOrDefault(nameof(_namespace), "");
                     }
-                }
-                _inspectorName = EditorGUILayout.TextField("Inspector class name", _inspectorName);
-                if (!RegexProvider.IdentifierRegex.IsMatch(_inspectorName))
-                {
-                    errorCount++;
-                    using (new EditorGUI.IndentLevelScope())
+
+                    if (!RegexProvider.NamespaceRegex.IsMatch(_namespace))
                     {
-                        EditorGUILayout.HelpBox(
-                            "Invalid inspector name.\n"
-                                + "The first character of an identifier must be an alphabetical character or an underscore.\n"
-                                + "Subsequent characters must be alphabetical characters, underscores, or digits.",
-                            MessageType.Error);
+                        errorCount++;
+                        using (new EditorGUI.IndentLevelScope())
+                        {
+                            EditorGUILayout.HelpBox(
+                                "Invalid namespace. Namespace names must be identifiers separated by periods.\n"
+                                    + "The first character of an identifier must be an alphabetical character or an underscore.\n"
+                                    + "Subsequent characters must be alphabetical characters, underscores, or digits.",
+                                MessageType.Error);
+                        }
                     }
+                    _inspectorName = EditorGUILayout.TextField("Inspector class name", _inspectorName);
+                    if (!RegexProvider.IdentifierRegex.IsMatch(_inspectorName))
+                    {
+                        errorCount++;
+                        using (new EditorGUI.IndentLevelScope())
+                        {
+                            EditorGUILayout.HelpBox(
+                                "Invalid inspector name.\n"
+                                    + "The first character of an identifier must be an alphabetical character or an underscore.\n"
+                                    + "Subsequent characters must be alphabetical characters, underscores, or digits.",
+                                MessageType.Error);
+                        }
+                    }
+                    _newLineType = (NewLineType)EditorGUILayout.Popup("New Line Code", (int)_newLineType, _newLineSelections);
+
                 }
-                _newLineType = (NewLineType)EditorGUILayout.Popup("New Line Code", (int)_newLineType, _newLineSelections);
             }
 
             using (var svScope = new EditorGUILayout.ScrollViewScope(_scrollPosition))
@@ -703,7 +715,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _assemblyDescription = CustomEditorGUILayout.ToggleTextField("Description", _assemblyDescription, ref _isAssemblyDescriptionEditable);
                             if (!_isAssemblyDescriptionEditable)
                             {
-                                _assemblyDescription = _assemblyDescriptionDefault;
+                                _assemblyDescription = _defaultTextCacheDict.GetValueOrDefault(nameof(_assemblyDescription), "");
                             }
 
                             _assemblyCompany = EditorGUILayout.TextField("Company", _assemblyCompany);
@@ -765,7 +777,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _packageName = CustomEditorGUILayout.ToggleTextField("Name", _packageName, ref _isPackageNameEditable);
                             if (!_isPackageNameEditable)
                             {
-                                _packageName = _packageNameDefault;
+                                _packageName = _defaultTextCacheDict.GetValueOrDefault(nameof(_packageName), "");
                             }
                             if (string.IsNullOrEmpty(_packageName))
                             {
@@ -1535,6 +1547,34 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private static void OpenWindow()
         {
             GetWindow<LilToonCustomGeneratorWindow>("lilToon Custom Generator");
+        }
+
+        /// <summary>
+        /// Convert shader name to C# namespace.
+        /// </summary>
+        /// <param name="shaderName">Shader name.</param>
+        /// <returns>C# namespace.</returns>
+        private static string ConvertShaderNameToCSharpNamespace(string shaderName)
+        {
+            var sb = new StringBuilder();
+            foreach (var part in shaderName.Replace('/', '.').Split('.'))
+            {
+                var part2 = RegexProvider.NonIdentifierCharRegex.Replace(part, "");
+                if (part2.Length == 0)
+                {
+                    continue;
+                }
+                if (sb.Length > 0)
+                {
+                    sb.Append('.');
+                }
+                sb.Append(char.ToUpper(part2[0]));
+                if (part2.Length > 1)
+                {
+                    sb.Append(part2, 1, part2.Length - 1);
+                }
+            }
+            return sb.ToString();
         }
 
         /// <summary>
