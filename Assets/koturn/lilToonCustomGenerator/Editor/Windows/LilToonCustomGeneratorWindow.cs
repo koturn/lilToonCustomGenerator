@@ -321,6 +321,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _shouldGeneratePackageJson = true;
         /// <summary>
+        /// Default value of "name" in package.json.
+        /// </summary>
+        private string _packageNameDefault;
+        /// <summary>
         /// Value of "name" in package.json.
         /// </summary>
         private string _packageName;
@@ -369,6 +373,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private string _packageAuthorUrl;
         /// <summary>
+        /// True to edit value for name in package.json
+        /// </summary>
+        private bool _isPackageNameEditable = false;
+        /// <summary>
         /// True to edit value for version number in package.json
         /// </summary>
         private bool _isPackageVersionEditable;
@@ -403,7 +411,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 var g = m.Groups;
                 _namespace = g[1].Value.ToUpperInvariant() + g[2].Value + ".LilToonCustom.Editor";
                 _shaderName = g[0].Value + "/MyCustomShader";
-                _packageName = "com." + g[0].Value.ToLowerInvariant() + ".mycustomshader";
             }
 
             _assemblyTitle = _namespace;
@@ -420,6 +427,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyFileVersionNumbers = new[] { 1, 0, 0, 0 };
             _assemblyInformationalVersion = "1.0.0.0";
 
+            _packageNameDefault = "com." + _shaderName.Replace('/', '.').ToLower();
+            _packageName = _packageNameDefault;
             _packageVersion = "1.0.0";
             _packageDisplayName = _shaderTitle;
             _packageDescription = "My custom shader of lilToon.";
@@ -467,6 +476,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     if (ccScope.changed)
                     {
                         _assemblyDescriptionDefault = $"Material inspector for {_shaderName}.";
+                        _packageNameDefault = "com." + _shaderName.Replace('/', '.').ToLower();
                     }
                 }
                 if (string.IsNullOrEmpty(_shaderName))
@@ -752,7 +762,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         using (new EditorGUI.IndentLevelScope(2))
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box))
                         {
-                            _packageName = EditorGUILayout.TextField("Name", _packageName);
+                            _packageName = CustomEditorGUILayout.ToggleTextField("Name", _packageName, ref _isPackageNameEditable);
+                            if (!_isPackageNameEditable)
+                            {
+                                _packageName = _packageNameDefault;
+                            }
                             if (string.IsNullOrEmpty(_packageName))
                             {
                                 errorCount++;
