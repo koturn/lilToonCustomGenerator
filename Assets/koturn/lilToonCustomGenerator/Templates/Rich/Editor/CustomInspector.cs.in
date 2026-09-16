@@ -240,7 +240,7 @@ namespace %%NAMESPACE%%
 #if UNITY_2022_1_OR_NEWER
                 if (material.parent != null)
                 {
-                    Debug.LogWarningFormat("Ignore {0} because it is Material Variant", AssetDatabase.GetAssetPath(material));
+                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(material));
                     continue;
                 }
 #endif  // UNITY_2022_1_OR_NEWER
@@ -248,7 +248,7 @@ namespace %%NAMESPACE%%
                 var shader = GetCorrespondingCustomShader(material.shader);
                 if (shader == null)
                 {
-                    Debug.LogWarningFormat("Ignore {0}. \"{1}\" is not original lilToon shader.", AssetDatabase.GetAssetPath(material), material.shader.name);
+                    Debug.LogWarningFormat("Ignore Material: {0}. \"{1}\" is not original lilToon shader.", AssetDatabase.GetAssetPath(material), material.shader.name);
                     continue;
                 }
 
@@ -276,7 +276,7 @@ namespace %%NAMESPACE%%
 #if UNITY_2022_1_OR_NEWER
                 if (material.parent != null)
                 {
-                    Debug.LogWarningFormat("Ignore {0} because it is Material Variant", AssetDatabase.GetAssetPath(material));
+                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(material));
                     continue;
                 }
 #endif  // UNITY_2022_1_OR_NEWER
@@ -304,7 +304,7 @@ namespace %%NAMESPACE%%
 #if UNITY_2022_1_OR_NEWER
                 if (material.parent != null)
                 {
-                    Debug.LogWarningFormat("Ignore {0} because it is Material Variant", AssetDatabase.GetAssetPath(material));
+                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(material));
                     continue;
                 }
 #endif  // UNITY_2022_1_OR_NEWER
@@ -312,7 +312,7 @@ namespace %%NAMESPACE%%
                 var shader = GetCorrespondingOriginalShader(material.shader);
                 if (shader == null)
                 {
-                    Debug.LogWarningFormat("Ignore {0}. \"{1}\" is not custom lilToon shader, \"" + ShaderName + "\".", AssetDatabase.GetAssetPath(material), material.shader.name);
+                    Debug.LogWarningFormat("Ignore Material: {0}. \"{1}\" is not custom lilToon shader, \"" + ShaderName + "\".", AssetDatabase.GetAssetPath(material), material.shader.name);
                     continue;
                 }
 
@@ -340,7 +340,7 @@ namespace %%NAMESPACE%%
 #if UNITY_2022_1_OR_NEWER
                 if (material.parent != null)
                 {
-                    Debug.LogWarningFormat("Ignore {0} because it is Material Variant", AssetDatabase.GetAssetPath(material));
+                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(material));
                     continue;
                 }
 #endif  // UNITY_2022_1_OR_NEWER
