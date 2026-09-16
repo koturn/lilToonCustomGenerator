@@ -427,7 +427,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyFileVersionNumbers = new[] { 1, 0, 0, 0 };
             _assemblyInformationalVersion = "1.0.0.0";
 
-            _packageNameDefault = "com." + _shaderName.Replace('/', '.').ToLower();
+            _packageNameDefault = ConvertShaderNameToPackageName(_shaderName);
             _packageName = _packageNameDefault;
             _packageVersion = "1.0.0";
             _packageDisplayName = _shaderTitle;
@@ -476,7 +476,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     if (ccScope.changed)
                     {
                         _assemblyDescriptionDefault = $"Material inspector for {_shaderName}.";
-                        _packageNameDefault = "com." + _shaderName.Replace('/', '.').ToLower();
+                        _packageNameDefault = ConvertShaderNameToPackageName(_shaderName);
                     }
                 }
                 if (string.IsNullOrEmpty(_shaderName))
@@ -1535,6 +1535,45 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private static void OpenWindow()
         {
             GetWindow<LilToonCustomGeneratorWindow>("lilToon Custom Generator");
+        }
+
+        /// <summary>
+        /// Convert shader name to package name.
+        /// </summary>
+        /// <param name="shaderName">Shader name.</param>
+        /// <returns>Package name.</returns>
+        private static string ConvertShaderNameToPackageName(string shaderName)
+        {
+            return ConvertShaderNameToPackageName(shaderName, "com");
+        }
+
+        /// <summary>
+        /// Convert shader name to package name.
+        /// </summary>
+        /// <param name="shaderName">Shader name.</param>
+        /// <param name="domainName">Domain name.</param>
+        /// <returns>Package name.</returns>
+        private static string ConvertShaderNameToPackageName(string shaderName, string domainName)
+        {
+            var packageName = domainName + ".";
+            shaderName = shaderName.Replace('.', '-').Replace('/', '.').ToLower();
+
+            var isContainsDot = false;
+            foreach (var c in shaderName)
+            {
+                if (c == '.')
+                {
+                    isContainsDot = true;
+                    break;
+                }
+            }
+            if (!isContainsDot)
+            {
+                packageName += Environment.UserName.Replace('.', '-').Replace('/', '.') + ".";
+            }
+
+            packageName += shaderName;
+            return RegexProvider.NonPackageNameCharRegex.Replace(packageName, "");
         }
 
         /// <summary>

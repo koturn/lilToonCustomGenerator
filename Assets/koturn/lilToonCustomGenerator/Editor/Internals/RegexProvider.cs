@@ -38,6 +38,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// </summary>
         internal const string PackageNamePattern = @"^[a-z0-9][a-z0-9_-]*(\.[a-z0-9][a-z0-9_-]*){2}(?:\.[a-z0-9][a-z0-9_-]*)*$";
         /// <summary>
+        /// <see cref="Regex"/> pattern <see cref="string"/> matching non-package name characters.
+        /// </summary>
+        internal const string NonPackageNameCharPattern = @"[^a-z0-9\.\-_]";
+        /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching property name.
         /// </summary>
         internal const string PropertyNamePattern = @"^_*(\w)(\w*)$";
@@ -74,16 +78,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching identifier.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(IdentifierRegexPattern, Options)]
+        [GeneratedRegex(IdentifierPattern, Options)]
         public static partial Regex IdentifierRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex IdentifierRegex => IdentifierRegex();
+        public static Regex IdentifierRegex => GetIdentifierRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching identifier.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching identifier.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex IdentifierRegex();
+        [GeneratedRegex(IdentifierPattern, Options)]
+        private static partial Regex GetIdentifierRegex();
 #else
         public static Regex IdentifierRegex => _identifierRegex ?? (_identifierRegex = new Regex(IdentifierPattern, Options));
         /// <summary>
@@ -96,16 +100,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching namespace.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(NamespaceRegexPattern, Options)]
+        [GeneratedRegex(NamespacePattern, Options)]
         public static partial Regex NamespaceRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex NamespaceRegex => NamespaceRegex();
+        public static Regex NamespaceRegex => GetNamespaceRegex();
         /// <summary>
-        /// Get <see cref="Regex"/> instance matching identifier.
+        /// Get <see cref="Regex"/> instance matching namespace.
         /// </summary>
-        /// <returns><see cref="Regex"/> instance matching identifier.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex NamespaceRegex();
+        /// <returns><see cref="Regex"/> instance matching namespace.</returns>
+        [GeneratedRegex(NamespacePattern, Options)]
+        private static partial Regex GetNamespaceRegex();
 #else
         public static Regex NamespaceRegex => _namespaceRegex ?? (_namespaceRegex = new Regex(NamespacePattern, Options));
         /// <summary>
@@ -118,38 +122,60 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching package name.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(PackageNameRegexPattern, Options)]
+        [GeneratedRegex(PackageNamePattern, Options)]
         public static partial Regex PackageNameRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex PackageNameRegex => PackageNameRegex();
+        public static Regex PackageNameRegex => GetPackageNameRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching package name.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching package name.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex PackageNameRegex();
+        [GeneratedRegex(PackageNamePattern, Options)]
+        private static partial Regex GetPackageNameRegex();
 #else
-        public static Regex PackageNameRegex => _packageName ?? (_packageName = new Regex(PackageNamePattern, Options));
+        public static Regex PackageNameRegex => _packageNameRegex ?? (_packageNameRegex = new Regex(PackageNamePattern, Options));
         /// <summary>
         /// Cache field of <see cref="PackageNameRegex"/>.
         /// </summary>
-        private static Regex _packageName;
+        private static Regex _packageNameRegex;
+#endif  // SUPPORT_GENERATED_REGEX_PROPERTY
+
+        /// <summary>
+        /// <see cref="Regex"/> instance matching non-package name characters.
+        /// </summary>
+#if SUPPORT_GENERATED_REGEX_PROPERTY
+        [GeneratedRegex(NonPackageNameCharPattern, Options)]
+        public static partial Regex NonPackageNameCharRegex { get; }
+#elif SUPPORT_GENERATED_REGEX
+        public static Regex NonPackageNameCharRegex => GetNonPackageNameChar();
+        /// <summary>
+        /// Get <see cref="Regex"/> instance matching package name.
+        /// </summary>
+        /// <returns><see cref="Regex"/> instance matching non-package name characters.</returns>
+        [GeneratedRegex(NonPackageNameCharPattern, Options)]
+        private static partial Regex GetNonPackageNameCharRegex();
+#else
+        public static Regex NonPackageNameCharRegex => _nonPackageNameCharRegex ?? (_nonPackageNameCharRegex = new Regex(NonPackageNameCharPattern, Options));
+        /// <summary>
+        /// Cache field of <see cref="PackageNameRegex"/>.
+        /// </summary>
+        private static Regex _nonPackageNameCharRegex;
 #endif  // SUPPORT_GENERATED_REGEX_PROPERTY
 
         /// <summary>
         /// <see cref="Regex"/> instance matching property name.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(PropertyNameRegexPattern, Options)]
+        [GeneratedRegex(PropertyNamePattern, Options)]
         public static partial Regex PropertyNameRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex PropertyNameRegex => PropertyNameRegex();
+        public static Regex PropertyNameRegex => GetPropertyNameRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching property name.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching property name.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex PropertyNameRegex();
+        [GeneratedRegex(PropertyNamePattern, Options)]
+        private static partial Regex GetPropertyNameRegex();
 #else
         public static Regex PropertyNameRegex => _propertyNameRegex ?? (_propertyNameRegex = new Regex(PropertyNamePattern, Options));
         /// <summary>
@@ -162,16 +188,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching version number.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(VersionNumberRegexPattern, Options)]
+        [GeneratedRegex(VersionNumberPattern, Options)]
         public static partial Regex VersionNumberRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex VersionNumberRegex => VersionNumberRegex();
+        public static Regex VersionNumberRegex => GetVersionNumberRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching version number.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching version number.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex VersionNumberRegex();
+        [GeneratedRegex(VersionNumberPattern, Options)]
+        private static partial Regex GetVersionNumberRegex();
 #else
         public static Regex VersionNumberRegex => _versionNumberRegex ?? (_versionNumberRegex = new Regex(VersionNumberPattern, Options));
         /// <summary>
@@ -184,16 +210,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching version number of semantic versioning 2.0.0.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(SemVerRegexPattern, Options)]
+        [GeneratedRegex(SemVerPattern, Options)]
         public static partial Regex SemVerRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex SemVerRegex => SemVerRegex();
+        public static Regex SemVerRegex => GetSemVerRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching version number of semantic versioning 2.0.0.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching version number of semantic versioning 2.0.0.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex SemVerRegex();
+        [GeneratedRegex(SemVerPattern, Options)]
+        private static partial Regex GetSemVerRegex();
 #else
         public static Regex SemVerRegex => _semVerRegex ?? (_semVerRegex = new Regex(SemVerPattern, Options));
         /// <summary>
@@ -206,16 +232,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching ifempty tags.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(TagIfemptyRegexPattern, Options)]
+        [GeneratedRegex(TagIfemptyPattern, Options)]
         public static partial Regex TagIfemptyRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex TagIfemptyRegex => TagIfemptyRegex();
+        public static Regex TagIfemptyRegex => GetTagIfemptyRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching ifempty tag.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching ifempty tags.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex TagIfemptyRegex();
+        [GeneratedRegex(TagIfemptyPattern, Options)]
+        private static partial Regex GetTagIfemptyRegex();
 #else
         public static Regex TagIfemptyRegex => _tagIfemptyRegex ?? (_tagIfemptyRegex = new Regex(TagIfemptyPattern, Options));
         /// <summary>
@@ -228,16 +254,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching else tags.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(TagElseRegexPattern, Options)]
+        [GeneratedRegex(TagElsePattern, Options)]
         public static partial Regex TagElseRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex TagElseRegex => TagElseRegex();
+        public static Regex TagElseRegex => GetTagElseRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching else tag.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching else tags.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex TagElseRegex();
+        [GeneratedRegex(TagElsePattern, Options)]
+        private static partial Regex GetTagElseRegex();
 #else
         public static Regex TagElseRegex => _tagElseRegex ?? (_tagElseRegex = new Regex(TagElsePattern, Options));
         /// <summary>
@@ -250,16 +276,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching endif tag.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(TagEndIfRegexPattern, Options)]
+        [GeneratedRegex(TagEndIfPattern, Options)]
         public static partial Regex TagEndIfRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex TagEndIfRegex => TagEndIfRegex();
+        public static Regex TagEndIfRegex => GetTagEndIfRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching endif tag.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching endif tag.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex TagEndIfRegex();
+        [GeneratedRegex(TagEndIfPattern, Options)]
+        private static partial Regex GetTagEndIfRegex();
 #else
         public static Regex TagEndIfRegex => _tagEndIfRegex ?? (_tagEndIfRegex = new Regex(TagEndIfPattern, Options));
         /// <summary>
@@ -272,16 +298,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <see cref="Regex"/> instance matching replacement tags.
         /// </summary>
 #if SUPPORT_GENERATED_REGEX_PROPERTY
-        [GeneratedRegex(TagRegexPattern, Options)]
+        [GeneratedRegex(TagPattern, Options)]
         public static partial Regex TagRegex { get; }
 #elif SUPPORT_GENERATED_REGEX
-        public static Regex TagRegex => TagRegex();
+        public static Regex TagRegex => GetTagRegex();
         /// <summary>
         /// Get <see cref="Regex"/> instance matching replacement tags.
         /// </summary>
         /// <returns><see cref="Regex"/> instance matching replacement tags.</returns>
-        [GeneratedRegex(InstanceResetNotificationPattern, Options)]
-        private static partial Regex TagRegex();
+        [GeneratedRegex(TagPattern, Options)]
+        private static partial Regex GetTagRegex();
 #else
         public static Regex TagRegex => _tagRegex ?? (_tagRegex = new Regex(TagPattern, Options));
         /// <summary>
