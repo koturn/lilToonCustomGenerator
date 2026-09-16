@@ -790,6 +790,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                             }
 
+                            // Package name length limit is 214 characters, but it is recommended to be less than 50 characters for visibility in the Editor.
+                            // See: https://docs.unity3d.com/2019.4/Documentation/Manual/cus-naming.html
+                            if (_packageName.Length > 214)
+                            {
+                                EditorGUILayout.HelpBox(
+                                    "Must not be more than 214 characters.",
+                                    MessageType.Error);
+                            }
+                            else if (_packageName.Length > 50)
+                            {
+                                EditorGUILayout.HelpBox(
+                                    "Be no more than 50 characters if you want package name to be visible in the Editor.",
+                                    MessageType.Warning);
+                            }
+
                             _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, ref _isPackageVersionEditable);
                             if (!_isPackageVersionEditable)
                             {
