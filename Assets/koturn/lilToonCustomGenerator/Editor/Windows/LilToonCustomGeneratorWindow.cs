@@ -1450,13 +1450,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     tagDict.Add("LIL_CURRENT_VERSION_MAJOR", "2");
                     tagDict.Add("LIL_CURRENT_VERSION_MINOR", "3");
-                    tagDict.Add("LIL_CURRENT_VERSION_PATCH", "2");
+                    tagDict.Add("LIL_CURRENT_VERSION_PATCH", "4");
                 }
 #else
                 tagDict.Add("LIL_CURRENT_VERSION_VALUE", "45");
                 tagDict.Add("LIL_CURRENT_VERSION_MAJOR", "2");
                 tagDict.Add("LIL_CURRENT_VERSION_MINOR", "3");
-                tagDict.Add("LIL_CURRENT_VERSION_PATCH", "2");
+                tagDict.Add("LIL_CURRENT_VERSION_PATCH", "4");
 #endif  // LILTOON
             }
             if (_shouldDeclareVRChatVariables)
