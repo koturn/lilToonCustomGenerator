@@ -36,7 +36,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching package name.
         /// </summary>
-        internal const string PackageNamePattern = @"^[a-z0-9][a-z0-9_]*(?:\.[a-z0-9][a-z0-9_]*)*$";
+        internal const string PackageNamePattern = @"^[a-z0-9][a-z0-9_-]*(\.[a-z0-9][a-z0-9_-]*){2}(?:\.[a-z0-9][a-z0-9_-]*)*$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching property name.
         /// </summary>

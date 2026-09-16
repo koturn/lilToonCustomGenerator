@@ -783,9 +783,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 using (new EditorGUI.IndentLevelScope())
                                 {
                                     EditorGUILayout.HelpBox(
-                                        "Package name must consist of the following names separated by periods.\n"
-                                            + "The first character of the name must be a lowercase letter or a digit.\n"
-                                            + "Subsequent characters must be lowercase letters, digits, hyphens, or underscores.",
+                                        "Package name must be <top-level-domain>.<organization-name>.<project-name>, such as `com.example.foo` or `net.example.bar`.\n"
+                                            + "Package name must consist of the following names separated by periods.\n"
+                                            + "  - The first character of the name must be a lowercase letter or a digit.\n"
+                                            + "  - Subsequent characters must be lowercase letters, digits, hyphens, or underscores.",
                                         MessageType.Error);
                                 }
                             }
