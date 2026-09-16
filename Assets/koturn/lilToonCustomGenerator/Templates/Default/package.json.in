@@ -17,9 +17,13 @@
   "license": "%%PACKAGE_LICENSE%%",
 !!endif!!
 !!ifempty:PACKAGE_AUTHOR_KEYVALUES!!
-  "keywords": [%%PACKAGE_KEYWORDS%%]
+  "keywords": [
+    %%PACKAGE_KEYWORDS:keepindent%%
+  ]
 !!else!!
-  "keywords": [%%PACKAGE_KEYWORDS%%],
+  "keywords": [
+    %%PACKAGE_KEYWORDS:keepindent%%
+  ],
   "author": {
     %%PACKAGE_AUTHOR_KEYVALUES:keepindent%%
   }

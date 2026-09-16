@@ -1369,7 +1369,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     }
                     if (index > 0)
                     {
-                        sb.Append(", ");
+                        sb.Append(",\n");
                     }
                     sb.AppendFormat("\"{0}\"", EscapeString(keyword));
                     index++;
