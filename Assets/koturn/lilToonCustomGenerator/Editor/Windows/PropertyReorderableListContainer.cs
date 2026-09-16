@@ -101,9 +101,29 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private readonly int[] _rangeIntMinMaxArray = new int[2];
         /// <summary>
-        /// Cache array of default vector components.
+        /// A cached temporary array corresponding to each component of <see cref="Vector2"/>.
         /// </summary>
-        private readonly float[] _defaultVectorArray = new float[4];
+        private readonly float[] _tmpVectorArray2 = new float[2];
+        /// <summary>
+        /// A cached temporary array corresponding to each component of <see cref="Vector3"/>.
+        /// </summary>
+        private readonly float[] _tmpVectorArray3 = new float[3];
+        /// <summary>
+        /// A cached temporary array corresponding to each component of <see cref="Vector4"/>.
+        /// </summary>
+        private readonly float[] _tmpVectorArray4 = new float[4];
+        /// <summary>
+        /// A cached temporary array corresponding to each component of <see cref="Vector2Int"/>.
+        /// </summary>
+        private readonly int[] _tmpVectorIntArray2 = new int[2];
+        /// <summary>
+        /// A cached temporary array corresponding to each component of <see cref="Vector3Int"/>.
+        /// </summary>
+        private readonly int[] _tmpVectorIntArray3 = new int[3];
+        /// <summary>
+        /// A cached temporary array containing four `int` elements.
+        /// </summary>
+        private readonly int[] _tmpVectorIntArray4 = new int[4];
 
 
         /// <summary>
@@ -420,20 +440,111 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     break;
                 case ShaderPropertyType.Vector:
                     var propDefaultVector = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultVector);
-                    var defaultVector = propDefaultVector.vector4Value;
-                    var defaultVectorArray = _defaultVectorArray;
+                    var vectorValue = propDefaultVector.vector4Value;
 
-                    defaultVectorArray[0] = defaultVector.x;
-                    defaultVectorArray[1] = defaultVector.y;
-                    defaultVectorArray[2] = defaultVector.z;
-                    defaultVectorArray[3] = defaultVector.w;
+                    float[] tmpVectorArray = null;
+                    int[] tmpVectorIntArray = null;
+                    var isUnsigned = false;
+                    switch ((ShaderVariableType)propUniformType.intValue)
+                    {
+                        case ShaderVariableType.Fixed2:
+                        case ShaderVariableType.Half2:
+                        case ShaderVariableType.Float2:
+                            tmpVectorArray = _tmpVectorArray2;
+                            break;
+                        case ShaderVariableType.Fixed3:
+                        case ShaderVariableType.Half3:
+                        case ShaderVariableType.Float3:
+                            tmpVectorArray = _tmpVectorArray3;
+                            break;
+                        case ShaderVariableType.Fixed4:
+                        case ShaderVariableType.Half4:
+                        case ShaderVariableType.Float4:
+                            tmpVectorArray = _tmpVectorArray4;
+                            break;
+                        case ShaderVariableType.Int2:
+                            tmpVectorIntArray = _tmpVectorIntArray2;
+                            break;
+                        case ShaderVariableType.Int3:
+                            tmpVectorIntArray = _tmpVectorIntArray3;
+                            break;
+                        case ShaderVariableType.Int4:
+                            tmpVectorIntArray = _tmpVectorIntArray4;
+                            break;
+                        case ShaderVariableType.UInt2:
+                            tmpVectorIntArray = _tmpVectorIntArray2;
+                            isUnsigned = true;
+                            break;
+                        case ShaderVariableType.UInt3:
+                            tmpVectorIntArray = _tmpVectorIntArray3;
+                            isUnsigned = true;
+                            break;
+                        case ShaderVariableType.UInt4:
+                            tmpVectorIntArray = _tmpVectorIntArray4;
+                            isUnsigned = true;
+                            break;
+                        default:
+                            tmpVectorArray = _tmpVectorArray4;
+                            break;
+                    }
 
-                    EditorGUI.MultiFloatField(
-                        rectDefaultValue,
-                        _defaultVectorLabel,
-                        defaultVectorArray);
-
-                    propDefaultVector.vector4Value = new Vector4(defaultVectorArray[0], defaultVectorArray[1], defaultVectorArray[2], defaultVectorArray[3]);
+                    var vector4 = propDefaultVector.vector4Value;
+                    unsafe
+                    {
+                        float* pFloat = &vector4.x;
+                        if (tmpVectorIntArray != null)
+                        {
+                            if (isUnsigned)
+                            {
+                                for (int i = 0; i < tmpVectorIntArray.Length; i++)
+                                {
+                                    tmpVectorIntArray[i] = (int)Math.Max(0.0f, pFloat[i]);
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < tmpVectorIntArray.Length; i++)
+                                {
+                                    tmpVectorIntArray[i] = (int)pFloat[i];
+                                }
+                            }
+                            EditorGUI.MultiIntField(
+                                rectDefaultValue,
+                                _defaultVectorLabel,
+                                tmpVectorIntArray);
+                            if (isUnsigned)
+                            {
+                                for (int i = 0; i < 4; i++)
+                                {
+                                    pFloat[i] = i < tmpVectorIntArray.Length ? (float)Math.Max(0, tmpVectorIntArray[i]) : 0.0f;
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < 4; i++)
+                                {
+                                    pFloat[i] = i < tmpVectorIntArray.Length ? (float)tmpVectorIntArray[i] : 0.0f;
+                                }
+                            }
+                            propDefaultVector.vector4Value = vector4;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < tmpVectorArray.Length; i++)
+                            {
+                                tmpVectorArray[i] = pFloat[i];
+                            }
+                            EditorGUI.MultiFloatField(
+                                rectDefaultValue,
+                                _defaultVectorLabel,
+                                tmpVectorArray);
+                            for (int i = 0; i < 4; i++)
+                            {
+                                pFloat[i] = i < tmpVectorArray.Length ? tmpVectorArray[i] : 0.0f;
+                            }
+                            propDefaultVector.vector4Value = vector4;
+                        }
+                    }
                     break;
                 case ShaderPropertyType.Color:
                     EditorGUI.PropertyField(
