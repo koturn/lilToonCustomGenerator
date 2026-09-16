@@ -30,6 +30,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// </summary>
         internal const string IdentifierPattern = @"^([a-zA-Z_])(\w*)$";
         /// <summary>
+        /// <see cref="Regex"/> pattern <see cref="string"/> matching non-identifier characters.
+        /// </summary>
+        internal const string NonIdentifierCharPattern = @"\W";
+        /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching identifier.
         /// </summary>
         internal const string NamespacePattern = @"^([a-zA-Z_])(\w*)(\.([a-zA-Z_])(\w*))*$";
@@ -94,6 +98,28 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// Cache field of <see cref="IdentifierRegex"/>.
         /// </summary>
         private static Regex _identifierRegex;
+#endif  // SUPPORT_GENERATED_REGEX_PROPERTY
+
+        /// <summary>
+        /// <see cref="Regex"/> instance matching non-identifier characters.
+        /// </summary>
+#if SUPPORT_GENERATED_REGEX_PROPERTY
+        [GeneratedRegex(NonIdentifierCharPattern, Options)]
+        public static partial Regex NonIdentifierCharRegex { get; }
+#elif SUPPORT_GENERATED_REGEX
+        public static Regex NonIdentifierCharRegex => GetNonIdentifierCharRegex();
+        /// <summary>
+        /// Get <see cref="Regex"/> instance matching non-identifier characters.
+        /// </summary>
+        /// <returns><see cref="Regex"/> instance matching non-identifier characters.</returns>
+        [GeneratedRegex(NonIdentifierCharPattern, Options)]
+        private static partial Regex GetNonIdentifierCharRegex();
+#else
+        public static Regex NonIdentifierCharRegex => _nonIdentifierCharRegex ?? (_nonIdentifierCharRegex = new Regex(NonIdentifierCharPattern, Options));
+        /// <summary>
+        /// Cache field of <see cref="NonIdentifierCharRegex"/>.
+        /// </summary>
+        private static Regex _nonIdentifierCharRegex;
 #endif  // SUPPORT_GENERATED_REGEX_PROPERTY
 
         /// <summary>

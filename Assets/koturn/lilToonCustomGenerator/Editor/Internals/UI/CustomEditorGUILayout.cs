@@ -30,8 +30,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
             isChecked = EditorGUI.ToggleLeft(toggleRect, label, isChecked);
             using (new EditorGUI.DisabledScope(!isChecked))
             {
+                var indentLevel = EditorGUI.indentLevel;
+                var offset = IndentSpaceUnit + 14.0f * indentLevel;
                 text = EditorGUI.TextField(
-                    new Rect(rowRect.x + toggleRect.width - (IndentSpaceUnit * 3.0f - 4.0f), rowRect.y, rowRect.width - toggleRect.width + (IndentSpaceUnit * 3.0f - 4.0f), rowRect.height),
+                    new Rect(rowRect.x + toggleRect.width - offset, rowRect.y, rowRect.width - toggleRect.width + offset, rowRect.height),
                     text);
             }
 
