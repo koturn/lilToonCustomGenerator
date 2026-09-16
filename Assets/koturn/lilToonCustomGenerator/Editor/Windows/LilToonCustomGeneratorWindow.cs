@@ -847,6 +847,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _packageAuthorName = EditorGUILayout.TextField("Author name", _packageAuthorName);
                             _packageAuthorEmail = EditorGUILayout.TextField("Author E-mail", _packageAuthorEmail);
                             _packageAuthorUrl = EditorGUILayout.TextField("Author URL", _packageAuthorUrl);
+                            if (_packageAuthorName.Length == 0 && (_packageAuthorEmail.Length > 0 || _packageAuthorUrl.Length > 0))
+                            {
+                                EditorGUILayout.HelpBox(
+                                    "Name is required in the author section.",
+                                    MessageType.Warning);
+                            }
                         }
                     }
                 }
