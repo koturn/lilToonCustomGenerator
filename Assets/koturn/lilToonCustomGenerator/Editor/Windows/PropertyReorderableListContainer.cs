@@ -394,11 +394,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             if ((ShaderPropertyType)propPropertyType.intValue == ShaderPropertyType.Range)
             {
-                propPropertyType.intValue = EditorGUI.Popup(
-                    new Rect(row2.x, row2.y, col1 * 0.5f - WidthPadding, line),
-                    "Variable type",
-                    propPropertyType.intValue,
-                    ShaderPropertyDefinition.PropertyTypeSelections);
                 var propRangeMinMax = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfRangeMinMax);
                 var rangeMinMax = propRangeMinMax.vector2Value;
 
