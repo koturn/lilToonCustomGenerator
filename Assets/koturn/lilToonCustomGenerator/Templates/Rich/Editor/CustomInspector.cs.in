@@ -435,15 +435,14 @@ namespace %%NAMESPACE%%
             }
         }
 !!endif!!
-!!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
 
-!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Identify whether the property block should be drawn or not.
         /// </summary>
         /// <param name="propertyList">Target property list.</param>
         /// <returns>True when the property block should be drawn, otherwise false.</returns>
-!!  endif!!
+!!endif!!
         private static bool ShouldDrawBlock(List<MaterialProperty> propertyList)
         {
             foreach (var property in propertyList)
@@ -455,6 +454,7 @@ namespace %%NAMESPACE%%
             }
             return false;
         }
+!!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
