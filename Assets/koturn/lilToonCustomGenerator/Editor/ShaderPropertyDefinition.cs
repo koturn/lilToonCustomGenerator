@@ -961,8 +961,8 @@ namespace Koturn.LilToonCustomGenerator.Editor
                 var sb = new StringBuilder();
                 sb.Append('[').Append(AllDrawerSelections[(int)drawerType]);
 
-                var arg = _drawerArgument;
-                if (GetDrawerArgumentType(drawerType) != ArgumentType.NotRequired && string.IsNullOrEmpty(arg))
+                var arg = _drawerArgument.Trim();
+                if (GetDrawerArgumentType(drawerType) != ArgumentType.NotRequired && arg.Length != 0)
                 {
                     sb.Append('(').Append(arg).Append(')');
                 }
