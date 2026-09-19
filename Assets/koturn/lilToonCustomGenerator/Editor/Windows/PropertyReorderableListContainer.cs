@@ -216,7 +216,74 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             foreach (var item in List)
             {
-                if (item.DrawerArgument.Contains('"'))
+                var argText = item.DrawerArgument;
+                if (argText.Length == 0)
+                {
+                    continue;
+                }
+
+                var argType = item.DrawerArgumentType;
+                if (argType == ArgumentType.NotRequired)
+                {
+                    continue;
+                }
+
+                var isValid = true;
+                var args = item.GetDrawerArguments();
+                switch (item.DrawerType)
+                {
+                    case DrawerType.Toggle:
+                    case DrawerType.ToggleOff:
+                        // MaterialToggleDrawer and MaterialToggleOffDrawer accepts only one argument.
+                        if (args.Length > 1
+                            || (args.Length == 1 && !RegexProvider.IdentifierRegex.IsMatch(args[0])))
+                        {
+                            isValid = false;
+                        }
+                        break;
+                    case DrawerType.KeywordEnum:
+                        if (args.Length > 9)
+                        {
+                            isValid = false;
+                            break;
+                        }
+                        foreach (var arg in args)
+                        {
+                            if (!RegexProvider.KeywordEnumArgumentRegex.IsMatch(arg))
+                            {
+                                isValid = false;
+                                break;
+                            }
+                        }
+                        break;
+                    case DrawerType.Enum:
+                        if (args.Length % 2 == 1 || args.Length > 14)
+                        {
+                            isValid = false;
+                            break;
+                        }
+                        for (int i = 0; i < args.Length; i += 2)
+                        {
+                            if (!RegexProvider.DrawerArgumentRegex.IsMatch(args[i])
+                                || !RegexProvider.DrawerArgumentRegex.IsMatch(args[i + 1])
+                                || !int.TryParse(args[i + 1], out _))
+                            {
+                                isValid = false;
+                                break;
+                            }
+                        }
+                        break;
+                    case DrawerType.PowerSlider:
+                        if (args.Length != 1 || !float.TryParse(args[0], out _))
+                        {
+                            isValid = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                if (!isValid)
                 {
                     invalidDrawerArgumentPropertyNameList.Add(item.Name);
                 }

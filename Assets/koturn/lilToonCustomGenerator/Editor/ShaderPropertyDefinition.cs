@@ -1138,6 +1138,25 @@ namespace Koturn.LilToonCustomGenerator.Editor
         }
 
         /// <summary>
+        /// Get drawer argument array.
+        /// </summary>
+        /// <returns>Drawer argument array</returns>
+        public string[] GetDrawerArguments()
+        {
+            var drawerArgument = _drawerArgument.Trim();
+            if (drawerArgument.Length == 0)
+            {
+                return Array.Empty<string>();
+            }
+            var args = drawerArgument.Split(',');
+            for (int i = 0; i < args.Length; i++)
+            {
+                args[i] = args[i].Trim();
+            }
+            return args;
+        }
+
+        /// <summary>
         /// Get keyword list for shader variant.
         /// </summary>
         /// <param name="includeEmptyKeyword">True to include an empty keyword, "_".</param>

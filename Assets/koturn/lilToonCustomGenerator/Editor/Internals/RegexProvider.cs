@@ -50,6 +50,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// </summary>
         internal const string PropertyNamePattern = @"^_*(\w)(\w*)$";
         /// <summary>
+        /// <see cref="Regex"/> pattern <see cref="string"/> matching drawer arguments.
+        /// </summary>
+        internal const string DrawerArgumentPattern = @"^[a-zA-Z0-9\._ ]+$";
+        /// <summary>
+        /// <see cref="Regex"/> pattern <see cref="string"/> matching <c>MaterialKeywordEnum</c> arguments.
+        /// </summary>
+        internal const string KeywordEnumArgumentPattern = @"^[a-zA-Z0-9_ ]+$";
+        /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching version number.
         /// </summary>
         internal const string VersionNumberPattern = @"^(0|[1-9]\d*)(?:\.(0|[1-9]\d*)(?:\.(0|[1-9]\d*)(?:\.((0|[1-9]\d*)))?)?)?$";
@@ -208,6 +216,50 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// Cache field of <see cref="PropertyNameRegex"/>.
         /// </summary>
         private static Regex _propertyNameRegex;
+#endif  // SUPPORT_GENERATED_REGEX_PROPERTY
+
+        /// <summary>
+        /// <see cref="Regex"/> instance matching property name.
+        /// </summary>
+#if SUPPORT_GENERATED_REGEX_PROPERTY
+        [GeneratedRegex(DrawerArgumentPattern, Options)]
+        public static partial Regex DrawerArgumentRegex { get; }
+#elif SUPPORT_GENERATED_REGEX
+        public static Regex DrawerArgumentRegex => GetDrawerArgumentRegex();
+        /// <summary>
+        /// Get <see cref="Regex"/> instance matching drawer arguments.
+        /// </summary>
+        /// <returns><see cref="Regex"/> instance matching drawer arguments.</returns>
+        [GeneratedRegex(DrawerArgumentPattern, Options)]
+        private static partial Regex GetDrawerArgumentRegex();
+#else
+        public static Regex DrawerArgumentRegex => _drawerArgumentPattern ?? (_drawerArgumentPattern = new Regex(DrawerArgumentPattern, Options));
+        /// <summary>
+        /// Cache field of <see cref="DrawerArgumentRegex"/>.
+        /// </summary>
+        private static Regex _drawerArgumentPattern;
+#endif  // SUPPORT_GENERATED_REGEX_PROPERTY
+
+        /// <summary>
+        /// <see cref="Regex"/> instance matching property name.
+        /// </summary>
+#if SUPPORT_GENERATED_REGEX_PROPERTY
+        [GeneratedRegex(KeywordEnumArgumentPattern, Options)]
+        public static partial Regex KeywordEnumArgumentRegex { get; }
+#elif SUPPORT_GENERATED_REGEX
+        public static Regex KeywordEnumArgumentRegex => GetKeywordEnumArgumentRegex();
+        /// <summary>
+        /// Get <see cref="Regex"/> instance matching drawer arguments.
+        /// </summary>
+        /// <returns><see cref="Regex"/> instance matching drawer arguments.</returns>
+        [GeneratedRegex(KeywordEnumArgumentPattern, Options)]
+        private static partial Regex GetKeywordEnumArgumentRegex();
+#else
+        public static Regex KeywordEnumArgumentRegex => _keywordEnumArgumentPattern ?? (_keywordEnumArgumentPattern = new Regex(KeywordEnumArgumentPattern, Options));
+        /// <summary>
+        /// Cache field of <see cref="KeywordEnumArgumentRegex"/>.
+        /// </summary>
+        private static Regex _keywordEnumArgumentPattern;
 #endif  // SUPPORT_GENERATED_REGEX_PROPERTY
 
         /// <summary>
