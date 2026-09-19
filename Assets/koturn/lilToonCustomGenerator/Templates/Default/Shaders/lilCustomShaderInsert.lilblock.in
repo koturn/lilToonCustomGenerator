@@ -1,1 +1,2 @@
+%%SHADER_KEYWORD_PRAGMAS:skipempty:keepindent%%
 #include "custom_insert.hlsl"

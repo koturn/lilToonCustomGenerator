@@ -53,14 +53,22 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!endif!!
         private readonly List<MaterialProperty> _propertyList = new List<MaterialProperty>();
+!!ifnotempty:SHADER_KEYWORD_CASES!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Keywords to preserve.
+        /// </summary>
+!!  endif!!
+        private readonly List<string> _shaderKeywordList = new List<string>();
+!!endif!!
 !!ifempty:DECLARE_MATERIAL_PROPERTIES!!
         // MaterialProperty _customVariable;
 !!else!!
         %%DECLARE_MATERIAL_PROPERTIES:keepindent%%
 !!endif!!
 
+!!ifnotempty:SHOULD_EMIT_ONGUI!!
 
-!!ifnotempty:GUID_LANG_CUSTOM!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Draw property items.
@@ -70,9 +78,20 @@ namespace %%NAMESPACE%%
 !!  endif!!
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
         {
+!!  ifnotempty:GUID_LANG_CUSTOM!!
             _shouldLoadLanguage = lts == null || lts.name != ShaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
 
+!!  endif!!
             base.OnGUI(materialEditor, props);
+!!  ifnotempty:SHADER_KEYWORD_CASES!!
+
+            var material = (Material)materialEditor.target;
+            foreach (var keyword in _shaderKeywordList)
+            {
+                material.EnableKeyword(keyword);
+            }
+            _shaderKeywordList.Clear();
+!!  endif!!
         }
 
 !!endif!!
@@ -151,6 +170,16 @@ namespace %%NAMESPACE%%
 !!endif!!
                 }
             }
+!!  ifnotempty:SHADER_KEYWORD_CASES!!
+
+            foreach (var keyword in material.shaderKeywords)
+            {
+                if (IsAllShaderKeyword(keyword))
+                {
+                    _shaderKeywordList.Add(keyword);
+                }
+            }
+!!  endif!!
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -454,6 +483,26 @@ namespace %%NAMESPACE%%
             }
             return false;
         }
+!!ifnotempty:SHADER_KEYWORD_CASES!!
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Check whether the specified keyword is used in not only multi-shaders but also non-multi-shaders.
+        /// </summary>
+        /// <param name="keyword">Shader keyword.</param>
+        /// <returns>True if the keyword is used in all shader variations, otherwise false.</returns>
+!!  endif!!
+        private static bool IsAllShaderKeyword(string keyword)
+        {
+            switch (keyword)
+            {
+                %%SHADER_KEYWORD_CASES:keepindent%%
+                    return true;
+                default:
+                    return false;
+            }
+        }
+!!endif!!
 !!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!

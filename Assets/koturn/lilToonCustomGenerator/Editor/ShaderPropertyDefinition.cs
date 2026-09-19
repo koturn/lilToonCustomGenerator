@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using Koturn.LilToonCustomGenerator.Editor.Enums;
+using Koturn.LilToonCustomGenerator.Editor.Internals;
 
 
 namespace Koturn.LilToonCustomGenerator.Editor
@@ -59,9 +60,21 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public const string NameOfDrawerType = nameof(_drawerType);
         /// <summary>
-        /// Serialize name of backing field of <see cref="NameOfDrawerArgument"/>.
+        /// Serialize name of backing field of <see cref="DrawerArgument"/>.
         /// </summary>
         public const string NameOfDrawerArgument = nameof(_drawerArgument);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="ShaderVariantType"/>.
+        /// </summary>
+        public const string NameOfShaderVariantType = nameof(_shaderVariantType);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="ShaderVariantTargetFlags"/>.
+        /// </summary>
+        public const string NameOfShaderVariantTargetFlags = nameof(_shaderVariantTargetFlags);
+        /// <summary>
+        /// Serialize name of backing field of <see cref="AllowKeywordEvenOnNonMultiShader"/>.
+        /// </summary>
+        public const string NameOfAllowKeywordEvenOnNonMultiShader = nameof(_allowKeywordEvenOnNonMultiShader);
 
         /// <summary>
         /// Property types.
@@ -822,6 +835,16 @@ namespace Koturn.LilToonCustomGenerator.Editor
             "_lilShadowCasterBias",
             "_lilToonVersion"
         });
+        /// <summary>
+        /// Shader keyword pragmas.
+        /// </summary>
+        public static string[] ShaderVariantTypeSelections { get; } = new[]
+        {
+            "shader_feature",
+            "shader_feature_local",
+            "multi_compile",
+            "multi_compile_local"
+        };
 
 
         /// <summary>
@@ -872,6 +895,18 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Drawer argument.
         /// </summary>
         public string DrawerArgument => _drawerArgument;
+        /// <summary>
+        /// Shader variant type.
+        /// </summary>
+        public ShaderVariantType ShaderVariantType => _shaderVariantType;
+        /// <summary>
+        /// Shader variant target flags.
+        /// </summary>
+        public ShaderVariantTargetFlags ShaderVariantTargetFlags => _shaderVariantTargetFlags;
+        /// <summary>
+        /// True if the keyword should be allowed even on shaders that are not multi-shaders.
+        /// </summary>
+        public bool AllowKeywordEvenOnNonMultiShader => _allowKeywordEvenOnNonMultiShader;
         /// <summary>
         /// Property type string.
         /// </summary>
@@ -974,6 +1009,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Drawer argument type.
         /// </summary>
         public ArgumentType DrawerArgumentType => GetDrawerArgumentType(_drawerType);
+        /// <summary>
+        /// Shader variant type string.
+        /// </summary>
+        public string ShaderVariantTypeText => ShaderVariantTypeSelections[(int)_shaderVariantType];
 
         /// <summary>
         /// Backing field of <see cref="Name"/>.
@@ -1019,23 +1058,37 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Backing field of <see cref="DefaultColor"/>.
         /// </summary>
         [SerializeField]
-        public Color _defaultColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        private Color _defaultColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
         /// <summary>
         /// Backing field of <see cref="DefaultTextureIndex"/>.
         /// </summary>
         [SerializeField]
-        public int _defaultTextureIndex = 0;
+        private int _defaultTextureIndex = 0;
         /// <summary>
         /// Backing field of <see cref="DrawerType"/>.
         /// </summary>
         [SerializeField]
-        public DrawerType _drawerType = DrawerType.None;
+        private DrawerType _drawerType = DrawerType.None;
         /// <summary>
         /// Backing field of <see cref="DrawerArgument"/>.
         /// </summary>
         [SerializeField]
-        public string _drawerArgument = "";
-
+        private string _drawerArgument = "";
+        /// <summary>
+        /// Backing field of <see cref="ShaderVariantType"/>.
+        /// </summary>
+        [SerializeField]
+        private ShaderVariantType _shaderVariantType = ShaderVariantType.ShaderFeature;
+        /// <summary>
+        /// Backing field of <see cref="ShaderVariantTargetFlags"/>.
+        /// </summary>
+        [SerializeField]
+        private ShaderVariantTargetFlags _shaderVariantTargetFlags = ShaderVariantTargetFlags.All;
+        /// <summary>
+        /// Backing field of <see cref="AllowKeywordEvenOnNonMultiShader"/>.
+        /// </summary>
+        [SerializeField]
+        private bool _allowKeywordEvenOnNonMultiShader = false;
 
         /// <summary>
         /// Create instance with shader property components.
@@ -1083,6 +1136,75 @@ namespace Koturn.LilToonCustomGenerator.Editor
                     throw new ArgumentOutOfRangeException(nameof(propertyType));
             }
         }
+
+        /// <summary>
+        /// Get keyword list for shader variant.
+        /// </summary>
+        /// <param name="includeEmptyKeyword">True to include an empty keyword, "_".</param>
+        /// <returns>Keyword list.</returns>
+        public string[] GetKeywords(bool includeEmptyKeyword = false)
+        {
+            switch (_drawerType)
+            {
+                case DrawerType.Toggle:
+                    return GetKeywordsForToggleDrawer(_name, _drawerArgument, "_ON", includeEmptyKeyword);
+                case DrawerType.ToggleOff:
+                    return GetKeywordsForToggleDrawer(_name, _drawerArgument, "_OFF", includeEmptyKeyword);
+                case DrawerType.KeywordEnum:
+                    return GetKeywordsForKeywordEnumDrawer(_name, _drawerArgument);
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Get keyword definition array for shader variant.
+        /// </summary>
+        /// <returns>Get keyword definition array (<c>#pragma</c> texts).</returns>
+        public string[] GetKeywordDefinitions()
+        {
+            var keywords = GetKeywords(true);
+            if (keywords == null)
+            {
+                return null;
+            }
+            var keywordText = string.Join(" ", keywords);
+
+            var flags = _shaderVariantTargetFlags;
+            if (flags == ShaderVariantTargetFlags.All)
+            {
+                return new[] { $"#pragma {ShaderVariantTypeText} {keywordText}" };
+            }
+            else
+            {
+                var keywordDefs = new string[BitOperations.PopCount((uint)flags)];
+                int index = 0;
+
+                if ((flags & ShaderVariantTargetFlags.Vertex) != 0)
+                {
+                    keywordDefs[index++] = $"#pragma {ShaderVariantTypeText}_vertex {keywordText}";
+                }
+                if ((flags & ShaderVariantTargetFlags.Hull) != 0)
+                {
+                    keywordDefs[index++] = $"#pragma {ShaderVariantTypeText}_hull {keywordText}";
+                }
+                if ((flags & ShaderVariantTargetFlags.Domain) != 0)
+                {
+                    keywordDefs[index++] = $"#pragma {ShaderVariantTypeText}_domain {keywordText}";
+                }
+                if ((flags & ShaderVariantTargetFlags.Geometry) != 0)
+                {
+                    keywordDefs[index++] = $"#pragma {ShaderVariantTypeText}_geometry {keywordText}";
+                }
+                if ((flags & ShaderVariantTargetFlags.Fragment) != 0)
+                {
+                    keywordDefs[index] = $"#pragma {ShaderVariantTypeText}_fragment {keywordText}";
+                }
+
+                return keywordDefs;
+            }
+        }
+
 
         /// <summary>
         /// Get suitable drawer selections.
@@ -1182,6 +1304,53 @@ namespace Koturn.LilToonCustomGenerator.Editor
                 default:
                     return string.Empty;
             }
+        }
+
+        /// <summary>
+        /// Get keyword name for shader variant.
+        /// </summary>
+        /// <param name="propName">Property name.</param>
+        /// <param name="displayName">Display name of the keyword.</param>
+        /// <returns>Keyword name.</returns>
+        /// <remarks>
+        /// <see href="https://github.com/Unity-Technologies/UnityCsReference/blob/2021.3/Editor/Mono/Inspector/MaterialPropertyDrawer.cs#L554-L558"/>
+        /// </remarks>
+        public static string GetKeywordName(string propName, string displayName)
+        {
+            return (propName + "_" + displayName).Replace(' ', '_').ToUpperInvariant();
+        }
+
+        /// <summary>
+        /// Get keyword array for <c>MaterialToggleDrawer</c> or <c>MaterialToggleOffDrawer</c>.
+        /// </summary>
+        /// <param name="propName">Property name.</param>
+        /// <param name="drawerArgument">Drawer argument.</param>
+        /// <param name="suffix">Keyword suffix.</param>
+        /// <param name="includeEmptyKeyword">True to include an empty keyword, "_".</param>
+        /// <returns>Keyword array.</returns>
+        /// <remarks>
+        /// <seealso href="https://github.com/Unity-Technologies/UnityCsReference/blob/2021.3/Editor/Mono/Inspector/MaterialPropertyDrawer.cs#L367-L380"/>
+        /// </remarks>
+        private static string[] GetKeywordsForToggleDrawer(string propName, string drawerArgument, string suffix, bool includeEmptyKeyword = false)
+        {
+            var keyword = drawerArgument == null ? (propName.ToUpperInvariant() + suffix) : drawerArgument.Trim().ToUpperInvariant();
+            return includeEmptyKeyword ? new[] { "_", keyword} : new[] { keyword };
+        }
+
+        /// <summary>
+        /// Get keyword array for <c>MaterialKeywordEnumDrawer</c>.
+        /// </summary>
+        /// <param name="propName">Property name.</param>
+        /// <param name="drawerArgument">Drawer argument.</param>
+        /// <returns>Keyword array.</returns>
+        private static string[] GetKeywordsForKeywordEnumDrawer(string propName, string drawerArgument)
+        {
+            var keywords = drawerArgument.Split(',');
+            for (int i = 0; i < keywords.Length; i++)
+            {
+                keywords[i] = GetKeywordName(propName, keywords[i].Trim());
+            }
+            return keywords;
         }
     }
 }

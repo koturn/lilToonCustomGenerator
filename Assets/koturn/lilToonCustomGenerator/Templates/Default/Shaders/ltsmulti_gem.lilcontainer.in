@@ -8,6 +8,7 @@ Shader "Hidden/*LIL_SHADER_NAME*/MultiGem"
     }
 
     HLSLINCLUDE
+        %%MULTI_SHADER_KEYWORD_PRAGMAS:skipempty:keepindent%%
         #include "custom.hlsl"
     ENDHLSL
 

@@ -284,7 +284,18 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <returns>Height of the element of the specified index.</returns>
         private float GetElementHeight(int index)
         {
-            return (EditorGUIUtility.singleLineHeight + HeightPadding) * 3.0f;
+            var element = GetReorderableList().serializedProperty.GetArrayElementAtIndex(index);
+            var propDrawerType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerType);
+            if ((DrawerType)propDrawerType.intValue == DrawerType.Toggle
+                || (DrawerType)propDrawerType.intValue == DrawerType.ToggleOff
+                || (DrawerType)propDrawerType.intValue == DrawerType.KeywordEnum)
+            {
+                return (EditorGUIUtility.singleLineHeight + HeightPadding) * 4.0f;
+            }
+            else
+            {
+                return (EditorGUIUtility.singleLineHeight + HeightPadding) * 3.0f;
+            }
         }
 
         /// <summary>
@@ -593,6 +604,57 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 EditorGUI.PropertyField(
                     new Rect(row3.x + col1, row3.y, col2, line),
                     element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerArgument));
+            }
+
+            //
+            // Fourth line.
+            //
+            if ((DrawerType)propDrawerType.intValue == DrawerType.Toggle
+                || (DrawerType)propDrawerType.intValue == DrawerType.ToggleOff
+                || (DrawerType)propDrawerType.intValue == DrawerType.KeywordEnum)
+            {
+                rect.y += line + HeightPadding;
+                var row4 = new Rect(rect.x, rect.y, rect.width, line);
+
+                var propShaderVariantType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfShaderVariantType);
+                propShaderVariantType.intValue = EditorGUI.Popup(
+                    new Rect(row4.x, row4.y, row4.width * 0.30f - WidthPadding, line),
+                    "Variant",
+                    propShaderVariantType.intValue,
+                    ShaderPropertyDefinition.ShaderVariantTypeSelections);
+
+                const float toggleWidth = 80.0f;
+
+                var propVariantTargetFlags = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfShaderVariantTargetFlags);
+                var oldFlags = (ShaderVariantTargetFlags)propVariantTargetFlags.intValue;
+                var newFlags = ShaderVariantTargetFlags.None;
+                newFlags |= EditorGUI.ToggleLeft(
+                    new Rect(row4.x + row4.width * 0.30f, row4.y, toggleWidth, line),
+                    "Vertex",
+                    (oldFlags & ShaderVariantTargetFlags.Vertex) != 0) ? ShaderVariantTargetFlags.Vertex : ShaderVariantTargetFlags.None;
+                newFlags |= EditorGUI.ToggleLeft(
+                    new Rect(row4.x + row4.width * 0.30f + toggleWidth, row4.y, toggleWidth, line),
+                    "Fragment",
+                    (oldFlags & ShaderVariantTargetFlags.Fragment) != 0) ? ShaderVariantTargetFlags.Fragment : ShaderVariantTargetFlags.None;
+                newFlags |= EditorGUI.ToggleLeft(
+                    new Rect(row4.x + row4.width * 0.30f + toggleWidth * 2.0f, row4.y, toggleWidth, line),
+                    "Geometry",
+                    (oldFlags & ShaderVariantTargetFlags.Geometry) != 0) ? ShaderVariantTargetFlags.Geometry : ShaderVariantTargetFlags.None;
+                newFlags |= EditorGUI.ToggleLeft(
+                    new Rect(row4.x + row4.width * 0.30f + toggleWidth * 3.0f, row4.y, toggleWidth, line),
+                    "Domain",
+                    (oldFlags & ShaderVariantTargetFlags.Domain) != 0) ? ShaderVariantTargetFlags.Domain : ShaderVariantTargetFlags.None;
+                newFlags |= EditorGUI.ToggleLeft(
+                    new Rect(row4.x + row4.width * 0.30f + toggleWidth * 4.0f, row4.y, toggleWidth, line),
+                    "Hull",
+                    (oldFlags & ShaderVariantTargetFlags.Hull) != 0) ? ShaderVariantTargetFlags.Hull : ShaderVariantTargetFlags.None;
+                propVariantTargetFlags.intValue = (int)newFlags;
+
+                var propAllowKeywordEvenOnNonMultiShader = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfAllowKeywordEvenOnNonMultiShader);
+                propAllowKeywordEvenOnNonMultiShader.boolValue = EditorGUI.ToggleLeft(
+                    new Rect(row4.x + row4.width - 180.0f, row4.y, 180.0f, line),
+                    "Allow on non-multi shaders",
+                    propAllowKeywordEvenOnNonMultiShader.boolValue);
             }
         }
 

@@ -955,6 +955,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     if (guidLangCustom.Length != 0)
                     {
                         tagDict.Add("GUID_LANG_CUSTOM", guidLangCustom);
+                        tagDict["SHOULD_EMIT_ONGUI"] = "true";
                     }
                 }
                 templates.RemoveAt(langCustomIndex);
@@ -1302,6 +1303,68 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 sb.AppendLine();
                 tagDict.Add("DECLARE_TEXTURE_VARIABLES", sb.ToString());
+            }
+
+            sb.Clear();
+            foreach (var shaderProp in shaderPropDefList)
+            {
+                if (shaderProp.AllowKeywordEvenOnNonMultiShader)
+                {
+                    continue;
+                }
+                var keywordDefs = shaderProp.GetKeywordDefinitions();
+                if (keywordDefs == null)
+                {
+                    continue;
+                }
+                foreach (var keywordDef in keywordDefs)
+                {
+                    sb.AppendLine(keywordDef);
+                }
+            }
+            tagDict.Add("MULTI_SHADER_KEYWORD_PRAGMAS", sb.ToString());
+
+            sb.Clear();
+            foreach (var shaderProp in shaderPropDefList)
+            {
+                if (!shaderProp.AllowKeywordEvenOnNonMultiShader)
+                {
+                    continue;
+                }
+                var keywordDefs = shaderProp.GetKeywordDefinitions();
+                if (keywordDefs == null)
+                {
+                    continue;
+                }
+                foreach (var keywordDef in keywordDefs)
+                {
+                    sb.AppendLine(keywordDef);
+                }
+            }
+            tagDict.Add("SHADER_KEYWORD_PRAGMAS", sb.ToString());
+
+            sb.Clear();
+            foreach (var shaderProp in shaderPropDefList)
+            {
+                if (!shaderProp.AllowKeywordEvenOnNonMultiShader)
+                {
+                    continue;
+                }
+                var keywords = shaderProp.GetKeywords();
+                if (keywords == null)
+                {
+                    continue;
+                }
+                foreach (var keyword in keywords)
+                {
+                    sb.AppendFormat("case \"{0}\":", keyword)
+                        .AppendLine();
+                }
+            }
+            if (sb.Length > 0)
+            {
+                tagDict.Add("SHADER_KEYWORD_CASES", sb.ToString());
+                tagDict["SHOULD_EMIT_ONGUI"] = "true";
             }
 
             var v2fMemberList = _v2fMemberReorderableListContainer.List;

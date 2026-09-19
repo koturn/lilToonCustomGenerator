@@ -8,6 +8,7 @@ Shader "*LIL_SHADER_NAME*/lilToonMulti"
     }
 
     HLSLINCLUDE
+        %%MULTI_SHADER_KEYWORD_PRAGMAS:skipempty:keepindent%%
         #include "custom.hlsl"
     ENDHLSL
 

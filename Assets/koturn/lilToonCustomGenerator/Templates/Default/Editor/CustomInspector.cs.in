@@ -1,4 +1,7 @@
 #if UNITY_EDITOR
+!!ifnotempty:SHADER_KEYWORD_CASES!!
+using System.Collections.Generic;
+!!endif!!
 using UnityEditor;
 using UnityEngine;
 !!ifnotempty:SHOULD_EMIT_USING_LILTOON!!
@@ -9,6 +12,9 @@ namespace %%NAMESPACE%%
 {
     public class %%INSPECTOR_NAME%% : lilToonInspector
     {
+!!ifnotempty:SHADER_KEYWORD_CASES!!
+        private readonly List<string> _shaderKeywordList = new List<string>();
+!!endif!!
         // Custom properties
 !!ifempty:DECLARE_MATERIAL_PROPERTIES!!
         //MaterialProperty customVariable;
@@ -21,6 +27,22 @@ namespace %%NAMESPACE%%
         private const string shaderName = "%%SHADER_NAME%%";
 !!else!!
         public const string shaderName = "%%SHADER_NAME%%";
+!!endif!!
+!!ifnotempty:SHOULD_EMIT_ONGUI!!
+
+        public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
+        {
+            base.OnGUI(materialEditor, props);
+!!  ifnotempty:SHADER_KEYWORD_CASES!!
+
+            var material = (Material)materialEditor.target;
+            foreach (var keyword in _shaderKeywordList)
+            {
+                material.EnableKeyword(keyword);
+            }
+            _shaderKeywordList.Clear();
+!!  endif!!
+        }
 !!endif!!
 
         protected override void LoadCustomProperties(MaterialProperty[] props, Material material)
@@ -72,6 +94,16 @@ namespace %%NAMESPACE%%
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
             }
+!!  ifnotempty:SHADER_KEYWORD_CASES!!
+
+            foreach (var keyword in material.shaderKeywords)
+            {
+                if (IsAllShaderKeyword(keyword))
+                {
+                    _shaderKeywordList.Add(keyword);
+                }
+            }
+!!  endif!!
         }
 
         protected override void ReplaceToCustomShaders()
@@ -158,6 +190,18 @@ namespace %%NAMESPACE%%
         }
 !!ifempty:SHOULD_GENERATE_CONVERT_MENU!!
         */
+!!endif!!
+!!ifnotempty:SHADER_KEYWORD_CASES!!
+        private static bool IsAllShaderKeyword(string keyword)
+        {
+            switch (keyword)
+            {
+                %%SHADER_KEYWORD_CASES:keepindent%%
+                    return true;
+                default:
+                    return false;
+            }
+        }
 !!endif!!
     }
 }
