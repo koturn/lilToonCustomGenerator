@@ -411,6 +411,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 var g = m.Groups;
                 _shaderName = g[0].Value + "/lilToonCustom";
             }
+            else
+            {
+                _shaderName = "lilToonCustom";
+            }
             _namespace = ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor";
 
             _assemblyTitle = _namespace;
@@ -770,6 +774,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _asmMetadataReorderableList.Draw();
                         }
                     }
+                    else
+                    {
+                        _isPackageVersionEditable = true;
+                    }
 
                     _shouldEmitDocComments = EditorGUILayout.ToggleLeft("Emit documentation comments", _shouldEmitDocComments);
                 }
@@ -828,9 +836,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     MessageType.Warning);
                             }
 
-                            _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, ref _isPackageVersionEditable);
-                            if (!_isPackageVersionEditable)
+                            var isPackageVersionEditable = _isPackageVersionEditable;
+                            _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, ref isPackageVersionEditable);
+                            if (!isPackageVersionEditable && _shouldGenerateAssemblyInfo)
                             {
+                                _isPackageVersionEditable = isPackageVersionEditable;
                                 _packageVersion = _assemblyVersionSemVer;
                             }
                             if (string.IsNullOrEmpty(_packageVersion))
