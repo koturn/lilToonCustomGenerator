@@ -782,6 +782,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         using (new EditorGUI.IndentLevelScope(2))
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        using (new LabelWidthScope(Labels.CalcLabelWidth("Minimal Unity version") + 34.0f))
                         {
                             _packageName = CustomEditorGUILayout.ToggleTextField("Name", _packageName, ref _isPackageNameEditable);
                             if (!_isPackageNameEditable)

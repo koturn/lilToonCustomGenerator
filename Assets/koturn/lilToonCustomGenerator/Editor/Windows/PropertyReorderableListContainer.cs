@@ -6,6 +6,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using Koturn.LilToonCustomGenerator.Editor.Enums;
 using Koturn.LilToonCustomGenerator.Editor.Internals;
+using Koturn.LilToonCustomGenerator.Editor.Internals.UI;
 
 
 namespace Koturn.LilToonCustomGenerator.Editor.Windows
@@ -45,11 +46,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// Label for Property Name.
         /// </summary>
-        private static readonly GUIContent _labelPropertyName = new GUIContent("Property Name");
+        private static readonly GUIContent _labelPropertyName = new GUIContent("Property name");
         /// <summary>
         /// "Default" labels.
         /// </summary>
         private static readonly GUIContent _labelDefaultValue = new GUIContent("Default");
+        /// <summary>
+        /// Label for drawer argument.
+        /// </summary>
+        private static readonly GUIContent _labelDrawerArgument = new GUIContent("Argument");
         /// <summary>
         /// Duplicate property name list.
         /// </summary>
@@ -90,6 +95,22 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_usedInlilToonPropertyNameList"/>.
         /// </summary>
         private readonly ReadOnlyCollection<string> _usedInlilToonPropertyNameCollection;
+        /// <summary>
+        /// Width of the label of the property type.
+        /// </summary>
+        private float _propertyTypePopupWidth;
+        /// <summary>
+        /// Width of the label of the variable type.
+        /// </summary>
+        private float _variableTypePopupWidth;
+        /// <summary>
+        /// Width of the popup of the interpolation mode.
+        /// </summary>
+        private float _drawerPopupWidth;
+        /// <summary>
+        /// Shader stage toggle width.
+        /// </summary>
+        private float _shaderStageToggleWidth;
 
 
         /// <summary>
@@ -331,6 +352,64 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             reorderableList.elementHeightCallback = GetElementHeight;
             reorderableList.drawElementCallback = DrawElement;
             reorderableList.onAddCallback = OnAdd;
+
+            var tmpLabel = new GUIContent();
+            try
+            {
+                var style = EditorStyles.popup;
+
+                var maxWidth = 0.0f;
+                foreach (var text in ShaderPropertyDefinition.PropertyTypeSelections)
+                {
+                    tmpLabel.text = text;
+                    maxWidth = Math.Max(maxWidth, style.CalcSize(tmpLabel).x);
+                }
+                _propertyTypePopupWidth = maxWidth + 4.0f;
+
+                maxWidth = 0.0f;
+                foreach (var text in ShaderPropertyDefinition.VariableTypeSelections)
+                {
+                    tmpLabel.text = text;
+                    maxWidth = Math.Max(maxWidth, style.CalcSize(tmpLabel).x);
+                }
+                _variableTypePopupWidth = maxWidth + 4.0f;
+
+                maxWidth = 0.0f;
+                foreach (var text in ShaderPropertyDefinition.AllDrawerSelections)
+                {
+                    tmpLabel.text = text;
+                    maxWidth = Math.Max(maxWidth, style.CalcSize(tmpLabel).x);
+                }
+                _drawerPopupWidth = maxWidth + 4.0f;
+            }
+            catch (NullReferenceException)
+            {
+                // NullReferenceException will occur when assembly is recompiled.
+            }
+
+            try
+            {
+                var style = EditorStyles.toggle;
+
+                var maxWidth = 0.0f;
+                foreach (var text in new[]
+                {
+                    nameof(ShaderVariantTargetFlags.Vertex),
+                    nameof(ShaderVariantTargetFlags.Domain),
+                    nameof(ShaderVariantTargetFlags.Hull),
+                    nameof(ShaderVariantTargetFlags.Geometry),
+                    nameof(ShaderVariantTargetFlags.Fragment)
+                })
+                {
+                    tmpLabel.text = text;
+                    maxWidth = Math.Max(maxWidth, style.CalcSize(tmpLabel).x);
+                }
+                _shaderStageToggleWidth = maxWidth + 6.0f;
+            }
+            catch (NullReferenceException)
+            {
+                // NullReferenceException will occur when assembly is recompiled.
+            }
         }
 
         /// <summary>
@@ -376,58 +455,66 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
         {
             var element = GetReorderableList().serializedProperty.GetArrayElementAtIndex(index);
-
-            var line = EditorGUIUtility.singleLineHeight;
+            var rowHeight = EditorGUIUtility.singleLineHeight;
+            var col1LabelWidth = Labels.CalcLabelWidth(_labelPropertyName) + WidthPadding;
+            var col2LabelWidth = Labels.CalcLabelWidth("Variable type") + WidthPadding;
+            var col1Width = Math.Max(col1LabelWidth + 184.0f, rect.width * 0.3f);
+            var col2Width = rect.width - col1Width;
 
             //
             // First line.
             //
-            rect.y += HeightPadding;
+            var leftRect = new Rect(rect.x, rect.y + HeightPadding, rect.width, rowHeight);
 
-            var row1 = new Rect(rect.x, rect.y, rect.width, line);
-            var nameWidth = row1.width * 0.3f;
-            var descWidth = row1.width * 0.7f;
-
-            EditorGUI.PropertyField(
-                new Rect(row1.x, row1.y, nameWidth - WidthPadding, line),
-                element.FindPropertyRelative(ShaderPropertyDefinition.NameOfName),
-                _labelPropertyName);
+            using (new LabelWidthScope(col1LabelWidth))
+            {
+                leftRect.width = col1Width - WidthPadding * 2.0f;
+                EditorGUI.PropertyField(
+                    leftRect,
+                    element.FindPropertyRelative(ShaderPropertyDefinition.NameOfName),
+                    _labelPropertyName);
+            }
 
             var propDescription = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDescription);
-            EditorGUI.PropertyField(
-                new Rect(row1.x + nameWidth, row1.y, descWidth, line),
-                propDescription);
+            using (new LabelWidthScope(col2LabelWidth))
+            {
+                leftRect.x += leftRect.width + WidthPadding * 2.0f;
+                leftRect.width = col2Width;
+                EditorGUI.PropertyField(
+                    new Rect(leftRect.x, leftRect.y, col2Width, rowHeight),
+                    propDescription);
+            }
 
             //
             // Second line.
             //
-            rect.y += line + HeightPadding;
-            var row2 = new Rect(rect.x, rect.y, rect.width, line);
-
-            var col1 = row2.width * 0.4f;
-            var col2 = row2.width * 0.2f;
-            var col3 = row2.width * 0.4f;
+            leftRect.x = rect.x;
+            leftRect.y += rowHeight + HeightPadding;
 
             var propPropertyType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfPropertyType);
             var propUniformType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfUniformType);
             var propDrawerType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerType);
             using (var ccScope = new EditorGUI.ChangeCheckScope())
             {
-                if ((ShaderPropertyType)propPropertyType.intValue == ShaderPropertyType.Range)
+                using (new LabelWidthScope(col1LabelWidth))
                 {
-                    propPropertyType.intValue = EditorGUI.Popup(
-                        new Rect(row2.x, row2.y, col1 * 0.5f - WidthPadding, line),
-                        "Property type",
-                        propPropertyType.intValue,
-                        ShaderPropertyDefinition.PropertyTypeSelections);
-                }
-                else
-                {
-                    propPropertyType.intValue = EditorGUI.Popup(
-                        new Rect(row2.x, row2.y, col1 - WidthPadding, line),
-                        "Property type",
-                        propPropertyType.intValue,
-                        ShaderPropertyDefinition.PropertyTypeSelections);
+                    leftRect.width = EditorGUIUtility.labelWidth + _propertyTypePopupWidth;
+                    if ((ShaderPropertyType)propPropertyType.intValue == ShaderPropertyType.Range)
+                    {
+                        propPropertyType.intValue = EditorGUI.Popup(
+                            leftRect,
+                            "Property type",
+                            propPropertyType.intValue,
+                            ShaderPropertyDefinition.PropertyTypeSelections);
+                    }
+                    else
+                    {
+                        propPropertyType.intValue = EditorGUI.Popup(
+                            leftRect,
+                            "Property type",
+                            propPropertyType.intValue,
+                            ShaderPropertyDefinition.PropertyTypeSelections);
+                    }
                 }
 
                 if (ccScope.changed)
@@ -461,6 +548,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             if ((ShaderPropertyType)propPropertyType.intValue == ShaderPropertyType.Range)
             {
+                leftRect.x += leftRect.width + WidthPadding;
+                leftRect.width = col1Width - leftRect.width - WidthPadding * 2.5f;
+
                 var propRangeMinMax = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfRangeMinMax);
                 var rangeMinMax = propRangeMinMax.vector2Value;
 
@@ -470,7 +560,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     rangeIntMinMaxArray[0] = (int)rangeMinMax.x;
                     rangeIntMinMaxArray[1] = (int)rangeMinMax.y;
                     EditorGUI.MultiIntField(
-                        new Rect(row2.x + col1 * 0.5f, row2.y, col1 * 0.5f - WidthPadding, line),
+                        leftRect,
                         _rangeMinMaxLabel,
                         rangeIntMinMaxArray);
                     propRangeMinMax.vector2Value = new Vector2(rangeIntMinMaxArray[0], rangeIntMinMaxArray[1]);
@@ -481,35 +571,48 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     rangeMinMaxArray[0] = rangeMinMax.x;
                     rangeMinMaxArray[1] = rangeMinMax.y;
                     EditorGUI.MultiFloatField(
-                        new Rect(row2.x + col1 * 0.5f, row2.y, col1 * 0.5f - WidthPadding, line),
+                        leftRect,
                         _rangeMinMaxLabel,
                         rangeMinMaxArray);
                     propRangeMinMax.vector2Value = new Vector2(rangeMinMaxArray[0], rangeMinMaxArray[1]);
                 }
             }
 
-            var availableTypeNames = ShaderPropertyDefinition.GetSuitableVariableTypeNames((ShaderPropertyType)propPropertyType.intValue);
-            var availableTypeIndex = EditorGUI.Popup(
-                new Rect(row2.x + col1, row2.y, col2 - WidthPadding, line),
-                "Variable type",
-                Array.IndexOf(availableTypeNames, ShaderPropertyDefinition.VariableTypeSelections[propUniformType.intValue]),
-                availableTypeNames);
-            propUniformType.intValue = Array.IndexOf(ShaderPropertyDefinition.VariableTypeSelections, availableTypeNames[availableTypeIndex]);
+            using (new LabelWidthScope(col2LabelWidth))
+            {
+                leftRect.x = rect.x + col1Width;
+                leftRect.width = EditorGUIUtility.labelWidth + _variableTypePopupWidth;
+                var availableTypeNames = ShaderPropertyDefinition.GetSuitableVariableTypeNames((ShaderPropertyType)propPropertyType.intValue);
+                var availableTypeIndex = EditorGUI.Popup(
+                    leftRect,
+                    "Variable type",
+                    Array.IndexOf(availableTypeNames, ShaderPropertyDefinition.VariableTypeSelections[propUniformType.intValue]),
+                    availableTypeNames);
+                propUniformType.intValue = Array.IndexOf(ShaderPropertyDefinition.VariableTypeSelections, availableTypeNames[availableTypeIndex]);
+            }
 
-            var rectDefaultValue = new Rect(row2.x + col1 + col2, row2.y, col3, line);
+            leftRect.x += leftRect.width + WidthPadding * 2.0f;
+            leftRect.width = rect.x + rect.width - leftRect.x;
             switch ((ShaderPropertyType)propPropertyType.intValue)
             {
                 case ShaderPropertyType.Float:
                 case ShaderPropertyType.Range:
-                    EditorGUI.PropertyField(
-                        rectDefaultValue,
-                        element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultFloat),
-                        _labelDefaultValue);
+                    using (new LabelWidthScope(Labels.CalcLabelWidth(_labelDefaultValue) + WidthPadding))
+                    {
+                        EditorGUI.PropertyField(
+                            leftRect,
+                            element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultFloat),
+                            _labelDefaultValue);
+                    }
                     break;
                 case ShaderPropertyType.Int:
-                    EditorGUI.PropertyField(
-                        rectDefaultValue,
-                        element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultInt));
+                    using (new LabelWidthScope(Labels.CalcLabelWidth(_labelDefaultValue) + WidthPadding))
+                    {
+                        EditorGUI.PropertyField(
+                            leftRect,
+                            element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultInt),
+                            _labelDefaultValue);
+                    }
                     break;
                 case ShaderPropertyType.Vector:
                     var propDefaultVector = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultVector);
@@ -582,7 +685,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                             }
                             EditorGUI.MultiIntField(
-                                rectDefaultValue,
+                                leftRect,
                                 _defaultVectorLabel,
                                 tmpVectorIntArray);
                             if (isUnsigned)
@@ -608,7 +711,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 tmpVectorArray[i] = pFloat[i];
                             }
                             EditorGUI.MultiFloatField(
-                                rectDefaultValue,
+                                leftRect,
                                 _defaultVectorLabel,
                                 tmpVectorArray);
                             for (int i = 0; i < 4; i++)
@@ -620,40 +723,47 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     }
                     break;
                 case ShaderPropertyType.Color:
-                    EditorGUI.PropertyField(
-                        rectDefaultValue,
-                        element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultColor));
+                    using (new LabelWidthScope(Labels.CalcLabelWidth(_labelDefaultValue) + WidthPadding))
+                    {
+                        EditorGUI.PropertyField(
+                            leftRect,
+                            element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultColor));
+                    }
                     break;
                 case ShaderPropertyType.Texture2D:
                 case ShaderPropertyType.Texture3D:
                 case ShaderPropertyType.TextureCube:
                     var propDefaultTextureIndex = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDefaultTextureIndex);
-                    propDefaultTextureIndex.intValue = EditorGUI.Popup(
-                        rectDefaultValue,
-                        "Default",
-                        propDefaultTextureIndex.intValue,
-                        ShaderPropertyDefinition.DefaultTextureNames);
+                    using (new LabelWidthScope(Labels.CalcLabelWidth(_labelDefaultValue) + WidthPadding))
+                    {
+                        propDefaultTextureIndex.intValue = EditorGUI.Popup(
+                            leftRect,
+                            "Default",
+                            propDefaultTextureIndex.intValue,
+                            ShaderPropertyDefinition.DefaultTextureNames);
+                    }
                     break;
             }
 
             //
             // Third line.
             //
-            rect.y += line + HeightPadding;
-            var row3 = new Rect(rect.x, rect.y, rect.width, line);
-
-            col1 = row3.width * 0.3f;
-            col2 = row3.width * 0.7f;
+            leftRect.x = rect.x;
+            leftRect.y += rowHeight + HeightPadding;
 
             using (var ccScope = new EditorGUI.ChangeCheckScope())
             {
                 var drawerSelections = ShaderPropertyDefinition.GetSuitableDrawerSelections((ShaderPropertyType)propPropertyType.intValue);
-                var drawerIndex = EditorGUI.Popup(
-                    new Rect(row3.x, row3.y, col1 - WidthPadding, line),
-                    "Drawer",
-                    Array.IndexOf(drawerSelections, ShaderPropertyDefinition.AllDrawerSelections[propDrawerType.intValue]),
-                    drawerSelections);
-                propDrawerType.intValue = Array.IndexOf(ShaderPropertyDefinition.AllDrawerSelections, drawerSelections[drawerIndex]);
+                using (new LabelWidthScope(col1LabelWidth))
+                {
+                    leftRect.width = col1Width - WidthPadding;
+                    var drawerIndex = EditorGUI.Popup(
+                        leftRect,
+                        "Drawer",
+                        Array.IndexOf(drawerSelections, ShaderPropertyDefinition.AllDrawerSelections[propDrawerType.intValue]),
+                        drawerSelections);
+                    propDrawerType.intValue = Array.IndexOf(ShaderPropertyDefinition.AllDrawerSelections, drawerSelections[drawerIndex]);
+                }
 
                 if (ccScope.changed && propDescription.stringValue.Length == 0)
                 {
@@ -663,9 +773,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             if (ShaderPropertyDefinition.GetDrawerArgumentType((DrawerType)propDrawerType.intValue) != ArgumentType.NotRequired)
             {
-                EditorGUI.PropertyField(
-                    new Rect(row3.x + col1, row3.y, col2, line),
-                    element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerArgument));
+                leftRect.x += leftRect.width + WidthPadding * 2.0f;
+                leftRect.width = rect.width - leftRect.width - WidthPadding * 2.0f;
+                using (new LabelWidthScope(col2LabelWidth))
+                {
+                    EditorGUI.PropertyField(
+                        leftRect,
+                        element.FindPropertyRelative(ShaderPropertyDefinition.NameOfDrawerArgument),
+                        _labelDrawerArgument);
+                }
             }
 
             //
@@ -675,46 +791,67 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 || (DrawerType)propDrawerType.intValue == DrawerType.ToggleOff
                 || (DrawerType)propDrawerType.intValue == DrawerType.KeywordEnum)
             {
-                rect.y += line + HeightPadding;
-                var row4 = new Rect(rect.x, rect.y, rect.width, line);
+                leftRect.y += rowHeight + HeightPadding;
+                leftRect.x = rect.x;
+                leftRect.width = col1Width - WidthPadding * 2.0f;
 
                 var propShaderVariantType = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfShaderVariantType);
-                propShaderVariantType.intValue = EditorGUI.Popup(
-                    new Rect(row4.x, row4.y, row4.width * 0.30f - WidthPadding, line),
-                    "Variant",
-                    propShaderVariantType.intValue,
-                    ShaderPropertyDefinition.ShaderVariantTypeSelections);
+                using (new LabelWidthScope(col1LabelWidth))
+                {
+                    propShaderVariantType.intValue = EditorGUI.Popup(
+                        leftRect,
+                        "Variant",
+                        propShaderVariantType.intValue,
+                        ShaderPropertyDefinition.ShaderVariantTypeSelections);
+                }
 
-                const float toggleWidth = 80.0f;
+                leftRect.x += leftRect.width + WidthPadding * 2.0f;
 
                 var propVariantTargetFlags = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfShaderVariantTargetFlags);
                 var oldFlags = (ShaderVariantTargetFlags)propVariantTargetFlags.intValue;
                 var newFlags = ShaderVariantTargetFlags.None;
+
+                leftRect.width = Labels.CalcToggleWidth(nameof(ShaderVariantTargetFlags.Vertex));
                 newFlags |= EditorGUI.ToggleLeft(
-                    new Rect(row4.x + row4.width * 0.30f, row4.y, toggleWidth, line),
-                    "Vertex",
+                    leftRect,
+                    nameof(ShaderVariantTargetFlags.Vertex),
                     (oldFlags & ShaderVariantTargetFlags.Vertex) != 0) ? ShaderVariantTargetFlags.Vertex : ShaderVariantTargetFlags.None;
+                leftRect.x += _shaderStageToggleWidth;
+
+                leftRect.width = Labels.CalcToggleWidth(nameof(ShaderVariantTargetFlags.Fragment));
                 newFlags |= EditorGUI.ToggleLeft(
-                    new Rect(row4.x + row4.width * 0.30f + toggleWidth, row4.y, toggleWidth, line),
-                    "Fragment",
+                    leftRect,
+                    nameof(ShaderVariantTargetFlags.Fragment),
                     (oldFlags & ShaderVariantTargetFlags.Fragment) != 0) ? ShaderVariantTargetFlags.Fragment : ShaderVariantTargetFlags.None;
+                leftRect.x += _shaderStageToggleWidth;
+
+                leftRect.width = Labels.CalcToggleWidth(nameof(ShaderVariantTargetFlags.Geometry));
                 newFlags |= EditorGUI.ToggleLeft(
-                    new Rect(row4.x + row4.width * 0.30f + toggleWidth * 2.0f, row4.y, toggleWidth, line),
-                    "Geometry",
+                    leftRect,
+                    nameof(ShaderVariantTargetFlags.Geometry),
                     (oldFlags & ShaderVariantTargetFlags.Geometry) != 0) ? ShaderVariantTargetFlags.Geometry : ShaderVariantTargetFlags.None;
+                leftRect.x += _shaderStageToggleWidth;
+
+                leftRect.width = Labels.CalcToggleWidth(nameof(ShaderVariantTargetFlags.Domain));
                 newFlags |= EditorGUI.ToggleLeft(
-                    new Rect(row4.x + row4.width * 0.30f + toggleWidth * 3.0f, row4.y, toggleWidth, line),
-                    "Domain",
+                    leftRect,
+                    nameof(ShaderVariantTargetFlags.Domain),
                     (oldFlags & ShaderVariantTargetFlags.Domain) != 0) ? ShaderVariantTargetFlags.Domain : ShaderVariantTargetFlags.None;
+                leftRect.x += _shaderStageToggleWidth;
+
+                leftRect.width = Labels.CalcToggleWidth(nameof(ShaderVariantTargetFlags.Hull));
                 newFlags |= EditorGUI.ToggleLeft(
-                    new Rect(row4.x + row4.width * 0.30f + toggleWidth * 4.0f, row4.y, toggleWidth, line),
-                    "Hull",
+                    leftRect,
+                    nameof(ShaderVariantTargetFlags.Hull),
                     (oldFlags & ShaderVariantTargetFlags.Hull) != 0) ? ShaderVariantTargetFlags.Hull : ShaderVariantTargetFlags.None;
+                leftRect.x += _shaderStageToggleWidth;
+
                 propVariantTargetFlags.intValue = (int)newFlags;
 
                 var propAllowKeywordEvenOnNonMultiShader = element.FindPropertyRelative(ShaderPropertyDefinition.NameOfAllowKeywordEvenOnNonMultiShader);
+                var toggleWidth = Labels.CalcToggleWidth("Allow on non-multi shaders");
                 propAllowKeywordEvenOnNonMultiShader.boolValue = EditorGUI.ToggleLeft(
-                    new Rect(row4.x + row4.width - 180.0f, row4.y, 180.0f, line),
+                    new Rect(rect.x + rect.width - toggleWidth - WidthPadding, leftRect.y, toggleWidth, rowHeight),
                     "Allow on non-multi shaders",
                     propAllowKeywordEvenOnNonMultiShader.boolValue);
             }

@@ -54,6 +54,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <see cref="ReadOnlyCollection{T}"/> of <see cref="_usedInlilToonV2FMemberNameList"/>
         /// </summary>
         private readonly ReadOnlyCollection<string> _usedInlilToonV2FMemberNameCollection;
+        /// <summary>
+        /// Width of the label of the variable type.
+        /// </summary>
+        private float _variableTypePopupWidth;
+        /// <summary>
+        /// Width of the popup of the interpolation mode.
+        /// </summary>
+        private float _interpolationModifierPopupWidth;
 
 
         /// <summary>
@@ -143,7 +151,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
 
         /// <summary>
-        /// Create <see cref="V2FMemberReorderableListContainer"/> with specified  <see cref="SerializedObject"/> and <see cref="SerializedProperty"/>.
+        /// Create <see cref="V2FMemberReorderableListContainer"/> with specified  <see cref="SerializedObject"/> and <see cref="SerializedProperty"/>,
+        /// and register <see cref="EditorApplication.delayCall"/>.
         /// </summary>
         private void OnEnable()
         {
@@ -152,6 +161,49 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             reorderableList.elementHeightCallback = GetElementHeight;
             reorderableList.drawElementCallback = DrawElement;
             reorderableList.onAddCallback = OnAdd;
+
+            EditorApplication.delayCall += InitializeWithDelay;
+
+            var tmpLabel = new GUIContent();
+            try
+            {
+                var style = EditorStyles.popup;
+
+                var maxWidth = 0.0f;
+                foreach (var text in V2FMember.VariableTypeSelections)
+                {
+                    tmpLabel.text = text;
+                    maxWidth = Math.Max(maxWidth, style.CalcSize(tmpLabel).x);
+                }
+                _variableTypePopupWidth = maxWidth + 4.0f;
+
+                maxWidth = 0.0f;
+                foreach (var text in V2FMember.InterpolationModifierSelections)
+                {
+                    tmpLabel.text = text;
+                    maxWidth = Math.Max(maxWidth, style.CalcSize(tmpLabel).x);
+                }
+                _interpolationModifierPopupWidth = maxWidth + 4.0f;
+            }
+            catch (NullReferenceException)
+            {
+                // NullReferenceException will occur when assembly is recompiled.
+            }
+        }
+
+        /// <summary>
+        /// Unregister <see cref="InitializeWithDelay"/> from <see cref="EditorApplication.delayCall"/>.
+        /// </summary>
+        private void OnDisable()
+        {
+            EditorApplication.delayCall -= InitializeWithDelay;
+        }
+
+        /// <summary>
+        /// Initialize <see cref="_variableTypePopupWidth"/> and <see cref="_interpolationModifierPopupWidth"/>.
+        /// </summary>
+        private void InitializeWithDelay()
+        {
         }
 
         /// <summary>
@@ -186,40 +238,61 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
         {
             var element = GetReorderableList().serializedProperty.GetArrayElementAtIndex(index);
-
-            var line = EditorGUIUtility.singleLineHeight;
+            var rowHeight = EditorGUIUtility.singleLineHeight;
 
             //
             // First line.
             //
             rect.y += HeightPadding;
 
-            var row1 = new Rect(rect.x, rect.y, rect.width, line);
-            var nameWidth = row1.width * 0.3f;
-            var typeWidth = row1.width * 0.35f;
-            var modifierWidth = row1.width * 0.35f;
+            var memberNameLabelWidth = Labels.CalcLabelWidth(_labelMemberName);
+            var variableTypeLabelWidth = Labels.CalcLabelWidth("Variable type");
+            var interpolationModifierLabelWidth = Labels.CalcLabelWidth("Interpolation modifier");
 
+            var rightWidth = variableTypeLabelWidth + interpolationModifierLabelWidth + _variableTypePopupWidth + _interpolationModifierPopupWidth + WidthPadding * 2.0f;
+
+            var rightRect = new Rect(
+                rect.x + rect.width - rightWidth,
+                rect.y + HeightPadding,
+                rect.width - WidthPadding * 2.0f,
+                rowHeight);
+            var leftRect = new Rect(
+                rect.x,
+                rect.y + HeightPadding,
+                rect.width - rightWidth - WidthPadding * 2.0f,
+                rowHeight);
+
+            var oldWidth = EditorGUIUtility.labelWidth;
+
+            EditorGUIUtility.labelWidth = memberNameLabelWidth + WidthPadding;
             EditorGUI.PropertyField(
-                new Rect(row1.x, row1.y, nameWidth - WidthPadding, line),
+                leftRect,
                 element.FindPropertyRelative(V2FMember.NameOfName),
                 _labelMemberName);
 
             var propVariableType = element.FindPropertyRelative(V2FMember.NameOfVariableType);
+            EditorGUIUtility.labelWidth = variableTypeLabelWidth + WidthPadding;
+            rightRect.width = EditorGUIUtility.labelWidth + _variableTypePopupWidth - WidthPadding * 2.0f;
             propVariableType.intValue = EditorGUI.Popup(
-                new Rect(row1.x + nameWidth, row1.y, typeWidth - WidthPadding, line),
+                rightRect,
                 "Variable type",
                 propVariableType.intValue,
                 V2FMember.VariableTypeSelections);
 
             if (!V2FMember.IsIntegerType((ShaderVariableType)propVariableType.intValue))
             {
+                EditorGUIUtility.labelWidth = interpolationModifierLabelWidth + WidthPadding;
                 var propInterpolationModifier = element.FindPropertyRelative(V2FMember.NameOfInterpolationModifier);
+                rightRect.x += rightRect.width + WidthPadding * 2.0f;
+                rightRect.width = Math.Max(0.0f, EditorGUIUtility.labelWidth + _interpolationModifierPopupWidth);
                 propInterpolationModifier.intValue = EditorGUI.Popup(
-                    new Rect(row1.x + nameWidth + typeWidth, row1.y, modifierWidth - WidthPadding, line),
+                    rightRect,
                     "Interpolation Modifier",
                     propInterpolationModifier.intValue,
                     V2FMember.InterpolationModifierSelections);
             }
+
+            EditorGUIUtility.labelWidth = oldWidth;
         }
 
         /// <summary>

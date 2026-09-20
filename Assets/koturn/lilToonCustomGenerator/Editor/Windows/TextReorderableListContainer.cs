@@ -82,7 +82,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var element = GetReorderableList().serializedProperty.GetArrayElementAtIndex(index);
 
             EditorGUI.PropertyField(
-                new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight),
+                new Rect(rect.x, rect.y + HeightPadding, rect.width, EditorGUIUtility.singleLineHeight),
                 element,
                 GUIContent.none);
         }

@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using Koturn.LilToonCustomGenerator.Editor.Internals.UI;
 
 
 namespace Koturn.LilToonCustomGenerator.Editor.Windows
@@ -21,6 +21,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// Height padding.
         /// </summary>
         private const float HeightPadding = 2.0f;
+
+        /// <summary>
+        /// Label for key.
+        /// </summary>
+        private static readonly GUIContent _labelKey = new GUIContent("Key");
+        /// <summary>
+        /// Label for value.
+        /// </summary>
+        private static readonly GUIContent _labelValue = new GUIContent("Value");
 
 
         /// <inheritdoc/>
@@ -85,25 +94,31 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
         {
             var element = GetReorderableList().serializedProperty.GetArrayElementAtIndex(index);
+            var rowHeight = EditorGUIUtility.singleLineHeight;
+            var col1LabelWidth = Labels.CalcLabelWidth(_labelKey) + WidthPadding;
+            var col2LabelWidth = Labels.CalcLabelWidth(_labelValue) + WidthPadding;
+            var col1Width = Math.Max(col1LabelWidth + 60.0f, rect.width * 0.25f);
+            var col2Width = rect.width - col1Width;
 
             //
             // First line.
             //
-            rect.y += HeightPadding;
+            var leftRect = new Rect(rect.x, rect.y + HeightPadding, col1Width, rowHeight);
 
-            var row = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
-            var keyWidth = row.width * 0.5f;
-            var valueWidth = row.width * 0.5f;
+            using (new LabelWidthScope(Labels.CalcLabelWidth("Value") + WidthPadding))
+            {
+                EditorGUI.PropertyField(
+                    leftRect,
+                    element.FindPropertyRelative(KVPair.NameOfKey),
+                    _labelKey);
 
-            EditorGUI.PropertyField(
-                new Rect(rect.x, rect.y, rect.width - keyWidth - WidthPadding, row.height),
-                element.FindPropertyRelative(KVPair.NameOfKey),
-                new GUIContent("Key"));
-
-            EditorGUI.PropertyField(
-                new Rect(rect.x + keyWidth, rect.y, rect.width - keyWidth, row.height),
-                element.FindPropertyRelative(KVPair.NameOfValue),
-                new GUIContent("Value"));
+                leftRect.x += leftRect.width + WidthPadding * 2.0f;
+                leftRect.width = col2Width - WidthPadding * 2.0f;
+                EditorGUI.PropertyField(
+                    leftRect,
+                    element.FindPropertyRelative(KVPair.NameOfValue),
+                    _labelValue);
+            }
         }
 
         /// <summary>
