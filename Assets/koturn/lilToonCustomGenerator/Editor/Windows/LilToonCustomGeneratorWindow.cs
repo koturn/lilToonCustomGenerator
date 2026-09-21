@@ -645,7 +645,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            _shouldEmitVer140Workaround = CustomEditorGUILayout.ToggleLeftAdjusted("Consider bug in the LIL_CUSTOM_V2F_MEMBER macro in lilToon 1.4.0", _shouldEmitVer140Workaround);
+                            using (new EditorGUILayout.HorizontalScope())
+                            {
+                                _shouldEmitVer140Workaround = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.WorkaroundForLilToon140, _shouldEmitVer140Workaround);
+                                GUILayout.FlexibleSpace();
+                                CustomEditorGUILayout.WebButton("Bug commit", "https://github.com/lilxyzw/lilToon/commit/6f7b21dc9a1c227cc605e09d1529d01da4bf037d");
+                                CustomEditorGUILayout.WebButton("Fix commit", "https://github.com/lilxyzw/lilToon/commit/a8548792c56537575bb2933d65233c8c9bdca4de");
+                                GUILayout.Space(4.0f);
+                            }
                         }
                     }
                     using (new EditorGUI.IndentLevelScope())

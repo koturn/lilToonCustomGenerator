@@ -32,6 +32,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "Inspector namespace",
             "Inspector namespace is used as namespace of C# script and name of the .asmdef file.");
         /// <summary>
+        /// <see cref="GUIContent"/> for description of ToggleLeft of workaround for lilToon 1.4.0.
+        /// </summary>
+        public static GUIContent WorkaroundForLilToon140 { get; } = new GUIContent(
+            "Consider bug in the LIL_CUSTOM_V2F_MEMBER macro in lilToon 1.4.0",
+            "In lilToon 1.4.0, in the ShadowCaster Pass, the `id0` passed to the `LIL_CUSTOM_V2F_MEMBER` macro overlaps with the TEXCOORD numbers used by the lilToon.");
+        /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Use GrabPass even with shaders that are neither Gem nor Refraction".
         /// </summary>
         public static GUIContent UseGrabPass { get; } = new GUIContent(
