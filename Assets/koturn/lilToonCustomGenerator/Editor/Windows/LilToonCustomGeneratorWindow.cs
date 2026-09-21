@@ -235,6 +235,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _shouldDeclareAudioLinkVariables = false;
         /// <summary>
+        /// Each AudioLink variable flags.
+        /// </summary>
+        private AudioLinkVariableFlagBits _audioLinkVariableFlagBits = new AudioLinkVariableFlagBits(AudioLinkVariableFlags.All);
+        /// <summary>
         /// <para>True to declare following three variables in <c>Shaders/custom_insert.hlsl</c>.</para>
         /// <para>
         /// <list type="bullet">
@@ -248,6 +252,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <seealso href="https://protv.dev/avatars"/>
         /// </remarks>
         private bool _shouldDeclareProTVVariables = false;
+        /// <summary>
+        /// Each ProTV variable flags.
+        /// </summary>
+        private ProTVVariableFlagBits _proTVVariableFlagBits = new ProTVVariableFlagBits(ProTVVariableFlags.All);
         /// <summary>
         /// True to generate <c>Editor/AssemblyInfo.cs</c>.
         /// </summary>
@@ -702,8 +710,29 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _vrchatVariableFlagBits.UseVRChatTimeEncoded2 = EditorGUILayout.ToggleLeft("_VRChatTimeEncoded2", _vrchatVariableFlagBits.UseVRChatTimeEncoded2);
                         }
                     }
+
                     _shouldDeclareAudioLinkVariables = EditorGUILayout.ToggleLeft("Use AudioLink variables", _shouldDeclareAudioLinkVariables);
+                    if (_shouldDeclareAudioLinkVariables)
+                    {
+                        using (new EditorGUI.IndentLevelScope())
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        {
+                            _audioLinkVariableFlagBits.UseAudioTexture = EditorGUILayout.ToggleLeft("_AudioTexture", _audioLinkVariableFlagBits.UseAudioTexture);
+                            _audioLinkVariableFlagBits.UseAudioTextureTexelSize = EditorGUILayout.ToggleLeft("_AudioTexture_TexelSize", _audioLinkVariableFlagBits.UseAudioTextureTexelSize);
+                        }
+                    }
+
                     _shouldDeclareProTVVariables = EditorGUILayout.ToggleLeft("Use ProTV variables", _shouldDeclareProTVVariables);
+                    if (_shouldDeclareProTVVariables)
+                    {
+                        using (new EditorGUI.IndentLevelScope())
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        {
+                            _proTVVariableFlagBits.UseUdonVideoTex = EditorGUILayout.ToggleLeft("_Udon_VideoTex", _proTVVariableFlagBits.UseUdonVideoTex);
+                            _proTVVariableFlagBits.UseUdonVideoTexTexelSize = EditorGUILayout.ToggleLeft("_Udon_VideoTex_TexelSize", _proTVVariableFlagBits.UseUdonVideoTexTexelSize);
+                            _proTVVariableFlagBits.UseUdonVideoTexST = EditorGUILayout.ToggleLeft("_Udon_VideoTex_ST", _proTVVariableFlagBits.UseUdonVideoTexST);
+                        }
+                    }
                 }
 
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box))
@@ -1638,10 +1667,29 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             if (_shouldDeclareAudioLinkVariables)
             {
                 tagDict.Add("SHOULD_DECLARE_AUDIOLINK_VARIABLES", "true");
+                if (_audioLinkVariableFlagBits.UseAudioTexture)
+                {
+                    tagDict.Add("SHOULD_DECLARE_AUDIO_TEXTURE", "true");
+                }
+                if (_audioLinkVariableFlagBits.UseAudioTextureTexelSize)
+                {
+                    tagDict.Add("SHOULD_DECLARE_AUDIO_TEXTURE_TEXEL_SIZE", "true");
+                }
             }
             if (_shouldDeclareProTVVariables)
             {
-                tagDict.Add("SHOULD_DECLARE_PROTV_VARIABLES", "true");
+                if (_proTVVariableFlagBits.UseUdonVideoTex)
+                {
+                    tagDict.Add("SHOULD_DECLARE_UDON_VIDEO_TEX", "true");
+                }
+                if (_proTVVariableFlagBits.UseUdonVideoTexTexelSize)
+                {
+                    tagDict.Add("SHOULD_DECLARE_UDON_VIDEO_TEX_TEXEL_SIZE", "true");
+                }
+                if (_proTVVariableFlagBits.UseUdonVideoTexST)
+                {
+                    tagDict.Add("SHOULD_DECLARE_UDON_VIDEO_TEX_ST", "true");
+                }
             }
 
             var newLine = _newLineType == NewLineType.CrLf ? "\n\r" : _newLineType == NewLineType.Cr ? "\r" : "\n";

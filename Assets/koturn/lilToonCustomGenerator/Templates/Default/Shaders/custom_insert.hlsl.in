@@ -72,14 +72,22 @@ uint _VRChatTimeEncoded2;
 !!endif!!
 !!ifnotempty:SHOULD_DECLARE_AUDIOLINK_VARIABLES!!
 #if !defined(LIL_FEATURE_AUDIOLINK) && !defined(AUDIOLINK_CGINC_INCLUDED)
+!!  ifnotempty:SHOULD_DECLARE_AUDIO_TEXTURE!!
 // _AudioTexture is declared in lil_common_input.hlsl when LIL_FEATURE_AUDIOLINK is defined.
 TEXTURE2D_FLOAT(_AudioTexture);
+!!  endif!!
+!!  ifnotempty:SHOULD_DECLARE_AUDIO_TEXTURE_TEXEL_SIZE!!
 float4 _AudioTexture_TexelSize;
+!!  endif!!
 #endif  // !defined(LIL_FEATURE_AUDIOLINK) && !defined(AUDIOLINK_CGINC_INCLUDED)
 !!endif!!
-!!ifnotempty:SHOULD_DECLARE_PROTV_VARIABLES!!
+!!ifnotempty:SHOULD_DECLARE_UDON_VIDEO_TEX!!
 // ProTV texture: https://protv.dev/avatars
 TEXTURE2D(_Udon_VideoTex);
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_UDON_VIDEO_TEX_TEXEL_SIZE!!
 float4 _Udon_VideoTex_TexelSize;
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_UDON_VIDEO_TEX_ST!!
 float4 _Udon_VideoTex_ST;
 !!endif!!
