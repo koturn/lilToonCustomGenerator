@@ -1,3 +1,7 @@
+#if UNITY_2021_3_OR_NEWER
+#    define SUPPORT_READONLY_INSTANCE_MEMBER
+#endif
+
 using Koturn.LilToonCustomGenerator.Editor.Enums;
 
 
@@ -19,7 +23,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseUdonVideoTex
         {
-            readonly get => (Value & ProTVVariableFlags.UseUdonVideoTex) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & ProTVVariableFlags.UseUdonVideoTex) != 0;
             set => Value = value ? (Value | ProTVVariableFlags.UseUdonVideoTex) : (Value & ~ProTVVariableFlags.UseUdonVideoTex);
         }
         /// <summary>
@@ -27,7 +34,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseUdonVideoTexTexelSize
         {
-            readonly get => (Value & ProTVVariableFlags.UseUdonVideoTexTexelSize) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & ProTVVariableFlags.UseUdonVideoTexTexelSize) != 0;
             set => Value = value ? (Value | ProTVVariableFlags.UseUdonVideoTexTexelSize) : (Value & ~ProTVVariableFlags.UseUdonVideoTexTexelSize);
         }
         /// <summary>
@@ -35,7 +45,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseUdonVideoTexST
         {
-            readonly get => (Value & ProTVVariableFlags.UseUdonVideoTexST) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & ProTVVariableFlags.UseUdonVideoTexST) != 0;
             set => Value = value ? (Value | ProTVVariableFlags.UseUdonVideoTexST) : (Value & ~ProTVVariableFlags.UseUdonVideoTexST);
         }
 

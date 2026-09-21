@@ -1,3 +1,7 @@
+#if UNITY_2021_3_OR_NEWER
+#    define SUPPORT_READONLY_INSTANCE_MEMBER
+#endif
+
 using Koturn.LilToonCustomGenerator.Editor.Enums;
 
 
@@ -19,7 +23,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseAudioTexture
         {
-            readonly get => (Value & AudioLinkVariableFlags.UseAudioTexture) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & AudioLinkVariableFlags.UseAudioTexture) != 0;
             set => Value = value ? (Value | AudioLinkVariableFlags.UseAudioTexture) : (Value & ~AudioLinkVariableFlags.UseAudioTexture);
         }
         /// <summary>
@@ -27,7 +34,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseAudioTextureTexelSize
         {
-            readonly get => (Value & AudioLinkVariableFlags.UseAudioTextureTexelSize) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & AudioLinkVariableFlags.UseAudioTextureTexelSize) != 0;
             set => Value = value ? (Value | AudioLinkVariableFlags.UseAudioTextureTexelSize) : (Value & ~AudioLinkVariableFlags.UseAudioTextureTexelSize);
         }
 

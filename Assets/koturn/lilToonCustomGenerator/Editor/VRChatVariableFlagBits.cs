@@ -1,3 +1,7 @@
+#if UNITY_2021_3_OR_NEWER
+#    define SUPPORT_READONLY_INSTANCE_MEMBER
+#endif
+
 using Koturn.LilToonCustomGenerator.Editor.Enums;
 
 
@@ -19,7 +23,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatCameraMode
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatCameraMode) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatCameraMode) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatCameraMode) : (Value & ~VRChatVariableFlags.UseVRChatCameraMode);
         }
         /// <summary>
@@ -27,7 +34,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatCameraMask
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatCameraMask) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatCameraMask) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatCameraMask) : (Value & ~VRChatVariableFlags.UseVRChatCameraMask);
         }
         /// <summary>
@@ -35,7 +45,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatMirrorMode
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatMirrorMode) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatMirrorMode) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatMirrorMode) : (Value & ~VRChatVariableFlags.UseVRChatMirrorMode);
         }
         /// <summary>
@@ -43,7 +56,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatFaceMirrorMode
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatFaceMirrorMode) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatFaceMirrorMode) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatFaceMirrorMode) : (Value & ~VRChatVariableFlags.UseVRChatFaceMirrorMode);
         }
         /// <summary>
@@ -51,7 +67,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatMirrorCameraPos
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatMirrorCameraPos) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatMirrorCameraPos) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatMirrorCameraPos) : (Value & ~VRChatVariableFlags.UseVRChatMirrorCameraPos);
         }
         /// <summary>
@@ -59,7 +78,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatScreenCameraPos
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatScreenCameraPos) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatScreenCameraPos) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatScreenCameraPos) : (Value & ~VRChatVariableFlags.UseVRChatScreenCameraPos);
         }
         /// <summary>
@@ -67,7 +89,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatScreenCameraRot
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatScreenCameraRot) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatScreenCameraRot) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatScreenCameraRot) : (Value & ~VRChatVariableFlags.UseVRChatScreenCameraRot);
         }
         /// <summary>
@@ -75,7 +100,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatPhotoCameraPos
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatPhotoCameraPos) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatPhotoCameraPos) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatPhotoCameraPos) : (Value & ~VRChatVariableFlags.UseVRChatPhotoCameraPos);
         }
         /// <summary>
@@ -83,7 +111,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatPhotoCameraRot
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatPhotoCameraRot) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatPhotoCameraRot) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatPhotoCameraRot) : (Value & ~VRChatVariableFlags.UseVRChatPhotoCameraRot);
         }
         /// <summary>
@@ -91,7 +122,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatTimeUTCUnixSeconds
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatTimeUTCUnixSeconds) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatTimeUTCUnixSeconds) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatTimeUTCUnixSeconds) : (Value & ~VRChatVariableFlags.UseVRChatTimeUTCUnixSeconds);
         }
         /// <summary>
@@ -99,7 +133,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatTimeNetworkMs
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatTimeNetworkMs) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatTimeNetworkMs) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatTimeNetworkMs) : (Value & ~VRChatVariableFlags.UseVRChatTimeNetworkMs);
         }
         /// <summary>
@@ -107,7 +144,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatTimeEncoded1
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatTimeEncoded1) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatTimeEncoded1) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatTimeEncoded1) : (Value & ~VRChatVariableFlags.UseVRChatTimeEncoded1);
         }
         /// <summary>
@@ -115,7 +155,10 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public bool UseVRChatTimeEncoded2
         {
-            readonly get => (Value & VRChatVariableFlags.UseVRChatTimeEncoded2) != 0;
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & VRChatVariableFlags.UseVRChatTimeEncoded2) != 0;
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatTimeEncoded2) : (Value & ~VRChatVariableFlags.UseVRChatTimeEncoded2);
         }
 
