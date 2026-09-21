@@ -492,7 +492,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             var errorCount = 0;
 
-            using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+            using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
                 EditorGUILayout.LabelField("Basic configuration", EditorStyles.boldLabel);
                 using (new EditorGUI.IndentLevelScope())
@@ -568,7 +568,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 _scrollPosition = svScope.scrollPosition;
 
-                using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     using (var ccScope = new EditorGUI.ChangeCheckScope())
                     {
@@ -612,7 +612,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         }
                     }
                 }
-                using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     using (var ccScope = new EditorGUI.ChangeCheckScope())
                     {
@@ -641,7 +641,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            _shouldEmitVer140Workaround = EditorGUILayout.ToggleLeft("Consider bug in the LIL_CUSTOM_V2F_MEMBER macro in lilToon 1.4.0", _shouldEmitVer140Workaround);
+                            _shouldEmitVer140Workaround = CustomEditorGUILayout.ToggleLeftAdjusted("Consider bug in the LIL_CUSTOM_V2F_MEMBER macro in lilToon 1.4.0", _shouldEmitVer140Workaround);
                         }
                     }
                     using (new EditorGUI.IndentLevelScope())
@@ -665,33 +665,33 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     }
                 }
 
-                using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     EditorGUILayout.LabelField("Shader options", EditorStyles.boldLabel);
-                    _shouldEmitGeometryShader = EditorGUILayout.ToggleLeft("Edit geometry shader", _shouldEmitGeometryShader);
+                    _shouldEmitGeometryShader = CustomEditorGUILayout.ToggleLeftAdjusted("Edit geometry shader", _shouldEmitGeometryShader);
                     if (_shouldEmitGeometryShader)
                     {
                         using (new EditorGUI.IndentLevelScope())
-                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         {
-                            _shouldOverrideFurGeometry = EditorGUILayout.ToggleLeft("Override fur geometry shaders", _shouldOverrideFurGeometry);
-                            _shouldOverrideOnePassOutlineGeometry = EditorGUILayout.ToggleLeft("Override one pass outline geometry shaders (HDRP only)", _shouldOverrideOnePassOutlineGeometry);
+                            _shouldOverrideFurGeometry = CustomEditorGUILayout.ToggleLeftAdjusted("Override fur geometry shaders", _shouldOverrideFurGeometry);
+                            _shouldOverrideOnePassOutlineGeometry = CustomEditorGUILayout.ToggleLeftAdjusted("Override one pass outline geometry shaders (HDRP only)", _shouldOverrideOnePassOutlineGeometry);
                         }
                         using (new EditorGUI.DisabledScope(_shouldEmitGeometryShader))
                         {
-                            EditorGUILayout.ToggleLeft("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldEmitGeometryShader);
+                            CustomEditorGUILayout.ToggleLeftAdjusted("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldEmitGeometryShader);
                         }
                     }
                     else
                     {
-                        _shouldGenerateInsertPost = EditorGUILayout.ToggleLeft("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldGenerateInsertPost);
+                        _shouldGenerateInsertPost = CustomEditorGUILayout.ToggleLeftAdjusted("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldGenerateInsertPost);
                     }
 
-                    _shouldEmitGrabPass = EditorGUILayout.ToggleLeft("Use GrabPass even with shaders that are neither Gem nor Refraction", _shouldEmitGrabPass);
+                    _shouldEmitGrabPass = CustomEditorGUILayout.ToggleLeftAdjusted("Use GrabPass even with shaders that are neither Gem nor Refraction", _shouldEmitGrabPass);
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        _shouldDeclareVRChatVariables = EditorGUILayout.ToggleLeft("Use VRChat variables", _shouldDeclareVRChatVariables);
+                        _shouldDeclareVRChatVariables = CustomEditorGUILayout.ToggleLeftAdjusted("Use VRChat variables", _shouldDeclareVRChatVariables);
                         GUILayout.FlexibleSpace();
                         CustomEditorGUILayout.WebButton("Documentation", "https://creators.vrchat.com/worlds/udon/vrc-graphics/vrchat-shader-globals/");
                         GUILayout.Space(4.0f);
@@ -699,27 +699,27 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     if (_shouldDeclareVRChatVariables)
                     {
                         using (new EditorGUI.IndentLevelScope())
-                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         {
-                            _vrchatVariableFlagBits.UseVRChatCameraMode = EditorGUILayout.ToggleLeft("_VRChatCameraMode", _vrchatVariableFlagBits.UseVRChatCameraMode);
-                            _vrchatVariableFlagBits.UseVRChatCameraMask = EditorGUILayout.ToggleLeft("_VRChatCameraMask", _vrchatVariableFlagBits.UseVRChatCameraMask);
-                            _vrchatVariableFlagBits.UseVRChatMirrorMode = EditorGUILayout.ToggleLeft("_VRChatMirrorMode", _vrchatVariableFlagBits.UseVRChatMirrorMode);
-                            _vrchatVariableFlagBits.UseVRChatFaceMirrorMode = EditorGUILayout.ToggleLeft("_VRChatFaceMirrorMode", _vrchatVariableFlagBits.UseVRChatFaceMirrorMode);
-                            _vrchatVariableFlagBits.UseVRChatMirrorCameraPos = EditorGUILayout.ToggleLeft("_VRChatMirrorCameraPos", _vrchatVariableFlagBits.UseVRChatMirrorCameraPos);
-                            _vrchatVariableFlagBits.UseVRChatScreenCameraPos = EditorGUILayout.ToggleLeft("_VRChatScreenCameraPos", _vrchatVariableFlagBits.UseVRChatScreenCameraPos);
-                            _vrchatVariableFlagBits.UseVRChatScreenCameraRot = EditorGUILayout.ToggleLeft("_VRChatScreenCameraRot", _vrchatVariableFlagBits.UseVRChatScreenCameraRot);
-                            _vrchatVariableFlagBits.UseVRChatPhotoCameraPos = EditorGUILayout.ToggleLeft("_VRChatPhotoCameraPos", _vrchatVariableFlagBits.UseVRChatPhotoCameraPos);
-                            _vrchatVariableFlagBits.UseVRChatPhotoCameraRot = EditorGUILayout.ToggleLeft("_VRChatPhotoCameraRot", _vrchatVariableFlagBits.UseVRChatPhotoCameraRot);
-                            _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds = EditorGUILayout.ToggleLeft("_VRChatTimeUTCUnixSeconds", _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds);
-                            _vrchatVariableFlagBits.UseVRChatTimeNetworkMs = EditorGUILayout.ToggleLeft("_VRChatTimeNetworkMs", _vrchatVariableFlagBits.UseVRChatTimeNetworkMs);
-                            _vrchatVariableFlagBits.UseVRChatTimeEncoded1 = EditorGUILayout.ToggleLeft("_VRChatTimeEncoded1", _vrchatVariableFlagBits.UseVRChatTimeEncoded1);
-                            _vrchatVariableFlagBits.UseVRChatTimeEncoded2 = EditorGUILayout.ToggleLeft("_VRChatTimeEncoded2", _vrchatVariableFlagBits.UseVRChatTimeEncoded2);
+                            _vrchatVariableFlagBits.UseVRChatCameraMode = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatCameraMode", _vrchatVariableFlagBits.UseVRChatCameraMode);
+                            _vrchatVariableFlagBits.UseVRChatCameraMask = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatCameraMask", _vrchatVariableFlagBits.UseVRChatCameraMask);
+                            _vrchatVariableFlagBits.UseVRChatMirrorMode = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatMirrorMode", _vrchatVariableFlagBits.UseVRChatMirrorMode);
+                            _vrchatVariableFlagBits.UseVRChatFaceMirrorMode = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatFaceMirrorMode", _vrchatVariableFlagBits.UseVRChatFaceMirrorMode);
+                            _vrchatVariableFlagBits.UseVRChatMirrorCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatMirrorCameraPos", _vrchatVariableFlagBits.UseVRChatMirrorCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatScreenCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatScreenCameraPos", _vrchatVariableFlagBits.UseVRChatScreenCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatScreenCameraRot = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatScreenCameraRot", _vrchatVariableFlagBits.UseVRChatScreenCameraRot);
+                            _vrchatVariableFlagBits.UseVRChatPhotoCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatPhotoCameraPos", _vrchatVariableFlagBits.UseVRChatPhotoCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatPhotoCameraRot = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatPhotoCameraRot", _vrchatVariableFlagBits.UseVRChatPhotoCameraRot);
+                            _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatTimeUTCUnixSeconds", _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds);
+                            _vrchatVariableFlagBits.UseVRChatTimeNetworkMs = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatTimeNetworkMs", _vrchatVariableFlagBits.UseVRChatTimeNetworkMs);
+                            _vrchatVariableFlagBits.UseVRChatTimeEncoded1 = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatTimeEncoded1", _vrchatVariableFlagBits.UseVRChatTimeEncoded1);
+                            _vrchatVariableFlagBits.UseVRChatTimeEncoded2 = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatTimeEncoded2", _vrchatVariableFlagBits.UseVRChatTimeEncoded2);
                         }
                     }
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        _shouldDeclareAudioLinkVariables = EditorGUILayout.ToggleLeft("Use AudioLink variables", _shouldDeclareAudioLinkVariables);
+                        _shouldDeclareAudioLinkVariables = CustomEditorGUILayout.ToggleLeftAdjusted("Use AudioLink variables", _shouldDeclareAudioLinkVariables);
                         GUILayout.FlexibleSpace();
                         CustomEditorGUILayout.WebButton("Documentation", "https://github.com/llealloo/audiolink/tree/master/Docs");
                         GUILayout.Space(4.0f);
@@ -727,16 +727,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     if (_shouldDeclareAudioLinkVariables)
                     {
                         using (new EditorGUI.IndentLevelScope())
-                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         {
-                            _audioLinkVariableFlagBits.UseAudioTexture = EditorGUILayout.ToggleLeft("_AudioTexture", _audioLinkVariableFlagBits.UseAudioTexture);
-                            _audioLinkVariableFlagBits.UseAudioTextureTexelSize = EditorGUILayout.ToggleLeft("_AudioTexture_TexelSize", _audioLinkVariableFlagBits.UseAudioTextureTexelSize);
+                            _audioLinkVariableFlagBits.UseAudioTexture = CustomEditorGUILayout.ToggleLeftAdjusted("_AudioTexture", _audioLinkVariableFlagBits.UseAudioTexture);
+                            _audioLinkVariableFlagBits.UseAudioTextureTexelSize = CustomEditorGUILayout.ToggleLeftAdjusted("_AudioTexture_TexelSize", _audioLinkVariableFlagBits.UseAudioTextureTexelSize);
                         }
                     }
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        _shouldDeclareProTVVariables = EditorGUILayout.ToggleLeft("Use ProTV variables", _shouldDeclareProTVVariables);
+                        _shouldDeclareProTVVariables = CustomEditorGUILayout.ToggleLeftAdjusted("Use ProTV variables", _shouldDeclareProTVVariables);
                         GUILayout.FlexibleSpace();
                         CustomEditorGUILayout.WebButton("Documentation", "https://protv.dev/avatars");
                         GUILayout.Space(4.0f);
@@ -744,34 +744,34 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     if (_shouldDeclareProTVVariables)
                     {
                         using (new EditorGUI.IndentLevelScope())
-                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         {
-                            _proTVVariableFlagBits.UseUdonVideoTex = EditorGUILayout.ToggleLeft("_Udon_VideoTex", _proTVVariableFlagBits.UseUdonVideoTex);
-                            _proTVVariableFlagBits.UseUdonVideoTexTexelSize = EditorGUILayout.ToggleLeft("_Udon_VideoTex_TexelSize", _proTVVariableFlagBits.UseUdonVideoTexTexelSize);
-                            _proTVVariableFlagBits.UseUdonVideoTexST = EditorGUILayout.ToggleLeft("_Udon_VideoTex_ST", _proTVVariableFlagBits.UseUdonVideoTexST);
+                            _proTVVariableFlagBits.UseUdonVideoTex = CustomEditorGUILayout.ToggleLeftAdjusted("_Udon_VideoTex", _proTVVariableFlagBits.UseUdonVideoTex);
+                            _proTVVariableFlagBits.UseUdonVideoTexTexelSize = CustomEditorGUILayout.ToggleLeftAdjusted("_Udon_VideoTex_TexelSize", _proTVVariableFlagBits.UseUdonVideoTexTexelSize);
+                            _proTVVariableFlagBits.UseUdonVideoTexST = CustomEditorGUILayout.ToggleLeftAdjusted("_Udon_VideoTex_ST", _proTVVariableFlagBits.UseUdonVideoTexST);
                         }
                     }
                 }
 
-                using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     EditorGUILayout.LabelField("Inspector options", EditorStyles.boldLabel);
-                    _shouldGenerateVersionDetectionHeader = EditorGUILayout.ToggleLeft("Generate Version Detection Header", _shouldGenerateVersionDetectionHeader);
+                    _shouldGenerateVersionDetectionHeader = CustomEditorGUILayout.ToggleLeftAdjusted("Generate Version Detection Header", _shouldGenerateVersionDetectionHeader);
                     if (_shouldGenerateVersionDetectionHeader)
                     {
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            _allowUnsafeCode = EditorGUILayout.ToggleLeft("Allow unsafe code", _allowUnsafeCode);
+                            _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
                         }
                     }
-                    _shouldGenerateLangTsv = EditorGUILayout.ToggleLeft("Generate Language File", _shouldGenerateLangTsv);
-                    _shouldGenerateConvertMenu = EditorGUILayout.ToggleLeft("Generate Convert Menu", _shouldGenerateConvertMenu);
-                    _shouldGenerateCacheClearMenu = EditorGUILayout.ToggleLeft("Generate Cache Clear Menu", _shouldGenerateCacheClearMenu);
-                    _shouldGenerateAssemblyInfo = EditorGUILayout.ToggleLeft("Generate AssemblyInfo.cs", _shouldGenerateAssemblyInfo);
+                    _shouldGenerateLangTsv = CustomEditorGUILayout.ToggleLeftAdjusted("Generate Language File", _shouldGenerateLangTsv);
+                    _shouldGenerateConvertMenu = CustomEditorGUILayout.ToggleLeftAdjusted("Generate Convert Menu", _shouldGenerateConvertMenu);
+                    _shouldGenerateCacheClearMenu = CustomEditorGUILayout.ToggleLeftAdjusted("Generate Cache Clear Menu", _shouldGenerateCacheClearMenu);
+                    _shouldGenerateAssemblyInfo = CustomEditorGUILayout.ToggleLeftAdjusted("Generate AssemblyInfo.cs", _shouldGenerateAssemblyInfo);
                     if (_shouldGenerateAssemblyInfo)
                     {
                         using (new EditorGUI.IndentLevelScope(2))
-                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         {
                             _assemblyTitle = CustomEditorGUILayout.ToggleTextField("Title", _assemblyTitle, ref _isAssemblyTitleEditable);
                             if (!_isAssemblyTitleEditable)
@@ -833,17 +833,17 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         _isPackageVersionEditable = true;
                     }
 
-                    _shouldEmitDocComments = EditorGUILayout.ToggleLeft("Emit documentation comments", _shouldEmitDocComments);
+                    _shouldEmitDocComments = CustomEditorGUILayout.ToggleLeftAdjusted("Emit documentation comments", _shouldEmitDocComments);
                 }
 
-                using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     EditorGUILayout.LabelField("Others", EditorStyles.boldLabel);
-                    _shouldGeneratePackageJson = EditorGUILayout.ToggleLeft("Generate package.json", _shouldGeneratePackageJson);
+                    _shouldGeneratePackageJson = CustomEditorGUILayout.ToggleLeftAdjusted("Generate package.json", _shouldGeneratePackageJson);
                     if (_shouldGeneratePackageJson)
                     {
                         using (new EditorGUI.IndentLevelScope(2))
-                        using (new EditorGUILayout.VerticalScope(GUI.skin.box))
+                        using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         using (new LabelWidthScope(Labels.CalcLabelWidth("Minimal Unity version") + 34.0f))
                         {
                             _packageName = CustomEditorGUILayout.ToggleTextField("Name", _packageName, ref _isPackageNameEditable);

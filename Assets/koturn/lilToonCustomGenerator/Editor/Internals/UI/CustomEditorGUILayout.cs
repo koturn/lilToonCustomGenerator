@@ -16,9 +16,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         private const float IndentSpaceUnit = 16.0f;
 
         /// <summary>
-        /// <see cref="GUIContent"/> for web link label.
+        /// Text-only <see cref="GUIContent"/>.
         /// </summary>
-        private static readonly GUIContent _webLinkLabel = new GUIContent();
+        private static readonly GUIContent _tmpLabel1 = new GUIContent();
+        /// <summary>
+        /// <see cref="GUIContent"/> with text, tooltips, and icons.
+        /// </summary>
+        private static readonly GUIContent _tmpLabel3 = new GUIContent();
+
 
         /// <summary>
         /// Draw web link button.
@@ -28,17 +33,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         /// <returns>True if button is pressed, otherwise false.</returns>
         public static bool WebButton(string text, string url)
         {
-            var webLinkLabel = _webLinkLabel;
-            webLinkLabel.text = text;
-            webLinkLabel.tooltip = url;
-            webLinkLabel.image = EditorGUIUtility.IconContent("BuildSettings.Web.Small").image;
-            return WebButton(webLinkLabel, url);
+            return WebButton(
+                GetTempLabel(text, url, EditorGUIUtility.IconContent("BuildSettings.Web.Small").image),
+                url);
         }
 
         /// <summary>
         /// Draw web link button.
         /// </summary>
-        /// <param name="label"></param>
+        /// <param name="label">Label.</param>
         /// <param name="url">URL of the linked page.</param>
         /// <returns>True if button is pressed, otherwise false.</returns>
         public static bool WebButton(GUIContent label, string url)
@@ -53,6 +56,30 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
             EditorGUIUtility.AddCursorRect(rect, MouseCursor.Link);
 
             return isPressed;
+        }
+
+        /// <summary>
+        /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="value">A boolean value indicating whether it is checked.</param>
+        /// <returns>True if checked, false otherwise.</returns>
+        public static bool ToggleLeftAdjusted(string text, bool value)
+        {
+            return ToggleLeftAdjusted(GetTempLabel(text), value);
+        }
+
+        /// <summary>
+        /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
+        /// </summary>
+        /// <param name="label">Label.</param>
+        /// <param name="value">A boolean value indicating whether it is checked.</param>
+        /// <returns>True if checked, false otherwise.</returns>
+        public static bool ToggleLeftAdjusted(GUIContent label, bool value)
+        {
+            var rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight);
+            rect.width = EditorStyles.toggle.CalcSize(label).x + EditorGUI.indentLevel * 15.0f + 2.0f;
+            return EditorGUI.ToggleLeft(rect, label, value);
         }
 
         /// <summary>
@@ -100,6 +127,34 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
                     subLabels,
                     values);
             }
+        }
+
+        /// <summary>
+        /// Retrieve a cached label with the specified text.
+        /// </summary>
+        /// <param name="text">Label text.</param>
+        /// <returns><see cref="_tmpLabel1"/> with the specified text.</returns>
+        private static GUIContent GetTempLabel(string text)
+        {
+            var tmpLabel = _tmpLabel1;
+            tmpLabel.text = text;
+            return tmpLabel;
+        }
+
+        /// <summary>
+        /// Retrieve a cached label with the specified text, tooltip, and icon.
+        /// </summary>
+        /// <param name="text">Label text.</param>
+        /// <param name="tooltip">Tooltip text.</param>
+        /// <param name="image">Icon image.</param>
+        /// <returns><see cref="_tmpLabel3"/> with the specified text, tooltip, and icon.</returns>
+        private static GUIContent GetTempLabel(string text, string tooltip, Texture image)
+        {
+            var tmpLabel = _tmpLabel3;
+            tmpLabel.text = text;
+            tmpLabel.tooltip = tooltip;
+            tmpLabel.image = image;
+            return tmpLabel;
         }
     }
 }
