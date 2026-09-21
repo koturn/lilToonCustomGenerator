@@ -97,6 +97,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <param name="isFocused">True if the element is focused, otherwise false.</param>
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
         {
+#if UNITY_2021_3_OR_NEWER
+            const float offset = 0.0f;
+#else
+            var offset = 15.0f * EditorGUI.indentLevel;
+            rect.x -= offset;
+            rect.width += offset;
+#endif  // UNITY_2021_3_OR_NEWER
+
             var element = GetReorderableList().serializedProperty.GetArrayElementAtIndex(index);
             var rowHeight = EditorGUIUtility.singleLineHeight;
             var col1LabelWidth = Labels.CalcLabelWidth(_labelKey) + WidthPadding;
@@ -109,7 +117,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             //
             var leftRect = new Rect(rect.x, rect.y + HeightPadding, col1Width, rowHeight);
 
-            using (new LabelWidthScope(Labels.CalcLabelWidth("Value") + WidthPadding))
+            using (new LabelWidthScope(Labels.CalcLabelWidth("Value") + WidthPadding + offset))
             {
                 EditorGUI.PropertyField(
                     leftRect,

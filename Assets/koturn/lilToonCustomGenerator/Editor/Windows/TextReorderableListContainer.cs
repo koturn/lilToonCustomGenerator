@@ -79,6 +79,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <param name="isFocused">True if the element is focused, otherwise false.</param>
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
         {
+#if !UNITY_2021_3_OR_NEWER
+            var offset = 15.0f * EditorGUI.indentLevel;
+            rect.x -= offset;
+            rect.width += offset;
+#endif  // !UNITY_2021_3_OR_NEWER
+
             var element = GetReorderableList().serializedProperty.GetArrayElementAtIndex(index);
 
             EditorGUI.PropertyField(
