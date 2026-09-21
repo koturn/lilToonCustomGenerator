@@ -44,13 +44,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         public void Draw()
         {
+            var reorderableList = GetReorderableList();
+
             _serializedObject.Update();
 
-            var rect = EditorGUILayout.GetControlRect(false, _reorderableList.GetHeight());
+            var rect = EditorGUILayout.GetControlRect(false, reorderableList.GetHeight());
             var offset = IndentOffset * EditorGUI.indentLevel;
             rect.x += offset;
             rect.width -= offset;
-            _reorderableList.DoList(rect);
+            reorderableList.DoList(rect);
 
             _serializedObject.ApplyModifiedProperties();
         }

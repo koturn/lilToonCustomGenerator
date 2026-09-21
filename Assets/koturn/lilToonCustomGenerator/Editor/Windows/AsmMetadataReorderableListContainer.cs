@@ -11,7 +11,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
     /// <see cref="ReorderableListContainer{T}"/> customized for <see cref="KVPair{TKey, TValue}"/>.
     /// </summary>
     [System.Runtime.InteropServices.Guid("9dc1f4b2-9b8e-d9e4-a9e1-e25c1876320b")]
+#if UNITY_2020_1_OR_NEWER
     public sealed class AsmMetadataReorderableListContainer : ReorderableListContainer<KVPair<string, string>>
+#else
+    public sealed class AsmMetadataReorderableListContainer : ReorderableListContainer<StringKVPair>
+#endif  // UNITY_2020_1_OR_NEWER
     {
         /// <summary>
         /// Width margin.
@@ -128,7 +132,26 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <param name="reorderableList">Source <see cref="ReorderableList"/>. (Unused)</param>
         private void OnAdd(ReorderableList reorderableList)
         {
+#if UNITY_2020_1_OR_NEWER
             List.Add(KVPair.Create("Key", "Value"));
+#else
+            List.Add(new StringKVPair("Key", "Value"));
+#endif  // UNITY_2020_1_OR_NEWER
         }
     }
+
+#if !UNITY_2020_1_OR_NEWER
+    /// <summary>
+    /// <see cref="KVPair{TKey, TValue}"/> for <see cref="string"/> - <see cref="string"/> pair.
+    /// </summary>
+    [Serializable]
+    public class StringKVPair : KVPair<string, string>
+    {
+        /// <inheritdoc/>
+        public StringKVPair(string key, string val)
+            : base(key, val)
+        {
+        }
+    }
+#endif  // !UNITY_2020_1_OR_NEWER
 }

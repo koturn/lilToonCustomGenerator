@@ -9,7 +9,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
     /// </summary>
     [System.Runtime.InteropServices.Guid("0aac7173-24f7-42a4-c994-c989601408ce")]
     [Serializable]
-    public sealed class KVPair<TKey, TValue>
+    public class KVPair<TKey, TValue>
     {
         /// <summary>
         /// Serialize name of backing field of <see cref="Key"/>.
@@ -44,7 +44,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Create instance with key and value.
         /// </summary>
         /// <param name="key">Key.</param>
-        /// <param name="value">value.</param>
+        /// <param name="val">value.</param>
         public KVPair(TKey key, TValue val)
         {
             _key = key;
