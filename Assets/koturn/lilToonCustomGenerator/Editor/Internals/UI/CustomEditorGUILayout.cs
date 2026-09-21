@@ -16,6 +16,46 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         private const float IndentSpaceUnit = 16.0f;
 
         /// <summary>
+        /// <see cref="GUIContent"/> for web link label.
+        /// </summary>
+        private static readonly GUIContent _webLinkLabel = new GUIContent();
+
+        /// <summary>
+        /// Draw web link button.
+        /// </summary>
+        /// <param name="text">Label text.</param>
+        /// <param name="url">URL of the linked page.</param>
+        /// <returns>True if button is pressed, otherwise false.</returns>
+        public static bool WebButton(string text, string url)
+        {
+            var webLinkLabel = _webLinkLabel;
+            webLinkLabel.text = text;
+            webLinkLabel.tooltip = url;
+            webLinkLabel.image = EditorGUIUtility.IconContent("BuildSettings.Web.Small").image;
+            return WebButton(webLinkLabel, url);
+        }
+
+        /// <summary>
+        /// Draw web link button.
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="url">URL of the linked page.</param>
+        /// <returns>True if button is pressed, otherwise false.</returns>
+        public static bool WebButton(GUIContent label, string url)
+        {
+            var rect = GUILayoutUtility.GetRect(label, EditorStyles.linkLabel);
+
+            bool isPressed;
+            if (isPressed = GUI.Button(rect, label, EditorStyles.linkLabel))
+            {
+                Application.OpenURL(url);
+            }
+            EditorGUIUtility.AddCursorRect(rect, MouseCursor.Link);
+
+            return isPressed;
+        }
+
+        /// <summary>
         /// Draws a toggle with a text field next to it.
         /// The text field is disabled when the toggle is unchecked.
         /// </summary>

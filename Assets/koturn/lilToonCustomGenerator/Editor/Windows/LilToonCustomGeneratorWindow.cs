@@ -689,7 +689,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                     _shouldEmitGrabPass = EditorGUILayout.ToggleLeft("Use GrabPass even with shaders that are neither Gem nor Refraction", _shouldEmitGrabPass);
 
-                    _shouldDeclareVRChatVariables = EditorGUILayout.ToggleLeft("Use VRChat variables", _shouldDeclareVRChatVariables);
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        _shouldDeclareVRChatVariables = EditorGUILayout.ToggleLeft("Use VRChat variables", _shouldDeclareVRChatVariables);
+                        GUILayout.FlexibleSpace();
+                        CustomEditorGUILayout.WebButton("Documentation", "https://creators.vrchat.com/worlds/udon/vrc-graphics/vrchat-shader-globals/");
+                        GUILayout.Space(4.0f);
+                    }
                     if (_shouldDeclareVRChatVariables)
                     {
                         using (new EditorGUI.IndentLevelScope())
@@ -711,7 +717,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         }
                     }
 
-                    _shouldDeclareAudioLinkVariables = EditorGUILayout.ToggleLeft("Use AudioLink variables", _shouldDeclareAudioLinkVariables);
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        _shouldDeclareAudioLinkVariables = EditorGUILayout.ToggleLeft("Use AudioLink variables", _shouldDeclareAudioLinkVariables);
+                        GUILayout.FlexibleSpace();
+                        CustomEditorGUILayout.WebButton("Documentation", "https://github.com/llealloo/audiolink/tree/master/Docs");
+                        GUILayout.Space(4.0f);
+                    }
                     if (_shouldDeclareAudioLinkVariables)
                     {
                         using (new EditorGUI.IndentLevelScope())
@@ -722,7 +734,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         }
                     }
 
-                    _shouldDeclareProTVVariables = EditorGUILayout.ToggleLeft("Use ProTV variables", _shouldDeclareProTVVariables);
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        _shouldDeclareProTVVariables = EditorGUILayout.ToggleLeft("Use ProTV variables", _shouldDeclareProTVVariables);
+                        GUILayout.FlexibleSpace();
+                        CustomEditorGUILayout.WebButton("Documentation", "https://protv.dev/avatars");
+                        GUILayout.Space(4.0f);
+                    }
                     if (_shouldDeclareProTVVariables)
                     {
                         using (new EditorGUI.IndentLevelScope())
