@@ -982,6 +982,23 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("BASE_DIRECTORY", dstDirAssetPath + "/");
             }
 
+            var filePathSet = new HashSet<string>();
+            foreach (var targetDirName in new[] { "Editor", "Shaders" })
+            {
+                var targetDirPath = Path.Combine(dstDirAssetPath, targetDirName);
+                if (!Directory.Exists(targetDirPath))
+                {
+                    continue;
+                }
+                foreach (var filePath in Directory.EnumerateFiles(targetDirPath, "*.*", SearchOption.AllDirectories))
+                {
+                    if (!filePath.EndsWith(".meta"))
+                    {
+                        filePathSet.Add(Path.GetFullPath(filePath));
+                    }
+                }
+            }
+
             // Generate `Shaders` directory and obtain its GUID.
             var shaderDirAssetPath = dstDirAssetPath + "/" + "Shaders";
             Directory.CreateDirectory(shaderDirAssetPath);
@@ -1015,6 +1032,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                     Debug.LogFormat("  {0} -> {1}", path, dstFilePath);
                     templateEngine.ExpandTemplate(path, dstFilePath);
+                    filePathSet.Remove(Path.GetFullPath(dstFilePath));
 
                     var guidLangCustom = ReadOrGenerateGuid(dstFilePath, isInProject);
                     if (guidLangCustom.Length != 0)
@@ -1088,6 +1106,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                             Debug.LogFormat("  {0} -> {1}", asmdefTemplatePath, asmdefPath);
                             templateEngine.ExpandTemplate(asmdefTemplatePath, asmdefPath);
+                            filePathSet.Remove(Path.GetFullPath(asmdefPath));
 
                             var guidAsmdef = ReadOrGenerateGuid(asmdefPath, isInProject);
                             if (guidAsmdef.Length != 0)
@@ -1129,6 +1148,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                     Debug.LogFormat("  {0} -> {1}", asmInfoTemplatePath, asmInfoPath);
                     templateEngine.ExpandTemplate(asmInfoTemplatePath, asmInfoPath);
+                    filePathSet.Remove(Path.GetFullPath(asmInfoPath));
                 }
 
                 templates.RemoveAt(asmInfoIndex);
@@ -1147,6 +1167,46 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                 Debug.LogFormat("  {0} -> {1}", templateFilePath, dstFilePath);
                 templateEngine.ExpandTemplate(templateFilePath, dstFilePath);
+                filePathSet.Remove(Path.GetFullPath(dstFilePath));
+            }
+
+            if (filePathSet.Count > 0)
+            {
+                var filePaths = new string[filePathSet.Count];
+                var index = 0;
+                var dstDirFullPath = Path.GetFullPath(dstDirAssetPath);
+                if (isInProject)
+                {
+                    foreach (var filePath in filePathSet)
+                    {
+                        filePaths[index] = AssetPathHelper.AbsPathToAssetPath(filePath);
+                        index++;
+                    }
+                }
+                else
+                {
+                    foreach (var filePath in filePathSet)
+                    {
+                        filePaths[index] = filePath.Substring(dstDirFullPath.Length + 1);
+                        index++;
+                    }
+                }
+                Array.Sort(filePaths);
+
+                if (EditorUtility.DisplayDialog(
+                    "Caution",
+                    "The files listed below were not intended to be included in the output. Do you want to delete them?"
+                        + "\n  - "
+                        + string.Join("\n  - ", filePaths),
+                    "Yes",
+                    "No"))
+                {
+                    foreach (var filePath in filePathSet)
+                    {
+                        File.Delete(filePath);
+                        File.Delete(filePath + ".meta");
+                    }
+                }
             }
 
             if (isInProject)
