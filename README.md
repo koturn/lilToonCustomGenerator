@@ -3,6 +3,8 @@ lilToonCustomGenerator
 
 [lilToon](https://github.com/lilxyzw/lilToon "lilxyzw/lilToon") custom shader generator.
 
+[![Application image](https://github.com/koturn/lilToonCustomGenerator/wiki/img/lilCustomGenerator.png)](https://github.com/koturn/lilToonCustomGenerator/wiki/img/lilCustomGenerator.png "Application image")
+
 ## Description
 
 This is a Unity Editor extension designed to simplify the first steps of creating custom shaders in lilToon.
