@@ -151,8 +151,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
 
         /// <summary>
-        /// Create <see cref="V2FMemberReorderableListContainer"/> with specified  <see cref="SerializedObject"/> and <see cref="SerializedProperty"/>,
-        /// and register <see cref="EditorApplication.delayCall"/>.
+        /// Create <see cref="V2FMemberReorderableListContainer"/> with specified  <see cref="SerializedObject"/> and <see cref="SerializedProperty"/>.
         /// </summary>
         private void OnEnable()
         {
@@ -161,8 +160,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             reorderableList.elementHeightCallback = GetElementHeight;
             reorderableList.drawElementCallback = DrawElement;
             reorderableList.onAddCallback = OnAdd;
-
-            EditorApplication.delayCall += InitializeWithDelay;
 
             var tmpLabel = new GUIContent();
             try
@@ -189,21 +186,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 // NullReferenceException will occur when assembly is recompiled.
             }
-        }
-
-        /// <summary>
-        /// Unregister <see cref="InitializeWithDelay"/> from <see cref="EditorApplication.delayCall"/>.
-        /// </summary>
-        private void OnDisable()
-        {
-            EditorApplication.delayCall -= InitializeWithDelay;
-        }
-
-        /// <summary>
-        /// Initialize <see cref="_variableTypePopupWidth"/> and <see cref="_interpolationModifierPopupWidth"/>.
-        /// </summary>
-        private void InitializeWithDelay()
-        {
         }
 
         /// <summary>
