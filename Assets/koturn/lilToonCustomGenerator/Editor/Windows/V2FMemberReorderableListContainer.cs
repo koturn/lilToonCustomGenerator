@@ -225,8 +225,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             //
             // First line.
             //
-            rect.y += HeightPadding;
-
             var memberNameLabelWidth = Labels.CalcLabelWidth(_labelMemberName);
             var variableTypeLabelWidth = Labels.CalcLabelWidth("Variable type");
             var interpolationModifierLabelWidth = Labels.CalcLabelWidth("Interpolation modifier");
