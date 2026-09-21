@@ -526,9 +526,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         }
                     }
 
-                    _shaderTitle = EditorGUILayout.TextField("Shader title", _shaderTitle);
+                    _shaderTitle = EditorGUILayout.TextField(Labels.ShaderTitle, _shaderTitle);
 
-                    _namespace = CustomEditorGUILayout.ToggleTextField("Inspector Namespace", _namespace, ref _isNamespaceEditable);
+                    _namespace = CustomEditorGUILayout.ToggleTextField(Labels.InspectorNamespace, _namespace, ref _isNamespaceEditable);
                     if (!_isNamespaceEditable)
                     {
                         _namespace = _defaultTextCacheDict.GetValueOrDefault(nameof(_namespace), "");
@@ -687,11 +687,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         _shouldGenerateInsertPost = CustomEditorGUILayout.ToggleLeftAdjusted("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldGenerateInsertPost);
                     }
 
-                    _shouldEmitGrabPass = CustomEditorGUILayout.ToggleLeftAdjusted("Use GrabPass even with shaders that are neither Gem nor Refraction", _shouldEmitGrabPass);
+                    _shouldEmitGrabPass = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseGrabPass, _shouldEmitGrabPass);
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        _shouldDeclareVRChatVariables = CustomEditorGUILayout.ToggleLeftAdjusted("Use VRChat variables", _shouldDeclareVRChatVariables);
+                        _shouldDeclareVRChatVariables = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.VRChatVariables, _shouldDeclareVRChatVariables);
                         GUILayout.FlexibleSpace();
                         CustomEditorGUILayout.WebButton("Documentation", "https://creators.vrchat.com/worlds/udon/vrc-graphics/vrchat-shader-globals/");
                         GUILayout.Space(4.0f);
@@ -701,25 +701,25 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         using (new EditorGUI.IndentLevelScope())
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         {
-                            _vrchatVariableFlagBits.UseVRChatCameraMode = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatCameraMode", _vrchatVariableFlagBits.UseVRChatCameraMode);
-                            _vrchatVariableFlagBits.UseVRChatCameraMask = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatCameraMask", _vrchatVariableFlagBits.UseVRChatCameraMask);
-                            _vrchatVariableFlagBits.UseVRChatMirrorMode = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatMirrorMode", _vrchatVariableFlagBits.UseVRChatMirrorMode);
-                            _vrchatVariableFlagBits.UseVRChatFaceMirrorMode = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatFaceMirrorMode", _vrchatVariableFlagBits.UseVRChatFaceMirrorMode);
-                            _vrchatVariableFlagBits.UseVRChatMirrorCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatMirrorCameraPos", _vrchatVariableFlagBits.UseVRChatMirrorCameraPos);
-                            _vrchatVariableFlagBits.UseVRChatScreenCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatScreenCameraPos", _vrchatVariableFlagBits.UseVRChatScreenCameraPos);
-                            _vrchatVariableFlagBits.UseVRChatScreenCameraRot = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatScreenCameraRot", _vrchatVariableFlagBits.UseVRChatScreenCameraRot);
-                            _vrchatVariableFlagBits.UseVRChatPhotoCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatPhotoCameraPos", _vrchatVariableFlagBits.UseVRChatPhotoCameraPos);
-                            _vrchatVariableFlagBits.UseVRChatPhotoCameraRot = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatPhotoCameraRot", _vrchatVariableFlagBits.UseVRChatPhotoCameraRot);
-                            _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatTimeUTCUnixSeconds", _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds);
-                            _vrchatVariableFlagBits.UseVRChatTimeNetworkMs = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatTimeNetworkMs", _vrchatVariableFlagBits.UseVRChatTimeNetworkMs);
-                            _vrchatVariableFlagBits.UseVRChatTimeEncoded1 = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatTimeEncoded1", _vrchatVariableFlagBits.UseVRChatTimeEncoded1);
-                            _vrchatVariableFlagBits.UseVRChatTimeEncoded2 = CustomEditorGUILayout.ToggleLeftAdjusted("_VRChatTimeEncoded2", _vrchatVariableFlagBits.UseVRChatTimeEncoded2);
+                            _vrchatVariableFlagBits.UseVRChatCameraMode = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatCameraMode, _vrchatVariableFlagBits.UseVRChatCameraMode);
+                            _vrchatVariableFlagBits.UseVRChatCameraMask = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatCameraMask, _vrchatVariableFlagBits.UseVRChatCameraMask);
+                            _vrchatVariableFlagBits.UseVRChatMirrorMode = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatMirrorMode, _vrchatVariableFlagBits.UseVRChatMirrorMode);
+                            _vrchatVariableFlagBits.UseVRChatFaceMirrorMode = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatFaceMirrorMode, _vrchatVariableFlagBits.UseVRChatFaceMirrorMode);
+                            _vrchatVariableFlagBits.UseVRChatMirrorCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatMirrorCameraPos, _vrchatVariableFlagBits.UseVRChatMirrorCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatScreenCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatScreenCameraPos, _vrchatVariableFlagBits.UseVRChatScreenCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatScreenCameraRot = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatScreenCameraRot, _vrchatVariableFlagBits.UseVRChatScreenCameraRot);
+                            _vrchatVariableFlagBits.UseVRChatPhotoCameraPos = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatPhotoCameraPos, _vrchatVariableFlagBits.UseVRChatPhotoCameraPos);
+                            _vrchatVariableFlagBits.UseVRChatPhotoCameraRot = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatPhotoCameraRot, _vrchatVariableFlagBits.UseVRChatPhotoCameraRot);
+                            _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatTimeUTCUnixSeconds, _vrchatVariableFlagBits.UseVRChatTimeUTCUnixSeconds);
+                            _vrchatVariableFlagBits.UseVRChatTimeNetworkMs = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatTimeNetworkMs, _vrchatVariableFlagBits.UseVRChatTimeNetworkMs);
+                            _vrchatVariableFlagBits.UseVRChatTimeEncoded1 = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatTimeEncoded1, _vrchatVariableFlagBits.UseVRChatTimeEncoded1);
+                            _vrchatVariableFlagBits.UseVRChatTimeEncoded2 = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseVRChatTimeEncoded2, _vrchatVariableFlagBits.UseVRChatTimeEncoded2);
                         }
                     }
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        _shouldDeclareAudioLinkVariables = CustomEditorGUILayout.ToggleLeftAdjusted("Use AudioLink variables", _shouldDeclareAudioLinkVariables);
+                        _shouldDeclareAudioLinkVariables = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.AudioLinkVariables, _shouldDeclareAudioLinkVariables);
                         GUILayout.FlexibleSpace();
                         CustomEditorGUILayout.WebButton("Documentation", "https://github.com/llealloo/audiolink/tree/master/Docs");
                         GUILayout.Space(4.0f);
@@ -729,14 +729,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         using (new EditorGUI.IndentLevelScope())
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         {
-                            _audioLinkVariableFlagBits.UseAudioTexture = CustomEditorGUILayout.ToggleLeftAdjusted("_AudioTexture", _audioLinkVariableFlagBits.UseAudioTexture);
-                            _audioLinkVariableFlagBits.UseAudioTextureTexelSize = CustomEditorGUILayout.ToggleLeftAdjusted("_AudioTexture_TexelSize", _audioLinkVariableFlagBits.UseAudioTextureTexelSize);
+                            _audioLinkVariableFlagBits.UseAudioTexture = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseAudioTexture, _audioLinkVariableFlagBits.UseAudioTexture);
+                            _audioLinkVariableFlagBits.UseAudioTextureTexelSize = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseAudioTextureTexelSize, _audioLinkVariableFlagBits.UseAudioTextureTexelSize);
                         }
                     }
 
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        _shouldDeclareProTVVariables = CustomEditorGUILayout.ToggleLeftAdjusted("Use ProTV variables", _shouldDeclareProTVVariables);
+                        _shouldDeclareProTVVariables = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.ProTVVariables, _shouldDeclareProTVVariables);
                         GUILayout.FlexibleSpace();
                         CustomEditorGUILayout.WebButton("Documentation", "https://protv.dev/avatars");
                         GUILayout.Space(4.0f);
@@ -746,9 +746,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         using (new EditorGUI.IndentLevelScope())
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                         {
-                            _proTVVariableFlagBits.UseUdonVideoTex = CustomEditorGUILayout.ToggleLeftAdjusted("_Udon_VideoTex", _proTVVariableFlagBits.UseUdonVideoTex);
-                            _proTVVariableFlagBits.UseUdonVideoTexTexelSize = CustomEditorGUILayout.ToggleLeftAdjusted("_Udon_VideoTex_TexelSize", _proTVVariableFlagBits.UseUdonVideoTexTexelSize);
-                            _proTVVariableFlagBits.UseUdonVideoTexST = CustomEditorGUILayout.ToggleLeftAdjusted("_Udon_VideoTex_ST", _proTVVariableFlagBits.UseUdonVideoTexST);
+                            _proTVVariableFlagBits.UseUdonVideoTex = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoTex, _proTVVariableFlagBits.UseUdonVideoTex);
+                            _proTVVariableFlagBits.UseUdonVideoTexTexelSize = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoTexTexelSize, _proTVVariableFlagBits.UseUdonVideoTexTexelSize);
+                            _proTVVariableFlagBits.UseUdonVideoTexST = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoTexST, _proTVVariableFlagBits.UseUdonVideoTexST);
                         }
                     }
                 }
@@ -756,7 +756,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     EditorGUILayout.LabelField("Inspector options", EditorStyles.boldLabel);
-                    _shouldGenerateVersionDetectionHeader = CustomEditorGUILayout.ToggleLeftAdjusted("Generate Version Detection Header", _shouldGenerateVersionDetectionHeader);
+                    _shouldGenerateVersionDetectionHeader = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateVersionDetectionScript, _shouldGenerateVersionDetectionHeader);
                     if (_shouldGenerateVersionDetectionHeader)
                     {
                         using (new EditorGUI.IndentLevelScope())
@@ -764,10 +764,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
                         }
                     }
-                    _shouldGenerateLangTsv = CustomEditorGUILayout.ToggleLeftAdjusted("Generate Language File", _shouldGenerateLangTsv);
-                    _shouldGenerateConvertMenu = CustomEditorGUILayout.ToggleLeftAdjusted("Generate Convert Menu", _shouldGenerateConvertMenu);
-                    _shouldGenerateCacheClearMenu = CustomEditorGUILayout.ToggleLeftAdjusted("Generate Cache Clear Menu", _shouldGenerateCacheClearMenu);
-                    _shouldGenerateAssemblyInfo = CustomEditorGUILayout.ToggleLeftAdjusted("Generate AssemblyInfo.cs", _shouldGenerateAssemblyInfo);
+                    _shouldGenerateLangTsv = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateLanguageFile, _shouldGenerateLangTsv);
+                    _shouldGenerateConvertMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateConvertMenu, _shouldGenerateConvertMenu);
+                    _shouldGenerateCacheClearMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateCacheClearMenu, _shouldGenerateCacheClearMenu);
+                    _shouldGenerateAssemblyInfo = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateAssemblyInfo, _shouldGenerateAssemblyInfo);
                     if (_shouldGenerateAssemblyInfo)
                     {
                         using (new EditorGUI.IndentLevelScope(2))
