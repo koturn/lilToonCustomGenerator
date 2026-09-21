@@ -15,7 +15,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         public VRChatVariableFlags Value { get; set; }
 
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatCameraMode`.
+        /// True to declare the uniform variable <c>_VRChatCameraMode</c>.
         /// </summary>
         public bool UseVRChatCameraMode
         {
@@ -23,7 +23,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatCameraMode) : (Value & ~VRChatVariableFlags.UseVRChatCameraMode);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatCameraMask`.
+        /// True to declare the uniform variable <c>_VRChatCameraMask</c>.
         /// </summary>
         public bool UseVRChatCameraMask
         {
@@ -31,7 +31,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatCameraMask) : (Value & ~VRChatVariableFlags.UseVRChatCameraMask);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatMirrorMode`.
+        /// True to declare the uniform variable <c>_VRChatMirrorMode</c>.
         /// </summary>
         public bool UseVRChatMirrorMode
         {
@@ -39,7 +39,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatMirrorMode) : (Value & ~VRChatVariableFlags.UseVRChatMirrorMode);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatFaceMirrorMode`.
+        /// True to declare the uniform variable <c>_VRChatFaceMirrorMode</c>.
         /// </summary>
         public bool UseVRChatFaceMirrorMode
         {
@@ -47,7 +47,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatFaceMirrorMode) : (Value & ~VRChatVariableFlags.UseVRChatFaceMirrorMode);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatMirrorCameraPos`.
+        /// True to declare the uniform variable <c>_VRChatMirrorCameraPos</c>.
         /// </summary>
         public bool UseVRChatMirrorCameraPos
         {
@@ -55,7 +55,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatMirrorCameraPos) : (Value & ~VRChatVariableFlags.UseVRChatMirrorCameraPos);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatScreenCameraPos`.
+        /// True to declare the uniform variable <c>_VRChatScreenCameraPos</c>.
         /// </summary>
         public bool UseVRChatScreenCameraPos
         {
@@ -63,7 +63,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatScreenCameraPos) : (Value & ~VRChatVariableFlags.UseVRChatScreenCameraPos);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatScreenCameraRot`.
+        /// True to declare the uniform variable <c>_VRChatScreenCameraRot</c>.
         /// </summary>
         public bool UseVRChatScreenCameraRot
         {
@@ -71,7 +71,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatScreenCameraRot) : (Value & ~VRChatVariableFlags.UseVRChatScreenCameraRot);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatPhotoCameraPos`.
+        /// True to declare the uniform variable <c>_VRChatPhotoCameraPos</c>.
         /// </summary>
         public bool UseVRChatPhotoCameraPos
         {
@@ -79,7 +79,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatPhotoCameraPos) : (Value & ~VRChatVariableFlags.UseVRChatPhotoCameraPos);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatPhotoCameraRot`.
+        /// True to declare the uniform variable <c>_VRChatPhotoCameraRot</c>.
         /// </summary>
         public bool UseVRChatPhotoCameraRot
         {
@@ -87,7 +87,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatPhotoCameraRot) : (Value & ~VRChatVariableFlags.UseVRChatPhotoCameraRot);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatTimeUTCUnixSeconds`.
+        /// True to declare the uniform variable <c>_VRChatTimeUTCUnixSeconds</c>.
         /// </summary>
         public bool UseVRChatTimeUTCUnixSeconds
         {
@@ -95,7 +95,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatTimeUTCUnixSeconds) : (Value & ~VRChatVariableFlags.UseVRChatTimeUTCUnixSeconds);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatTimeNetworkMs`.
+        /// True to declare the uniform variable <c>_VRChatTimeNetworkMs</c>.
         /// </summary>
         public bool UseVRChatTimeNetworkMs
         {
@@ -103,7 +103,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatTimeNetworkMs) : (Value & ~VRChatVariableFlags.UseVRChatTimeNetworkMs);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatTimeEncoded1`.
+        /// True to declare the uniform variable <c>_VRChatTimeEncoded1</c>.
         /// </summary>
         public bool UseVRChatTimeEncoded1
         {
@@ -111,7 +111,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             set => Value = value ? (Value | VRChatVariableFlags.UseVRChatTimeEncoded1) : (Value & ~VRChatVariableFlags.UseVRChatTimeEncoded1);
         }
         /// <summary>
-        /// True to declare the uniform variable `UseVRChatTimeEncoded2`.
+        /// True to declare the uniform variable <c>_VRChatTimeEncoded2</c>.
         /// </summary>
         public bool UseVRChatTimeEncoded2
         {
