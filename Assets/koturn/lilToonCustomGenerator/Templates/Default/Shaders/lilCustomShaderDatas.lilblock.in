@@ -1,5 +1,10 @@
 ShaderName "%%SHADER_NAME%%"
 EditorName "%%NAMESPACE%%.%%INSPECTOR_NAME%%"
+!!ifnotempty:SHOULD_EMIT_GRAB_PASS!!
+InsertPassPre "PrePass.lilblock"
+InsertPassPre "Gem" "PrePassNone.lilblock"
+InsertPassPre "Refraction" "PrePassNone.lilblock"
+!!endif!!
 !!ifnotempty:SHOULD_EMIT_GEOMETRY_SHADER!!
 Replace "\r\n" "\n"
 Replace "\r" "\n"

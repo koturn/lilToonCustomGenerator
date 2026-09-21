@@ -302,6 +302,14 @@
         {
           "guid": "df095a8654862ba4dbe3ae6012a4a209",
           "destination": "Shaders/lts_twotrans_o.lilcontainer"
+        },
+        {
+          "guid": "bc3095776d31c9444bf6bf30f46f23d3",
+          "destination": "Shaders/PrePassBRP.lilblock"
+        },
+        {
+          "guid": "d143cd9ae91ecc6469ad4256404c3418",
+          "destination": "Shaders/PrePassNoneBRP.lilblock"
         }
       ]
     },

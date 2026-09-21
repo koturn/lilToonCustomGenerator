@@ -1,0 +1,4 @@
+!!ifnotempty:SHOULD_EMIT_GRAB_PASS!!
+// GrabPass
+GrabPass {"_lilBackgroundTexture"}
+!!endif!!

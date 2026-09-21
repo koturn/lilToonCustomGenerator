@@ -142,6 +142,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _shouldEmitGeometryShader = false;
         /// <summary>
+        /// True to emit <c>GrabPass</c> to non-gem and non-refraction shaders.
+        /// </summary>
+        private bool _shouldEmitGrabPass = false;
+        /// <summary>
         /// True to override geometry shader of fur shaders.
         /// </summary>
         private bool _shouldOverrideFurGeometry = false;
@@ -674,6 +678,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         _shouldGenerateInsertPost = EditorGUILayout.ToggleLeft("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldGenerateInsertPost);
                     }
+
+                    _shouldEmitGrabPass = EditorGUILayout.ToggleLeft("Use GrabPass even with shaders that are neither Gem nor Refraction", _shouldEmitGrabPass);
+
                     _shouldDeclareVRChatVariables = EditorGUILayout.ToggleLeft("Use VRChat variables", _shouldDeclareVRChatVariables);
                     if (_shouldDeclareVRChatVariables)
                     {
@@ -981,6 +988,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
 
                 index = IndexOfDestination(templates, "Shaders/lilCustomShaderInsertPost.lilblock");
+                if (index != -1)
+                {
+                    templates.RemoveAt(index);
+                }
+            }
+
+            if (!_shouldEmitGrabPass)
+            {
+                var index = IndexOfDestination(templates, "Shaders/PrePassBRP.lilblock");
+                if (index != -1)
+                {
+                    templates.RemoveAt(index);
+                }
+
+                index = IndexOfDestination(templates, "Shaders/PrePassNoneBRP.lilblock");
                 if (index != -1)
                 {
                     templates.RemoveAt(index);
@@ -1515,6 +1537,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             if (_shouldEmitGeometryShader || _shouldGenerateInsertPost)
             {
                 tagDict.Add("SHOULD_GENERATE_INSERT_POST", "true");
+            }
+            if (_shouldEmitGrabPass)
+            {
+                tagDict.Add("SHOULD_EMIT_GRAB_PASS", "true");
             }
             if (_shouldGenerateConvertMenu)
             {
