@@ -32,6 +32,25 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "CR + LF"
         };
         /// <summary>
+        /// Substrings of shader names that can lead to incorrect determinations.
+        /// </summary>
+        private static readonly string[] _specificShaderNameSubstrings =
+        {
+            "Blur",
+            "Cutout",
+            "Fur",
+            "Gem",
+            "Lite",
+            "Multi",
+            "OnePass",
+            "Outline",
+            "Overlay",
+            "Refraction",
+            "Tessellation",
+            "Transparent",
+            "TwoPass"
+        };
+        /// <summary>
         /// Invalid characters for shader name.
         /// </summary>
         private static readonly char[] _invalidShaderNameChars = { '\n', '\r', '"' };
@@ -508,6 +527,26 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _defaultTextCacheDict[nameof(_assemblyDescription)] = $"Material inspector for \"{_shaderName}/*\".";
                             _defaultTextCacheDict[nameof(_packageName)] = ConvertShaderNameToPackageName(_shaderName);
                         }
+                    }
+                    if (!CheckShaderName(_shaderName))
+                    {
+                        EditorGUILayout.HelpBox(
+                            "In versions of lilToon prior to 2.3.0, if a shader name contains any of the following 13 strings,\n"
+                                + "it may be incorrectly classified as a different shader type, potentially leading to unexpected errors or unintended behavior.\n"
+                                + "  1. Blur\n"
+                                + "  2. Cutout\n"
+                                + "  3. Fur\n"
+                                + "  4. Gem\n"
+                                + "  5. Lite\n"
+                                + "  6. Multi\n"
+                                + "  7. OnePass\n"
+                                + "  8. Outline\n"
+                                + "  9. Overlay\n"
+                                + "  10. Refraction\n"
+                                + "  11. Tessellation\n"
+                                + "  12. Transparent\n"
+                                + "  13. TwoPass",
+                            MessageType.Warning);
                     }
                     if (string.IsNullOrEmpty(_shaderName))
                     {
@@ -1868,6 +1907,22 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             packageName += shaderName;
             return RegexProvider.NonPackageNameCharRegex.Replace(packageName, "");
+        }
+
+        /// <summary>
+        /// Check whether the shader name contains any substrings that could lead to incorrect determinations.
+        /// </summary>
+        /// <returns>True if shader name NOT contains any substrings that could lead to incorrect determinations, false otherwise.</returns>
+        private static bool CheckShaderName(string shaderName)
+        {
+            foreach (var substr in _specificShaderNameSubstrings)
+            {
+                if (shaderName.Contains(substr))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
