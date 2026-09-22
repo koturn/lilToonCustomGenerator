@@ -857,7 +857,18 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     _shouldGenerateCacheClearMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateCacheClearMenu, _shouldGenerateCacheClearMenu);
                     using (new EditorGUILayout.HorizontalScope())
                     {
-                        _shouldGenerateAssemblyInfo = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateAssemblyInfo, _shouldGenerateAssemblyInfo);
+                        using (var ccScope = new EditorGUI.ChangeCheckScope())
+                        {
+                            _shouldGenerateAssemblyInfo = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateAssemblyInfo, _shouldGenerateAssemblyInfo);
+                            if (ccScope.changed
+                                && _shouldGenerateAssemblyInfo
+                                && !_isPackageVersionEditable
+                                && string.Format("{0}.{1}.{2}", _assemblyVersionNumbers[0], _assemblyVersionNumbers[1], _assemblyVersionNumbers[2]) != _packageVersion)
+                            {
+                                // Since the package version has been edited, leave the “Editable” checkbox selected.
+                                _isPackageVersionEditable = true;
+                            }
+                        }
                         GUILayout.FlexibleSpace();
                         CustomEditorGUILayout.WebButton("About assembly attributes", "https://learn.microsoft.com/en-us/dotnet/standard/assembly/set-attributes");
                         GUILayout.Space(4.0f);
@@ -925,10 +936,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                             _asmMetadataReorderableList.Draw();
                         }
-                    }
-                    else
-                    {
-                        _isPackageVersionEditable = true;
                     }
 
                     _shouldEmitDocComments = CustomEditorGUILayout.ToggleLeftAdjusted("Emit documentation comments", _shouldEmitDocComments);
@@ -998,12 +1005,18 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     MessageType.Warning);
                             }
 
-                            var isPackageVersionEditable = _isPackageVersionEditable;
-                            _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, ref isPackageVersionEditable);
-                            if (!isPackageVersionEditable && _shouldGenerateAssemblyInfo)
+                            if (_shouldGenerateAssemblyInfo)
                             {
-                                _isPackageVersionEditable = isPackageVersionEditable;
-                                _packageVersion = _assemblyVersionSemVer;
+                                _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, ref _isPackageVersionEditable);
+                                if (!_isPackageVersionEditable)
+                                {
+                                    _packageVersion = _assemblyVersionSemVer;
+                                }
+                            }
+                            else
+                            {
+                                var isPackageVersionEditable = true;
+                                _packageVersion = CustomEditorGUILayout.ToggleTextField("Version", _packageVersion, ref isPackageVersionEditable, true);
                             }
                             if (string.IsNullOrEmpty(_packageVersion))
                             {

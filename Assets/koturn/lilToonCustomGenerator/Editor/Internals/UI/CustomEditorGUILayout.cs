@@ -105,9 +105,40 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         /// <returns>The text entered by the user.</returns>
         public static string ToggleTextField(GUIContent label, string text, ref bool isChecked)
         {
+            return ToggleTextField(label, text, ref isChecked, false);
+        }
+
+        /// <summary>
+        /// Draws a toggle with a text field next to it.
+        /// The text field is disabled when the toggle is unchecked.
+        /// </summary>
+        /// <param name="label">Label to display next to the toggle.</param>
+        /// <param name="text">Text to display in the text field.</param>
+        /// <param name="isChecked">Indicates whether the toggle is checked.</param>
+        /// <param name="isCheckBoxDisabled">True to disable checkbox.</param>
+        /// <returns>The text entered by the user.</returns>
+        public static string ToggleTextField(string label, string text, ref bool isChecked, bool isCheckBoxDisabled)
+        {
+            return ToggleTextField(GetTempLabel(label), text, ref isChecked, isCheckBoxDisabled);
+        }
+
+        /// <summary>
+        /// Draws a toggle with a text field next to it.
+        /// The text field is disabled when the toggle is unchecked.
+        /// </summary>
+        /// <param name="label">Label to display next to the toggle.</param>
+        /// <param name="text">Text to display in the text field.</param>
+        /// <param name="isChecked">Indicates whether the toggle is checked.</param>
+        /// <param name="isCheckBoxDisabled">True to disable checkbox.</param>
+        /// <returns>The text entered by the user.</returns>
+        public static string ToggleTextField(GUIContent label, string text, ref bool isChecked, bool isCheckBoxDisabled)
+        {
             var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
             var toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
-            isChecked = EditorGUI.ToggleLeft(toggleRect, label, isChecked);
+            using (new EditorGUI.DisabledScope(isCheckBoxDisabled))
+            {
+                isChecked = EditorGUI.ToggleLeft(toggleRect, label, isChecked);
+            }
             using (new EditorGUI.DisabledScope(!isChecked))
             {
                 var indentLevel = EditorGUI.indentLevel;
