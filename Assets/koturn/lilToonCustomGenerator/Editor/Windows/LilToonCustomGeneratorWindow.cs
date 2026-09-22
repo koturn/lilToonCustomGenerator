@@ -903,7 +903,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     EditorGUILayout.LabelField("Others", EditorStyles.boldLabel);
-                    _shouldGeneratePackageJson = CustomEditorGUILayout.ToggleLeftAdjusted("Generate package.json", _shouldGeneratePackageJson);
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        _shouldGeneratePackageJson = CustomEditorGUILayout.ToggleLeftAdjusted("Generate package.json", _shouldGeneratePackageJson);
+                        GUILayout.FlexibleSpace();
+                        CustomEditorGUILayout.WebButton("About package.json", "https://docs.unity3d.com/2021.3/Documentation/Manual/upm-manifestPkg.html");
+                        GUILayout.Space(4.0f);
+                    }
                     if (_shouldGeneratePackageJson)
                     {
                         using (new EditorGUI.IndentLevelScope(2))
