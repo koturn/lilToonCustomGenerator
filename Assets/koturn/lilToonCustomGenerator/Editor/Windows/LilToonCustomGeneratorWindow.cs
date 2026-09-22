@@ -827,7 +827,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     _shouldGenerateLangTsv = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateLanguageFile, _shouldGenerateLangTsv);
                     _shouldGenerateConvertMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateConvertMenu, _shouldGenerateConvertMenu);
                     _shouldGenerateCacheClearMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateCacheClearMenu, _shouldGenerateCacheClearMenu);
-                    _shouldGenerateAssemblyInfo = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateAssemblyInfo, _shouldGenerateAssemblyInfo);
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        _shouldGenerateAssemblyInfo = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateAssemblyInfo, _shouldGenerateAssemblyInfo);
+                        GUILayout.FlexibleSpace();
+                        CustomEditorGUILayout.WebButton("About assembly attributes", "https://learn.microsoft.com/en-us/dotnet/standard/assembly/set-attributes");
+                        GUILayout.Space(4.0f);
+                    }
                     if (_shouldGenerateAssemblyInfo)
                     {
                         using (new EditorGUI.IndentLevelScope(2))
