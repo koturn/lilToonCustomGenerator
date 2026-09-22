@@ -28,5 +28,20 @@
 !!endif!!
   "dependencies": {
     "jp.lilxyzw.liltoon": "%%PACKAGE_MINIMAL_LILTOON_VERSION%%"
+!!ifempty:PACKAGE_VPM_MINIMAL_LILTOON_VERSION!!
   }
+!!else!!
+  },
+!!  ifnotempty:PACKAGE_VPM_URL!!
+  "url": "%%PACKAGE_VPM_URL%%",
+!!  endif!!
+!!  ifnotempty:PACKAGE_VPM_LEGACY_FOLDERS!!
+  "legacyFolders": {
+    %%PACKAGE_VPM_LEGACY_FOLDERS:keepindent%%
+  },
+!!  endif!!
+  "vpmDependencies": {
+    "jp.lilxyzw.liltoon": "%%PACKAGE_VPM_MINIMAL_LILTOON_VERSION%%"
+  }
+!!endif!!
 }

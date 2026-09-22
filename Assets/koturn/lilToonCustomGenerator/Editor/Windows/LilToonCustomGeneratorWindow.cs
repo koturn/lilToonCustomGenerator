@@ -55,6 +55,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private static readonly int[] _defaultMinimalLilToonVersion = { 1, 2, 11 };
         /// <summary>
+        /// Default minimal lilToon version array for VPM.
+        /// </summary>
+        private static readonly int[] _defaultVpmMinimalLilToonVersion = { 1, 3, 7 };
+        /// <summary>
         /// Invalid characters for shader name.
         /// </summary>
         private static readonly char[] _invalidShaderNameChars = { '\n', '\r', '"' };
@@ -412,6 +416,22 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private int[] _packageMinimalLilToonVersion;
         /// <summary>
+        /// VPM package URL.
+        /// </summary>
+        private string _packageVpmUrl;
+        /// <summary>
+        /// Minimal lilToon version for VPM.
+        /// </summary>
+        private int[] _packageVpmMinimalLilToonVersion;
+        /// <summary>
+        /// True to emit <c>legacyFolders</c> to the package.json.
+        /// </summary>
+        private bool _shouldEmitLegacyFolders = true;
+        /// <summary>
+        /// True to output the package.json entries for VPM.
+        /// </summary>
+        private bool _shouldEmitVpmEntries;
+        /// <summary>
         /// True to edit value for name in package.json
         /// </summary>
         private bool _isPackageNameEditable = false;
@@ -423,6 +443,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// True to edit value for display name in package.json
         /// </summary>
         private bool _isPackageDisplayNameEditable;
+        /// <summary>
+        /// True to edit value for minimal lilToon version in package.json for VPM.
+        /// </summary>
+        private bool _isPackageVpmMinimalLilToonVersionEditable;
         /// <summary>
         /// Last export directory.
         /// </summary>
@@ -480,6 +504,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _packageLicense = "";
             _packageMinimalLilToonVersion = new int[_defaultMinimalLilToonVersion.Length];
             Buffer.BlockCopy(_defaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+            _packageVpmMinimalLilToonVersion = new int[_defaultVpmMinimalLilToonVersion.Length];
+            Buffer.BlockCopy(_defaultVpmMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageVpmMinimalLilToonVersion.Length);
 
             var packageKeywordList = _packageKeywordReorderableListContaner.List;
             if (packageKeywordList.Count == 0)
@@ -492,6 +518,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _packageAuthorName = Environment.UserName;
             _packageAuthorEmail = "";
             _packageAuthorUrl = "";
+            _packageVpmUrl = "";
         }
 
         /// <summary>
@@ -920,7 +947,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         using (new EditorGUI.IndentLevelScope(2))
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
-                        using (new LabelWidthScope(Labels.CalcLabelWidth(Labels.MinimalLilToonVersion) + 34.0f))
+                        using (new LabelWidthScope(Labels.CalcLabelWidth(Labels.MinimalLilToonVersion) + EditorGUI.indentLevel * 15.0f + 2.0f))
                         {
                             _packageName = CustomEditorGUILayout.ToggleTextField("Name", _packageName, ref _isPackageNameEditable);
                             if (!_isPackageNameEditable)
@@ -1034,6 +1061,62 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     }
                                 }
                             }
+
+                            using (new EditorGUILayout.HorizontalScope())
+                            {
+                                _shouldEmitVpmEntries = CustomEditorGUILayout.ToggleLeftAdjusted("Emit VRM entries", _shouldEmitVpmEntries);
+                                GUILayout.FlexibleSpace();
+                                CustomEditorGUILayout.WebButton("About VPM", "https://vcc.docs.vrchat.com/vpm/packages/");
+                                GUILayout.Space(4.0f);
+                            }
+                            if (_shouldEmitVpmEntries)
+                            {
+                                using (new EditorGUI.IndentLevelScope(2))
+                                using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
+                                using (new LabelWidthScope(Labels.CalcLabelWidth(Labels.MinimalVpmLilToonVersion) + EditorGUI.indentLevel * 15.0f + 2.0f))
+                                {
+                                    using (var ccScope = new EditorGUI.ChangeCheckScope())
+                                    {
+                                        _packageVpmUrl = EditorGUILayout.TextField(Labels.VpmUrl, _packageVpmUrl);
+                                    }
+
+                                    if (_packageVpmUrl.Length == 0)
+                                    {
+                                        EditorGUILayout.HelpBox(
+                                            "According to the official documentation page, it appears that the `url` entry is required.\n"
+                                                + "However, in practice, it is fine to omit the `url` entry.\n"
+                                                + "Please note that it is required in the manifest JSON file for the repository listing.",
+                                            MessageType.Info);
+                                    }
+                                    else if (!Uri.TryCreate(_packageVpmUrl, UriKind.Absolute, out var uri))
+                                    {
+                                        EditorGUILayout.HelpBox("Invalid URL.", MessageType.Error);
+                                        errorCount++;
+                                    }
+                                    else if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+                                    {
+                                        EditorGUILayout.HelpBox("The URL scheme is neither HTTP nor HTTPS.", MessageType.Error);
+                                        errorCount++;
+                                    }
+
+                                    EditorGUI.indentLevel--;
+                                    var rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight);
+                                    rect.x -= 3.0f;
+                                    rect.width = EditorStyles.toggle.CalcSize(Labels.LegacyFolders).x + EditorGUI.indentLevel * 15.0f + 2.0f;
+                                    _shouldEmitLegacyFolders = EditorGUI.ToggleLeft(rect, Labels.LegacyFolders, _shouldEmitLegacyFolders);
+                                    EditorGUI.indentLevel++;
+
+                                    CustomEditorGUILayout.ToggleMultiIntField(Labels.MinimalVpmLilToonVersion, _versionNumberLabels, _packageVpmMinimalLilToonVersion, ref _isPackageVpmMinimalLilToonVersionEditable);
+                                    if (!_isPackageVpmMinimalLilToonVersionEditable)
+                                    {
+                                        Buffer.BlockCopy(_packageMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                    }
+                                    if (CompareVersionArray(_packageVpmMinimalLilToonVersion, _defaultVpmMinimalLilToonVersion) < 0)
+                                    {
+                                        Buffer.BlockCopy(_defaultVpmMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageVpmMinimalLilToonVersion.Length);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1102,6 +1185,24 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             if (guidShaderDir.Length != 0)
             {
                 tagDict.Add("GUID_SHADER_DIR", guidShaderDir);
+            }
+
+            if (_shouldEmitVpmEntries && _shouldEmitLegacyFolders && dstDirAssetPath.StartsWith("Assets"))
+            {
+                if (dstDirAssetPath == "Assets")
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendFormat("\"Assets/Shaders\": \"{0}\",", guidShaderDir)
+                        .AppendLine()
+                        .AppendFormat("\"Assets/Editor\": \"{0}\"", ReadOrGenerateGuid("Assets/Editor", isInProject));
+                    tagDict.Add("PACKAGE_VPM_LEGACY_FOLDERS", sb.ToString());
+                }
+                else
+                {
+                    tagDict.Add(
+                        "PACKAGE_VPM_LEGACY_FOLDERS",
+                        $"\"{dstDirAssetPath.Replace("/", @"\\")}\": \"{ReadOrGenerateGuid(dstDirAssetPath, isInProject)}\"");
+                }
             }
 
             var config = _jsonRoot.ConfigList[_templateIndex];
@@ -1718,6 +1819,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 if (sb.Length != 0)
                 {
                     tagDict.Add("PACKAGE_AUTHOR_KEYVALUES", sb.ToString());
+                }
+
+                if (_shouldEmitVpmEntries)
+                {
+                    tagDict.Add("PACKAGE_VPM_URL", _packageVpmUrl);
+                    tagDict.Add("PACKAGE_VPM_MINIMAL_LILTOON_VERSION", ">=" + string.Join('.', _packageVpmMinimalLilToonVersion));
                 }
             }
 

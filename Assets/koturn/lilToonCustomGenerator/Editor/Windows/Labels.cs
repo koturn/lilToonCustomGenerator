@@ -275,6 +275,25 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         public static GUIContent MinimalLilToonVersion { get; } = new GUIContent(
             "Minimal lilToon version",
             "The custom shader feature is now available starting with lilToon 1.2.11.");
+        /// <summary>
+        /// <see cref="GUIContent"/> for description of "url" entry in package.json.
+        /// </summary>
+        public static GUIContent VpmUrl { get; } = new GUIContent(
+            "URL",
+            "A direct-download link to a zip file of your package.");
+        /// <summary>
+        /// <see cref="GUIContent"/> for description of ToggleLeft of "Mininal lilToon version (VPM)".
+        /// </summary>
+        public static GUIContent MinimalVpmLilToonVersion { get; } = new GUIContent(
+            "Minimal lilToon version (VPM)",
+            "lilToon began supporting VPM starting with version 1.3.7.");
+        /// <summary>
+        /// <see cref="GUIContent"/> for description of "legacyFolders" entry in package.json.
+        /// </summary>
+        public static GUIContent LegacyFolders { get; } = new GUIContent(
+            "Set the destination directory to \"legacyFolders\" when files are generated under the \"Assets/\"",
+            "legacyFolders property can be used to detect and migrate from the old .unitypackage version of your project to this version.\n"
+                + "Any folders found with a matching path will be removed.");
 
         /// <summary>
         /// Calc label width.
