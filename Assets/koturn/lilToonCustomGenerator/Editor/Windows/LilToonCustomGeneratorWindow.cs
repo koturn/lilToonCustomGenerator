@@ -904,13 +904,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _assemblyTrademark = EditorGUILayout.TextField("Trademark", _assemblyTrademark);
                             _assemblyCulture = EditorGUILayout.TextField("Culture", _assemblyCulture);
 
-                            var asmVerFieldRect = EditorGUI.PrefixLabel(
-                                EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight),
-                                new GUIContent("Version"));
                             var assemblyVersionNumbers = _assemblyVersionNumbers;
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
-                                EditorGUI.MultiIntField(asmVerFieldRect, _versionNumberLabels, assemblyVersionNumbers);
+                                CustomEditorGUILayout.LabelMultiIntField("Version", _versionNumberLabels, assemblyVersionNumbers);
                                 if (ccScope.changed)
                                 {
                                     for (int i = 0; i < assemblyVersionNumbers.Length; i++)
@@ -1063,10 +1060,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
-                                var minimalLilToonVersionPrefixLabel = EditorGUI.PrefixLabel(
-                                    EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight),
-                                    Labels.MinimalLilToonVersion);
-                                EditorGUI.MultiIntField(minimalLilToonVersionPrefixLabel, _versionNumberLabels, _packageMinimalLilToonVersion);
+                                CustomEditorGUILayout.LabelMultiIntField(Labels.MinimalLilToonVersion, _versionNumberLabels, _packageMinimalLilToonVersion);
                                 if (ccScope.changed)
                                 {
                                     if (CompareVersionArray(_packageMinimalLilToonVersion, _defaultMinimalLilToonVersion) < 0)

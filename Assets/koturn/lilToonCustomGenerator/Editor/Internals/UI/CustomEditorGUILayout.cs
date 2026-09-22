@@ -59,6 +59,31 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         }
 
         /// <summary>
+        /// Draws MultiIntField with prefix label.
+        /// </summary>
+        /// <param name="label">Label to display next to the toggle.</param>
+        /// <param name="subLabels">Labels for each sub-field.</param>
+        /// <param name="values">Values for each sub-field.</param>
+        public static void LabelMultiIntField(string label, GUIContent[] subLabels, int[] values)
+        {
+            LabelMultiIntField(GetTempLabel(label), subLabels, values);
+        }
+
+        /// <summary>
+        /// Draws MultiIntField with prefix label.
+        /// </summary>
+        /// <param name="label">Label to display next to the toggle.</param>
+        /// <param name="subLabels">Labels for each sub-field.</param>
+        /// <param name="values">Values for each sub-field.</param>
+        public static void LabelMultiIntField(GUIContent label, GUIContent[] subLabels, int[] values)
+        {
+            var rect = EditorGUI.PrefixLabel(
+                EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight),
+                label);
+            EditorGUI.MultiIntField(rect, subLabels, values);
+        }
+
+        /// <summary>
         /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
         /// </summary>
         /// <param name="text"></param>
