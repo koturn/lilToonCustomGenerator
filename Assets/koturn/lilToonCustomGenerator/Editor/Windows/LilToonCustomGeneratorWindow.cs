@@ -1,6 +1,7 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -8,7 +9,6 @@ using Koturn.LilToonCustomGenerator.Editor.Enums;
 using Koturn.LilToonCustomGenerator.Editor.Json;
 using Koturn.LilToonCustomGenerator.Editor.Internals;
 using Koturn.LilToonCustomGenerator.Editor.Internals.UI;
-using System.Linq;
 #if LILTOON
 using lilToon;
 #endif  // LILTOON
@@ -1154,6 +1154,19 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     Debug.LogFormat("Export dir: {0}", exportDirPath);
 
                     var assetPath = AssetPathHelper.AbsPathToAssetPath(exportDirPath);
+                    if (assetPath == "Assets")
+                    {
+                        if (!EditorUtility.DisplayDialog(
+                            "Caution",
+                            "Saving directly to the `Asset` directory is not recommended.\n"
+                                + "Are you sure want to continue?",
+                            "Yes",
+                            "No"))
+                        {
+                            return;
+                        }
+                    }
+
                     Generate(assetPath ?? exportDirPath);
                 }
             }
@@ -1168,13 +1181,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var templateEngine = CreateTemplateEngine();
             var tagDict = templateEngine.TagDictionary;
 
-            var isInProject = dstDirAssetPath.StartsWith("Assets") || dstDirAssetPath.StartsWith("Packages");
-            if (isInProject)
-            {
-                tagDict.Add("BASE_DIRECTORY", dstDirAssetPath + "/");
-            }
-
             var filePathSet = new HashSet<string>();
+            var nonEmptyDirNameList = new List<string>(2);
             foreach (var targetDirName in new[] { "Editor", "Shaders" })
             {
                 var targetDirPath = Path.Combine(dstDirAssetPath, targetDirName);
@@ -1182,13 +1190,43 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     continue;
                 }
-                foreach (var filePath in Directory.EnumerateFiles(targetDirPath, "*.*", SearchOption.AllDirectories))
+
+                var isEmptyDir = true;
+                foreach (var filePath in Directory.EnumerateFiles(targetDirPath, "*.*", SearchOption.AllDirectories)
+                    .Where(filePath => !filePath.EndsWith(".meta")))
                 {
-                    if (!filePath.EndsWith(".meta"))
-                    {
-                        filePathSet.Add(Path.GetFullPath(filePath));
-                    }
+                    filePathSet.Add(Path.GetFullPath(filePath));
+                    isEmptyDir = false;
                 }
+
+                if (!isEmptyDir)
+                {
+                    nonEmptyDirNameList.Add(targetDirName);
+                }
+            }
+
+            if (nonEmptyDirNameList.Count > 0)
+            {
+                var message = new StringBuilder()
+                    .AppendFormat(
+                        "Destination directory: `{0}` contains non-empty {1} directories.",
+                        dstDirAssetPath,
+                        string.Join(" and ", nonEmptyDirNameList.Select(dirName => $"`{dirName}`")))
+                    .AppendLine()
+                    .Append("The files in those directories will be overwritten.")
+                    .AppendLine()
+                    .Append("Are you sure want to continue?")
+                    .ToString();
+                if (!EditorUtility.DisplayDialog("Caution", message, "Yes", "No"))
+                {
+                    return;
+                }
+            }
+
+            var isInProject = dstDirAssetPath.StartsWith("Assets") || dstDirAssetPath.StartsWith("Packages");
+            if (isInProject)
+            {
+                tagDict.Add("BASE_DIRECTORY", dstDirAssetPath + "/");
             }
 
             // Generate `Shaders` directory and obtain its GUID.
