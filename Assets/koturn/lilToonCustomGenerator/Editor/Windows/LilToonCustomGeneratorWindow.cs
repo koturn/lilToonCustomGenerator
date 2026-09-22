@@ -430,7 +430,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to output the package.json entries for VPM.
         /// </summary>
-        private bool _shouldEmitVpmEntries;
+        private bool _shouldEmitVpmEntries = true;
         /// <summary>
         /// True to edit value for name in package.json
         /// </summary>
