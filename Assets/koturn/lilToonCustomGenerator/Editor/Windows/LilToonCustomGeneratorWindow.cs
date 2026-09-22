@@ -51,6 +51,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "TwoPass"
         };
         /// <summary>
+        /// Default minimal lilToon version array.
+        /// </summary>
+        private static readonly int[] _defaultMinimalLilToonVersion = { 1, 2, 11 };
+        /// <summary>
         /// Invalid characters for shader name.
         /// </summary>
         private static readonly char[] _invalidShaderNameChars = { '\n', '\r', '"' };
@@ -404,6 +408,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private string _packageAuthorUrl;
         /// <summary>
+        /// Minimal lilToon version.
+        /// </summary>
+        private int[] _packageMinimalLilToonVersion;
+        /// <summary>
         /// True to edit value for name in package.json
         /// </summary>
         private bool _isPackageNameEditable = false;
@@ -470,6 +478,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _packageDocumentationUrl = "";
             _packageLicenseUrl = "";
             _packageLicense = "";
+            _packageMinimalLilToonVersion = new int[_defaultMinimalLilToonVersion.Length];
+            Buffer.BlockCopy(_defaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
 
             var packageKeywordList = _packageKeywordReorderableListContaner.List;
             if (packageKeywordList.Count == 0)
@@ -898,7 +908,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         using (new EditorGUI.IndentLevelScope(2))
                         using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
-                        using (new LabelWidthScope(Labels.CalcLabelWidth("Minimal Unity version") + 34.0f))
+                        using (new LabelWidthScope(Labels.CalcLabelWidth(Labels.MinimalLilToonVersion) + 34.0f))
                         {
                             _packageName = CustomEditorGUILayout.ToggleTextField("Name", _packageName, ref _isPackageNameEditable);
                             if (!_isPackageNameEditable)
@@ -996,6 +1006,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 EditorGUILayout.HelpBox(
                                     "Name is required in the author section.",
                                     MessageType.Warning);
+                            }
+
+                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            {
+                                var minimalLilToonVersionPrefixLabel = EditorGUI.PrefixLabel(
+                                    EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight),
+                                    Labels.MinimalLilToonVersion);
+                                EditorGUI.MultiIntField(minimalLilToonVersionPrefixLabel, _versionNumberLabels, _packageMinimalLilToonVersion);
+                                if (ccScope.changed)
+                                {
+                                    if (CompareVersionArray(_packageMinimalLilToonVersion, _defaultMinimalLilToonVersion) < 0)
+                                    {
+                                        Buffer.BlockCopy(_defaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                    }
+                                }
                             }
                         }
                     }
@@ -1640,6 +1665,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("PACKAGE_DOCUMENTATION_URL", EscapeString(_packageDocumentationUrl));
                 tagDict.Add("PACKAGE_LICENSE_URL", EscapeString(_packageLicenseUrl));
                 tagDict.Add("PACKAGE_LICENSE", EscapeString(_packageLicense));
+                tagDict.Add("PACKAGE_MINIMAL_LILTOON_VERSION", string.Join(".", _packageMinimalLilToonVersion));
 
                 sb.Clear();
                 index = 0;
@@ -1923,6 +1949,53 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Compare two version array.
+        /// </summary>
+        /// <param name="versions1">First version array.</param>
+        /// <param name="versions2">Second version array.</param>
+        /// <returns>
+        /// 1: <paramref name="versions1"/> is greater than <paramref name="versions2"/>.
+        /// 0: <paramref name="versions1"/> is equals to <paramref name="versions2"/>.
+        /// -1: <paramref name="versions1"/> is less than <paramref name="versions2"/>.
+        /// </returns>
+        private static int CompareVersionArray(int[] versions1, int[] versions2)
+        {
+            int count = Math.Min(versions1.Length, versions2.Length);
+            int ret = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (versions1[i] > versions2[i])
+                {
+                    ret = 1;
+                    break;
+                }
+
+                if (versions1[i] < versions2[i])
+                {
+                    ret = -1;
+                    break;
+                }
+            }
+
+            if (ret != 0)
+            {
+                return ret;
+            }
+
+            var versions = versions1.Length > versions2.Length ? versions1 : versions2;
+            for (int i = count; i < versions.Length; i++)
+            {
+                if (versions[i] > 0)
+                {
+                    ret = versions == versions1 ? 1 : -1;
+                    break;
+                }
+            }
+
+            return ret;
         }
 
         /// <summary>

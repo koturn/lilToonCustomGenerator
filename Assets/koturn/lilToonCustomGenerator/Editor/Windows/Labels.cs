@@ -269,6 +269,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         public static GUIContent GenerateAssemblyInfo { get; } = new GUIContent(
             "Generate AssemblyInfo.cs",
             "By including AssemblyInfo.cs, you can add information to the DLLs located in the Library/ScriptAssemblies folder.");
+        /// <summary>
+        /// <see cref="GUIContent"/> for description of ToggleLeft of "Mininal lilToon version".
+        /// </summary>
+        public static GUIContent MinimalLilToonVersion { get; } = new GUIContent(
+            "Minimal lilToon version",
+            "The custom shader feature is now available starting with lilToon 1.2.11.");
 
         /// <summary>
         /// Calc label width.

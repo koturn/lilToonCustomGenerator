@@ -16,16 +16,17 @@
 !!ifnotempty:PACKAGE_LICENSE!!
   "license": "%%PACKAGE_LICENSE%%",
 !!endif!!
-!!ifempty:PACKAGE_AUTHOR_KEYVALUES!!
-  "keywords": [
-    %%PACKAGE_KEYWORDS:keepindent%%
-  ]
-!!else!!
+!!ifnotempty:PACKAGE_KEYWORDS!!
   "keywords": [
     %%PACKAGE_KEYWORDS:keepindent%%
   ],
+!!endif!!
+!!ifempty:PACKAGE_AUTHOR_KEYVALUES!!
   "author": {
     %%PACKAGE_AUTHOR_KEYVALUES:keepindent%%
-  }
+  },
 !!endif!!
+  "dependencies": {
+    "jp.lilxyzw.liltoon": "%%PACKAGE_MINIMAL_LILTOON_VERSION%%"
+  }
 }

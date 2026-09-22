@@ -130,6 +130,19 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         /// <param name="isChecked">Indicates whether the toggle is checked.</param>
         public static void ToggleMultiIntField(string label, GUIContent[] subLabels, int[] values, ref bool isChecked)
         {
+            ToggleMultiIntField(GetTempLabel(label), subLabels, values, ref isChecked);
+        }
+
+        /// <summary>
+        /// Draws a toggle with multiple integer fields next to it.
+        /// The fields are disabled when the toggle is unchecked.
+        /// </summary>
+        /// <param name="label">Label to display next to the toggle.</param>
+        /// <param name="subLabels">Labels for each sub-field.</param>
+        /// <param name="values">Values for each sub-field.</param>
+        /// <param name="isChecked">Indicates whether the toggle is checked.</param>
+        public static void ToggleMultiIntField(GUIContent label, GUIContent[] subLabels, int[] values, ref bool isChecked)
+        {
             var rowRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
             var toggleRect = new Rect(rowRect.x - (IndentSpaceUnit + 2.0f), rowRect.y, EditorGUIUtility.labelWidth + IndentSpaceUnit, rowRect.height);
             isChecked = EditorGUI.ToggleLeft(toggleRect, label, isChecked);
