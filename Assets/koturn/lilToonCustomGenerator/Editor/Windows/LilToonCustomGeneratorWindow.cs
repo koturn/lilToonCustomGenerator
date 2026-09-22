@@ -392,13 +392,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private string _packageDocumentationUrl;
         /// <summary>
-        /// Value of "licenseUrl" in package.json.
-        /// </summary>
-        private string _packageLicenseUrl;
-        /// <summary>
         /// Value of "license" in package.json.
         /// </summary>
         private string _packageLicense;
+        /// <summary>
+        /// Value of "licensesUrl" in package.json.
+        /// </summary>
+        private string _packageLicensesUrl;
         /// <summary>
         /// Values of "author.name" in package.json.
         /// </summary>
@@ -500,8 +500,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _packageUnityVersion = "2019.4";
             _packageChangeLogUrl = "";
             _packageDocumentationUrl = "";
-            _packageLicenseUrl = "";
             _packageLicense = "";
+            _packageLicensesUrl = "";
             _packageMinimalLilToonVersion = new int[_defaultMinimalLilToonVersion.Length];
             Buffer.BlockCopy(_defaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
             _packageVpmMinimalLilToonVersion = new int[_defaultVpmMinimalLilToonVersion.Length];
@@ -1048,8 +1048,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _packageUnityVersion = EditorGUILayout.TextField("Minimal Unity version", _packageUnityVersion);
                             _packageChangeLogUrl = EditorGUILayout.TextField("Change log URL", _packageChangeLogUrl);
                             _packageDocumentationUrl = EditorGUILayout.TextField("Documentation URL", _packageDocumentationUrl);
-                            _packageLicenseUrl = EditorGUILayout.TextField("License URL", _packageLicenseUrl);
                             _packageLicense = EditorGUILayout.TextField("License type", _packageLicense);
+                            _packageLicensesUrl = EditorGUILayout.TextField("Licenses URL", _packageLicensesUrl);
                             _packageKeywordReorderableListContaner.Draw();
                             _packageAuthorName = EditorGUILayout.TextField("Author name", _packageAuthorName);
                             _packageAuthorEmail = EditorGUILayout.TextField("Author E-mail", _packageAuthorEmail);
@@ -1828,8 +1828,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("PACKAGE_UNITY_VERSION", EscapeString(_packageUnityVersion));
                 tagDict.Add("PACKAGE_CHANGELOG_URL", EscapeString(_packageChangeLogUrl));
                 tagDict.Add("PACKAGE_DOCUMENTATION_URL", EscapeString(_packageDocumentationUrl));
-                tagDict.Add("PACKAGE_LICENSE_URL", EscapeString(_packageLicenseUrl));
                 tagDict.Add("PACKAGE_LICENSE", EscapeString(_packageLicense));
+                tagDict.Add("PACKAGE_LICENSES_URL", EscapeString(_packageLicensesUrl));
                 tagDict.Add("PACKAGE_MINIMAL_LILTOON_VERSION", string.Join(".", _packageMinimalLilToonVersion));
 
                 sb.Clear();

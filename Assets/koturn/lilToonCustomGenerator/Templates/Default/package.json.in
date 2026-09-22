@@ -10,11 +10,11 @@
 !!ifnotempty:PACKAGE_DOCUMENTATION_URL!!
   "documentationUrl": "%%PACKAGE_DOCUMENTATION_URL%%",
 !!endif!!
-!!ifnotempty:PACKAGE_LICENSE_URL!!
-  "licensesUrl": "%%PACKAGE_LICENSE_URL%%",
-!!endif!!
 !!ifnotempty:PACKAGE_LICENSE!!
   "license": "%%PACKAGE_LICENSE%%",
+!!endif!!
+!!ifnotempty:PACKAGE_LICENSES_URL!!
+  "licensesUrl": "%%PACKAGE_LICENSES_URL%%",
 !!endif!!
 !!ifnotempty:PACKAGE_KEYWORDS!!
   "keywords": [
