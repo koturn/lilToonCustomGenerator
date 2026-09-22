@@ -511,6 +511,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             if (packageKeywordList.Count == 0)
             {
                 packageKeywordList.Add("lilToon");
+                packageKeywordList.Add("ScriptedImporter");
                 packageKeywordList.Add("Material");
                 packageKeywordList.Add("Custom shader");
             }
