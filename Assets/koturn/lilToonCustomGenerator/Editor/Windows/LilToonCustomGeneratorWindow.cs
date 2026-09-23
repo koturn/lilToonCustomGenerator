@@ -63,9 +63,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private static readonly int[] _defaultVpmMinimalLilToonVersion = { 1, 3, 7 };
         /// <summary>
+        /// lilToon 1.2.11 version array.
+        /// </summary>
+        private static readonly int[] _lilToonVersion1211 = { 1, 2, 11 };
+        /// <summary>
+        /// lilToon 1.3.0 version array.
+        /// </summary>
+        private static readonly int[] _lilToonVersion130 = { 1, 3, 0 };
+        /// <summary>
         /// lilToon 1.4.0 version array.
         /// </summary>
         private static readonly int[] _lilToonVersion140 = { 1, 4, 0 };
+        /// <summary>
+        /// lilToon 1.4.1 version array.
+        /// </summary>
+        private static readonly int[] _lilToonVersion141 = { 1, 4, 1 };
         /// <summary>
         /// Invalid characters for shader name.
         /// </summary>
@@ -474,6 +486,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// True to edit value for display name in package.json
         /// </summary>
         private bool _isPackageDisplayNameEditable;
+        /// <summary>
+        /// True to edit value for minimal lilToon version in package.json
+        /// </summary>
+        private bool _isPackageMinimalLilToonVersionEditable = false;
         /// <summary>
         /// True to edit value for minimal lilToon version in package.json for VPM.
         /// </summary>
@@ -1167,10 +1183,19 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     MessageType.Warning);
                             }
 
+                            var minimalLilToonVersion = _v2fMemberReorderableListContainer.List.Count > 0 && !_shouldEmitVer140Workaround ? _lilToonVersion141
+                                : _isPropertySearchSupported ? _lilToonVersion140
+                                : !_shouldGetVersionFromPackageJson ? _lilToonVersion130
+                                : _lilToonVersion1211;
+
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
-                                CustomEditorGUILayout.LabelMultiIntField(Labels.MinimalLilToonVersion, _versionNumberLabels, _packageMinimalLilToonVersion);
-                                if (ccScope.changed)
+                                CustomEditorGUILayout.ToggleMultiIntField(Labels.MinimalLilToonVersion, _versionNumberLabels, _packageMinimalLilToonVersion, ref _isPackageMinimalLilToonVersionEditable);
+                                if (!_isPackageMinimalLilToonVersionEditable)
+                                {
+                                    Buffer.BlockCopy(minimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                }
+                                else if (ccScope.changed)
                                 {
                                     if (CompareVersionArray(_packageMinimalLilToonVersion, _defaultMinimalLilToonVersion) < 0)
                                     {
@@ -1178,13 +1203,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     }
                                 }
 
-                                var hasVersionWarning = false;
+                                //
+                                // Compare minimal unity version and lilToon version.
+                                //
                                 foreach (var checkTuple in _lilToonUnityVersionCheckTuples)
                                 {
                                     if (CompareVersionArray(_packageMinimalLilToonVersion, checkTuple.Item1) >= 0
                                         && CompareVersionArray(_packageUnityVersion, checkTuple.Item2) < 0)
                                     {
-                                        hasVersionWarning = true;
                                         using (new EditorGUILayout.HorizontalScope())
                                         {
                                             EditorGUILayout.HelpBox(checkTuple.Item3, MessageType.Warning);
@@ -1198,8 +1224,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     }
                                 }
 
+                                //
+                                // Check whether old lilToon version has been released or not.
+                                //
                                 if (_packageMinimalLilToonVersion[0] == 1 && _packageMinimalLilToonVersion[1] > 10)
                                 {
+                                    // Major - Minor
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
@@ -1216,6 +1246,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 else if (_lilToonMaxPatchNumberDict.TryGetValue(((uint)_packageMinimalLilToonVersion[0] << 16) | (uint)_packageMinimalLilToonVersion[1], out var patchVersion)
                                     && _packageMinimalLilToonVersion[2] > patchVersion)
                                 {
+                                    // Major and Minor - Patch
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
@@ -1229,20 +1260,54 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     }
                                 }
 
-                                if (!hasVersionWarning
-                                    && _v2fMemberReorderableListContainer.List.Count > 0
+                                //
+                                // Check lilToon version and output options.
+                                //
+                                if (_v2fMemberReorderableListContainer.List.Count > 0
                                     && !_shouldEmitVer140Workaround
-                                    && CompareVersionArray(_packageMinimalLilToonVersion, _lilToonVersion140) <= 0)
+                                    && CompareVersionArray(_packageMinimalLilToonVersion, _lilToonVersion141) < 0)
                                 {
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
                                             "There is at least one v2fmember, and even though no workaround for lilToon 1.4.0 has been specified, the minimum lilToon version is set to 1.4.0 or lower.\n"
-                                                + "Please consider either fixing the \"Minimal lilToon version\" or checking the box for \"Consider bug in the LIL_CUSTOM_V2F_MEMBER macro in lilToon 1.4.0\".",
+                                                + "Please consider either setting the minimum lilToon version to 1.4.1 or checking the box for \"" + Labels.WorkaroundForLilToon140.text + "\".",
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
-                                            _shouldEmitVer140Workaround = true;
+                                            Buffer.BlockCopy(_lilToonVersion141, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                            GUI.FocusControl(null);
+                                        }
+                                    }
+                                }
+                                else if (_isPropertySearchSupported
+                                    && CompareVersionArray(_packageMinimalLilToonVersion, _lilToonVersion140) < 0)
+                                {
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        EditorGUILayout.HelpBox(
+                                            "Property search was implemented in lilToon 1.4.0 and methods such as `lilEditorGUI.LocalizedProperty()` were also implemented in that version.\n"
+                                                + "Please consider either setting the minimum lilToon version to 1.4.0 or checking the box for \"" + Labels.SupportPropertySearch.text + "\"",
+                                            MessageType.Warning);
+                                        if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                        {
+                                            Buffer.BlockCopy(_lilToonVersion140, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                            GUI.FocusControl(null);
+                                        }
+                                    }
+                                }
+                                else if (!_shouldGetVersionFromPackageJson
+                                    && CompareVersionArray(_packageMinimalLilToonVersion, _lilToonVersion130) < 0)
+                                {
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        EditorGUILayout.HelpBox(
+                                            "The `lilConstans` class was introduced in lilToon 1.3.0.\n"
+                                                + "Please consider either setting the minimum lilToon version to 1.3.0 or checking the box for \"" + Labels.GetVersionFromPackageJson.text + "\".",
+                                            MessageType.Warning);
+                                        if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                        {
+                                            Buffer.BlockCopy(_lilToonVersion130, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                             GUI.FocusControl(null);
                                         }
                                     }
