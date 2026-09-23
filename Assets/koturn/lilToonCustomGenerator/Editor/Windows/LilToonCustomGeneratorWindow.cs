@@ -1873,7 +1873,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 if (_shouldEmitVpmEntries)
                 {
                     tagDict.Add("PACKAGE_VPM_URL", _packageVpmUrl);
+#if UNITY_2021_2_OR_NEWER
                     tagDict.Add("PACKAGE_VPM_MINIMAL_LILTOON_VERSION", ">=" + string.Join('.', _packageVpmMinimalLilToonVersion));
+#else
+                    tagDict.Add("PACKAGE_VPM_MINIMAL_LILTOON_VERSION", ">=" + string.Join(".", _packageVpmMinimalLilToonVersion));
+#endif  // UNITY_2021_2_OR_NEWER
                 }
             }
 
