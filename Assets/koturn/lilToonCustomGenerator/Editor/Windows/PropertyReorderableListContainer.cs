@@ -765,9 +765,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     propDrawerType.intValue = Array.IndexOf(ShaderPropertyDefinition.AllDrawerSelections, drawerSelections[drawerIndex]);
                 }
 
-                if (ccScope.changed && propDescription.stringValue.Length == 0)
+                if (ccScope.changed)
                 {
-                    propDescription.stringValue = ShaderPropertyDefinition.GetDefaultDescription((DrawerType)propDrawerType.intValue);
+                    var defaultDescription = ShaderPropertyDefinition.GetDefaultDescription((DrawerType)propDrawerType.intValue);
+                    if (defaultDescription.Length > 0)
+                    {
+                        propDescription.stringValue = defaultDescription;
+                    }
                 }
             }
 

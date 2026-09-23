@@ -1292,8 +1292,6 @@ namespace Koturn.LilToonCustomGenerator.Editor
                     return "sDecalAnimations";
                 case DrawerType.LilDecalSub:
                     return "sDecalSubParams";
-                case DrawerType.LilEnum:
-                    return "UV Mode|UV0|UV1|UV2|UV3|MatCap";
                 case DrawerType.LilEnumLabel:
                     return "sAlphaMaskModes";
                 case DrawerType.LilFF:
