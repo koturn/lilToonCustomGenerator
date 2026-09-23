@@ -51,6 +51,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "TwoPass"
         };
         /// <summary>
+        /// Default minimal unity version array for package.json.
+        /// </summary>
+        private static readonly int[] _defaultMinimalUnityVersion = { 2019, 4 };
+        /// <summary>
         /// Default minimal lilToon version array.
         /// </summary>
         private static readonly int[] _defaultMinimalLilToonVersion = { 1, 2, 11 };
@@ -58,6 +62,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// Default minimal lilToon version array for VPM.
         /// </summary>
         private static readonly int[] _defaultVpmMinimalLilToonVersion = { 1, 3, 7 };
+        /// <summary>
+        /// lilToon 1.4.0 version array.
+        /// </summary>
+        private static readonly int[] _lilToonVersion140 = { 1, 4, 0 };
         /// <summary>
         /// Invalid characters for shader name.
         /// </summary>
@@ -72,6 +80,17 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             new GUIContent("Patch"),
             new GUIContent("Build")
         };
+        /// <summary>
+        /// Array of the tuple; Unity version, lilToon version and message.
+        /// </summary>
+        private static Tuple<int[], int[], string>[] _lilToonUnityVersionCheckTuples;
+        /// <summary>
+        /// <para>Maximum patch number dict of lilToon.</para>
+        /// <para>key: The upper 16 bits represent the major version, and the lower 16 bits represent the minor version.</para>
+        /// <para>Value: Maximum patch number.</para>
+        /// </summary>
+        private static Dictionary<uint, int> _lilToonMaxPatchNumberDict;
+
         /// <summary>
         /// <see cref="ReorderableListContainer{T}"/> for <see cref="ShaderPropertyDefinition"/>.
         /// </summary>
@@ -382,7 +401,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// Value of "unity" in package.json.
         /// </summary>
-        private string _packageUnityVersion;
+        private int[] _packageUnityVersion;
+        /// <summary>
+        /// Value of "unityRelease" in package.json.
+        /// </summary>
+        private string _packageUnityReleaseVersion;
         /// <summary>
         /// Value of "changelogUrl" in package.json.
         /// </summary>
@@ -497,15 +520,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _packageVersion = "1.0.0";
             _packageDisplayName = _shaderTitle;
             _packageDescription = "Customized lilToon shaders.";
-            _packageUnityVersion = "2019.4";
+            _packageUnityVersion = new int[_defaultMinimalUnityVersion.Length];
+            Buffer.BlockCopy(_defaultMinimalUnityVersion, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
+            _packageUnityReleaseVersion = "";
             _packageChangeLogUrl = "";
             _packageDocumentationUrl = "";
             _packageLicense = "";
             _packageLicensesUrl = "";
-            _packageMinimalLilToonVersion = new int[_defaultMinimalLilToonVersion.Length];
-            Buffer.BlockCopy(_defaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
-            _packageVpmMinimalLilToonVersion = new int[_defaultVpmMinimalLilToonVersion.Length];
-            Buffer.BlockCopy(_defaultVpmMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageVpmMinimalLilToonVersion.Length);
+            _packageMinimalLilToonVersion = new[] { 1, 4, 0 };
+            _packageVpmMinimalLilToonVersion = new[] { 1, 4, 0 };
 
             var packageKeywordList = _packageKeywordReorderableListContaner.List;
             if (packageKeywordList.Count == 0)
@@ -533,6 +556,39 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 { nameof(_namespace), ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor" },
                 { nameof(_assemblyDescription), $"Material inspector for \"{_shaderName}/*\"." },
                 { nameof(_packageName), ConvertShaderNameToPackageName(_shaderName) }
+            };
+            _lilToonUnityVersionCheckTuples = new[]
+            {
+                Tuple.Create(
+                    new[] { 2, 0, 0 },
+                    new[] { 2022, 1 },
+                    "Starting with lilToon 2.0.0, it is compatible only with Unity 2022 and later.\n"
+                        + "Please consider fixing either the \"Minimal lilToon version\" or the \"Minimal Unity Version\"."),
+                Tuple.Create(
+                    new[] { 1, 10, 0 },
+                    new[] { 2021, 2 },
+                    "The C# scripts of lilToon 1.10.0 cannot be compiled unless using Unity 2021.2 or later.\n"
+                        + "Please consider fixing either the \"Minimal lilToon version\" or the \"Minimal Unity Version\"."),
+                Tuple.Create(
+                    new[] { 1, 9, 0 },
+                    new[] { 2020, 2 },
+                    "The C# scripts of lilToon 1.9.0 cannot be compiled unless using Unity 2020.2 or later.\n"
+                        + "Please consider fixing either the \"Minimal lilToon version\" or the \"Minimal Unity Version\"."),
+            };
+            _lilToonMaxPatchNumberDict = new Dictionary<uint, int>()
+            {
+                { (uint)1 << 16 | (uint)2, 12 },
+                { (uint)1 << 16 | (uint)3, 7 },
+                { (uint)1 << 16 | (uint)4, 1 },
+                { (uint)1 << 16 | (uint)5, 1 },
+                { (uint)1 << 16 | (uint)6, 1 },
+                { (uint)1 << 16 | (uint)7, 3 },
+                { (uint)1 << 16 | (uint)8, 5 },
+                { (uint)1 << 16 | (uint)9, 0 },
+                { (uint)1 << 16 | (uint)10, 3 },
+                { (uint)2 << 16 | (uint)0, 0 },
+                { (uint)2 << 16 | (uint)1, 10 },
+                { (uint)2 << 16 | (uint)2, 1 },
             };
         }
 
@@ -1045,7 +1101,36 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 _packageDisplayName = _shaderTitle;
                             }
                             _packageDescription = EditorGUILayout.TextField("Description", _packageDescription);
-                            _packageUnityVersion = EditorGUILayout.TextField("Minimal Unity version", _packageUnityVersion);
+
+                            using (var ccScope = new EditorGUI.ChangeCheckScope())
+                            {
+                                using (new EditorGUILayout.HorizontalScope())
+                                {
+                                    CustomEditorGUILayout.LabelMultiIntField("Minimal Unity version", _versionNumberLabels, _packageUnityVersion);
+                                    if (ccScope.changed)
+                                    {
+                                        if (CompareVersionArray(_packageUnityVersion, _defaultMinimalUnityVersion) < 0)
+                                        {
+                                            Buffer.BlockCopy(_defaultMinimalUnityVersion, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
+                                        }
+                                    }
+                                    EditorGUI.indentLevel -= 2;
+                                    using (new LabelWidthScope(Labels.CalcLabelWidth("Release") + EditorGUI.indentLevel * 15.0f + 2.0f))
+                                    {
+                                        _packageUnityReleaseVersion = EditorGUILayout.TextField("Release", _packageUnityReleaseVersion);
+                                    }
+                                    EditorGUI.indentLevel += 2;
+                                }
+
+                                if (_packageUnityReleaseVersion.Length > 0 && !RegexProvider.UnityReleaseVersionRegex.IsMatch(_packageUnityReleaseVersion))
+                                {
+                                    EditorGUILayout.HelpBox(
+                                        "`unityRelease` must be in the format <update-number>[bfp]<release-number>.",
+                                        MessageType.Error);
+                                    errorCount++;
+                                }
+                            }
+
                             _packageChangeLogUrl = EditorGUILayout.TextField("Change log URL", _packageChangeLogUrl);
                             _packageDocumentationUrl = EditorGUILayout.TextField("Documentation URL", _packageDocumentationUrl);
                             _packageLicense = EditorGUILayout.TextField("License type", _packageLicense);
@@ -1069,6 +1154,76 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     if (CompareVersionArray(_packageMinimalLilToonVersion, _defaultMinimalLilToonVersion) < 0)
                                     {
                                         Buffer.BlockCopy(_defaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                    }
+                                }
+
+                                var hasVersionWarning = false;
+                                foreach (var checkTuple in _lilToonUnityVersionCheckTuples)
+                                {
+                                    if (CompareVersionArray(_packageMinimalLilToonVersion, checkTuple.Item1) >= 0
+                                        && CompareVersionArray(_packageUnityVersion, checkTuple.Item2) < 0)
+                                    {
+                                        hasVersionWarning = true;
+                                        using (new EditorGUILayout.HorizontalScope())
+                                        {
+                                            EditorGUILayout.HelpBox(checkTuple.Item3, MessageType.Warning);
+                                            if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                            {
+                                                Buffer.BlockCopy(checkTuple.Item2, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
+                                                GUI.FocusControl(null);
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+
+                                if (_packageMinimalLilToonVersion[0] == 1 && _packageMinimalLilToonVersion[1] > 10)
+                                {
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        EditorGUILayout.HelpBox(
+                                            $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.\n",
+                                            MessageType.Warning);
+                                        if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                        {
+                                            _packageMinimalLilToonVersion[1] = 10;
+                                            _packageMinimalLilToonVersion[2] = 3;
+                                            GUI.FocusControl(null);
+                                        }
+                                    }
+                                }
+                                else if (_lilToonMaxPatchNumberDict.TryGetValue(((uint)_packageMinimalLilToonVersion[0] << 16) | (uint)_packageMinimalLilToonVersion[1], out var patchVersion)
+                                    && _packageMinimalLilToonVersion[2] > patchVersion)
+                                {
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        EditorGUILayout.HelpBox(
+                                            $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.\n",
+                                            MessageType.Warning);
+                                        if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                        {
+                                            _packageMinimalLilToonVersion[2] = patchVersion;
+                                            GUI.FocusControl(null);
+                                        }
+                                    }
+                                }
+
+                                if (!hasVersionWarning
+                                    && _v2fMemberReorderableListContainer.List.Count > 0
+                                    && !_shouldEmitVer140Workaround
+                                    && CompareVersionArray(_packageMinimalLilToonVersion, _lilToonVersion140) <= 0)
+                                {
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        EditorGUILayout.HelpBox(
+                                            "There is at least one v2fmember, and even though no workaround for lilToon 1.4.0 has been specified, the minimum lilToon version is set to 1.4.0 or lower.\n"
+                                                + "Please consider either fixing the \"Minimal lilToon version\" or checking the box for \"Consider bug in the LIL_CUSTOM_V2F_MEMBER macro in lilToon 1.4.0\".",
+                                            MessageType.Warning);
+                                        if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                        {
+                                            _shouldEmitVer140Workaround = true;
+                                            GUI.FocusControl(null);
+                                        }
                                     }
                                 }
                             }
@@ -1125,6 +1280,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     if (CompareVersionArray(_packageVpmMinimalLilToonVersion, _defaultVpmMinimalLilToonVersion) < 0)
                                     {
                                         Buffer.BlockCopy(_defaultVpmMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageVpmMinimalLilToonVersion.Length);
+                                    }
+
+                                    if (CompareVersionArray(_packageVpmMinimalLilToonVersion, _packageMinimalLilToonVersion) < 0)
+                                    {
+                                        using (new EditorGUILayout.HorizontalScope())
+                                        {
+                                            EditorGUILayout.HelpBox(
+                                                "Version number is lower than that of the \"Minimal lilToon version\".",
+                                                MessageType.Warning);
+                                            if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                            {
+                                                Buffer.BlockCopy(_packageMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageVpmMinimalLilToonVersion.Length);
+                                                GUI.FocusControl(null);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1822,12 +1992,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("PACKAGE_VERSION", EscapeString(_packageVersion));
                 tagDict.Add("PACKAGE_DISPLAY_NAME", EscapeString(_packageDisplayName));
                 tagDict.Add("PACKAGE_DESCRIPTION", EscapeString(_packageDescription));
-                tagDict.Add("PACKAGE_UNITY_VERSION", EscapeString(_packageUnityVersion));
+#if UNITY_2021_2_OR_NEWER
+                tagDict.Add("PACKAGE_UNITY_VERSION", string.Join('.', _packageUnityVersion));
+#else
+                tagDict.Add("PACKAGE_UNITY_VERSION", string.Join(".", _packageUnityVersion));
+#endif  // UNITY_2021_2_OR_NEWER
+                tagDict.Add("PACKAGE_UNITY_RELEASE_VERSION", EscapeString(_packageUnityReleaseVersion));
                 tagDict.Add("PACKAGE_CHANGELOG_URL", EscapeString(_packageChangeLogUrl));
                 tagDict.Add("PACKAGE_DOCUMENTATION_URL", EscapeString(_packageDocumentationUrl));
                 tagDict.Add("PACKAGE_LICENSE", EscapeString(_packageLicense));
                 tagDict.Add("PACKAGE_LICENSES_URL", EscapeString(_packageLicensesUrl));
+#if UNITY_2021_2_OR_NEWER
+                tagDict.Add("PACKAGE_MINIMAL_LILTOON_VERSION", string.Join('.', _packageMinimalLilToonVersion));
+#else
                 tagDict.Add("PACKAGE_MINIMAL_LILTOON_VERSION", string.Join(".", _packageMinimalLilToonVersion));
+#endif  // UNITY_2021_2_OR_NEWER
 
                 sb.Clear();
                 index = 0;

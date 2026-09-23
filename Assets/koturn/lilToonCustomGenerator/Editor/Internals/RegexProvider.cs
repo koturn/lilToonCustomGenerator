@@ -72,6 +72,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         [StringSyntax(StringSyntaxAttribute.Regex)]
         private const string VersionNumberPattern = @"^(0|[1-9]\d*)(?:\.(0|[1-9]\d*)(?:\.(0|[1-9]\d*)(?:\.((0|[1-9]\d*)))?)?)?$";
         /// <summary>
+        /// <see cref="Regex"/> pattern <see cref="string"/> matching Unity release version.
+        /// </summary>
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string UnityReleaseVersionPattern = @"^\d+[bfp]\d+$";
+        /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching version number of semantic versioning 2.0.0.
         /// </summary>
         /// <remarks>
@@ -297,6 +302,28 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// Cache field of <see cref="VersionNumberRegex"/>.
         /// </summary>
         private static Regex _versionNumberRegex;
+#endif  // SUPPORT_GENERATED_REGEX_PROPERTY
+
+        /// <summary>
+        /// <see cref="Regex"/> instance matching unity release version.
+        /// </summary>
+#if SUPPORT_GENERATED_REGEX_PROPERTY
+        [GeneratedRegex(UnityReleaseVersionPattern, Options)]
+        public static partial Regex UnityReleaseVersionRegex { get; }
+#elif SUPPORT_GENERATED_REGEX
+        public static Regex UnityReleaseVersionRegex => GetUnityReleaseVersionRegex();
+        /// <summary>
+        /// Get <see cref="Regex"/> instance matching unity release version.
+        /// </summary>
+        /// <returns><see cref="Regex"/> instance matching version number.</returns>
+        [GeneratedRegex(UnityReleaseVersionPattern, Options)]
+        private static partial Regex GetUnityReleaseVersionRegex();
+#else
+        public static Regex UnityReleaseVersionRegex => _unityReleaseVersionRegex ?? (_unityReleaseVersionRegex = new Regex(UnityReleaseVersionPattern, Options));
+        /// <summary>
+        /// Cache field of <see cref="UnityReleaseVersionRegex"/>.
+        /// </summary>
+        private static Regex _unityReleaseVersionRegex;
 #endif  // SUPPORT_GENERATED_REGEX_PROPERTY
 
         /// <summary>

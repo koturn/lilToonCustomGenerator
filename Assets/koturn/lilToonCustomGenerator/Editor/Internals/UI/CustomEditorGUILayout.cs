@@ -86,7 +86,27 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         /// <summary>
         /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="text">Button text.</param>
+        /// <returns>True if checked, false otherwise.</returns>
+        public static bool ButtonAdjusted(string text)
+        {
+            return ButtonAdjusted(GetTempLabel(text));
+        }
+
+        /// <summary>
+        /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
+        /// </summary>
+        /// <param name="label">Button label.</param>
+        /// <returns>True if checked, false otherwise.</returns>
+        public static bool ButtonAdjusted(GUIContent label)
+        {
+            return GUILayout.Button(label, GUILayout.Width(EditorStyles.miniButton.CalcSize(label).x));
+        }
+
+        /// <summary>
+        /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
+        /// </summary>
+        /// <param name="text">Label text.</param>
         /// <param name="value">A boolean value indicating whether it is checked.</param>
         /// <returns>True if checked, false otherwise.</returns>
         public static bool ToggleLeftAdjusted(string text, bool value)

@@ -4,6 +4,9 @@
   "displayName": "%%PACKAGE_DISPLAY_NAME%%",
   "description": "%%PACKAGE_DESCRIPTION%%",
   "unity": "%%PACKAGE_UNITY_VERSION%%",
+!!ifnotempty:PACKAGE_UNITY_RELEASE_VERSION!!
+  "unityRelease": "%%PACKAGE_UNITY_RELEASE_VERSION%%",
+!!endif!!
 !!ifnotempty:PACKAGE_CHANGELOG_URL!!
   "changelogUrl": "%%PACKAGE_CHANGELOG_URL%%",
 !!endif!!
