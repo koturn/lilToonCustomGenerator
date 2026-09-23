@@ -1029,10 +1029,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             {
                                 errorCount++;
                                 using (new EditorGUI.IndentLevelScope())
+                                using (new EditorGUILayout.HorizontalScope())
                                 {
                                     EditorGUILayout.HelpBox(
-                                        "Package version numbers must follow semantic versioning.",
+                                        "Package version numbers must follow semantic versioning 2.0.0.",
                                         MessageType.Error);
+                                    CustomEditorGUILayout.WebButton("About semantic versioning 2.0.0", "https://semver.org/spec/v2.0.0.html");
+                                    GUILayout.Space(4.0f);
                                 }
                             }
 
