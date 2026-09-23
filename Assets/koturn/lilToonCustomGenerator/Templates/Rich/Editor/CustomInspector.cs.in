@@ -51,12 +51,14 @@ namespace %%NAMESPACE%%
 !!  endif!!
         private bool _shouldLoadLanguage;
 !!endif!!
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+!!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// <see cref="List{T}"/> of <see cref="MaterialProperty"/> about elapsed time.
         /// </summary>
-!!endif!!
+!!  endif!!
         private readonly List<MaterialProperty> _propertyList = new List<MaterialProperty>();
+!!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -125,12 +127,20 @@ namespace %%NAMESPACE%%
             }
 
 !!endif!!
+!!ifempty:SUPPORT_PROPERTY_SEARCH!!
+!!  ifempty:INITIALIZE_MATERIAL_PROPERTIES!!
+            // _customVariable = FindProperty("_CustomVariable", props);
+!!  else!!
+            %%INITIALIZE_MATERIAL_PROPERTIES:keepindent%%
+!!  endif!!
+!!else!!
             var propertyList = _propertyList;
             propertyList.Clear();
-!!ifempty:INITIALIZE_MATERIAL_PROPERTIES_AND_LIST!!
+!!  ifempty:INITIALIZE_MATERIAL_PROPERTIES_AND_LIST!!
             // propertyList.Add(_customVariable = FindProperty("_CustomVariable", props));
-!!else!!
+!!  else!!
             %%INITIALIZE_MATERIAL_PROPERTIES_AND_LIST:keepindent%%
+!!  endif!!
 !!endif!!
         }
 
@@ -149,11 +159,13 @@ namespace %%NAMESPACE%%
             // boxInner         inner box without label
             // customBox        box (similar to unity default box)
             // customToggleFont label for box
+!!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
 
             if (!ShouldDrawBlock(_propertyList))
             {
                 return;
             }
+!!endif!!
 
             var titleLoc = GetLoc("sCustomShaderTitle");
             isShowCustomProperties = Foldout(titleLoc, titleLoc, isShowCustomProperties);
@@ -167,10 +179,18 @@ namespace %%NAMESPACE%%
                 EditorGUILayout.LabelField(GetLoc("sCustomPropertyCategory"), customToggleFont);
                 using (new EditorGUILayout.VerticalScope(boxInnerHalf))
                 {
-!!ifempty:DRAW_MATERIAL_PROPERTIES!!
+!!ifempty:SUPPORT_PROPERTY_SEARCH!!
+!!  ifempty:DRAW_MATERIAL_PROPERTIES!!
                     // m_MaterialEditor.ShaderProperty(_customVariable, "Custom Variable");
+!!  else!!
+                    %%DRAW_MATERIAL_PROPERTIES:keepindent%%
+!!  endif!!
 !!else!!
+!!  ifempty:DRAW_LOCALIZED_MATERIAL_PROPERTIES!!
+                    // lilEditorGUI.LocalizedProperty(m_MaterialEditor, _customVariable);
+!!  else!!
                     %%DRAW_LOCALIZED_MATERIAL_PROPERTIES:keepindent%%
+!!  endif!!
 !!endif!!
                 }
             }
@@ -468,14 +488,15 @@ namespace %%NAMESPACE%%
             }
         }
 !!endif!!
+!!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
 
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Identify whether the property block should be drawn or not.
         /// </summary>
         /// <param name="propertyList">Target property list.</param>
         /// <returns>True when the property block should be drawn, otherwise false.</returns>
-!!endif!!
+!!  endif!!
         private static bool ShouldDrawBlock(List<MaterialProperty> propertyList)
         {
             foreach (var property in propertyList)
@@ -487,6 +508,7 @@ namespace %%NAMESPACE%%
             }
             return false;
         }
+!!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!

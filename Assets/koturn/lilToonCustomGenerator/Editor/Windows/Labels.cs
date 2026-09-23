@@ -240,6 +240,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 + "  - z: X offset value\n"
                 + "  - w: Y offset value");
         /// <summary>
+        /// <see cref="GUIContent"/> for description of ToggleLeft of "Support property search".
+        /// </summary>
+        public static GUIContent SupportPropertySearch { get; } = new GUIContent(
+            "Support property search",
+            "Property search was implemented in lilToon 1.4.0.\n"
+                + "Use methods in lilEditorGUI class instead of ShaderProperty().");
+        /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Get version from package.json...".
         /// </summary>
         public static GUIContent GetVersionFromPackageJson { get; } = new GUIContent(

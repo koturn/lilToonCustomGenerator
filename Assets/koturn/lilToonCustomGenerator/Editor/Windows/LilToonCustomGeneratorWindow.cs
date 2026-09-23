@@ -164,6 +164,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _shouldEmitVer140Workaround = true;
         /// <summary>
+        /// True to support property search.
+        /// </summary>
+        private bool _isPropertySearchSupported = true;
+        /// <summary>
         /// True to generate <c>Editor/Startup.cs</c>.
         /// </summary>
         private bool _shouldGenerateVersionDetectionHeader = false;
@@ -904,13 +908,25 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     EditorGUILayout.LabelField("Inspector options", EditorStyles.boldLabel);
+                    _isPropertySearchSupported = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.SupportPropertySearch, _isPropertySearchSupported);
                     _shouldGenerateVersionDetectionHeader = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateVersionDetectionScript, _shouldGenerateVersionDetectionHeader);
                     if (_shouldGenerateVersionDetectionHeader)
                     {
                         using (new EditorGUI.IndentLevelScope())
                         {
                             _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
-                            _shouldGetVersionFromPackageJson = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, _shouldGetVersionFromPackageJson);
+                            if (_isPropertySearchSupported)
+                            {
+                                using (new EditorGUI.DisabledScope(true))
+                                {
+                                    var shouldGetVersionFromPackageJson = false;
+                                    CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, shouldGetVersionFromPackageJson);
+                                }
+                            }
+                            else
+                            {
+                                _shouldGetVersionFromPackageJson = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, _shouldGetVersionFromPackageJson);
+                            }
                         }
                     }
                     _shouldGenerateLangTsv = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateLanguageFile, _shouldGenerateLangTsv);
@@ -2096,6 +2112,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             if (_shouldGenerateCacheClearMenu)
             {
                 tagDict.Add("SHOULD_GENERATE_REFRESH_MENU", "true");
+            }
+            if (_isPropertySearchSupported)
+            {
+                tagDict.Add("SUPPORT_PROPERTY_SEARCH", "true");
             }
             if (_shouldGenerateVersionDetectionHeader)
             {

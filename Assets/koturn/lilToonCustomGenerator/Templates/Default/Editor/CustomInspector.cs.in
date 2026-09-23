@@ -5,6 +5,8 @@ using System.IO;
 !!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
 using System.Collections.Generic;
+!!elifnotempty:SUPPORT_PROPERTY_SEARCH!!
+using System.Collections.Generic;
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System.Runtime.InteropServices;
@@ -21,7 +23,10 @@ namespace %%NAMESPACE%%
     public class %%INSPECTOR_NAME%% : lilToonInspector
     {
 !!ifnotempty:SHADER_KEYWORD_CASES!!
-        private readonly List<string> _shaderKeywordList = new List<string>();
+        private readonly List<string> shaderKeywordList = new List<string>();
+!!endif!!
+!!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
+        private readonly List<MaterialProperty> propertyList = new List<MaterialProperty>();
 !!endif!!
         // Custom properties
 !!ifempty:DECLARE_MATERIAL_PROPERTIES!!
@@ -48,11 +53,11 @@ namespace %%NAMESPACE%%
 !!  ifnotempty:SHADER_KEYWORD_CASES!!
 
             var material = (Material)materialEditor.target;
-            foreach (var keyword in _shaderKeywordList)
+            foreach (var keyword in shaderKeywordList)
             {
                 material.EnableKeyword(keyword);
             }
-            _shaderKeywordList.Clear();
+            shaderKeywordList.Clear();
 !!  endif!!
         }
 !!endif!!
@@ -73,10 +78,19 @@ namespace %%NAMESPACE%%
 !!else!!
             LoadCustomLanguage("%%GUID_LANG_CUSTOM%%");
 !!endif!!
-!!ifempty:INITIALIZE_MATERIAL_PROPERTIES!!
+!!ifempty:SUPPORT_PROPERTY_SEARCH!!
+!!  ifempty:INITIALIZE_MATERIAL_PROPERTIES!!
             //customVariable = FindProperty("_CustomVariable", props);
-!!else!!
+!!  else!!
             %%INITIALIZE_MATERIAL_PROPERTIES:keepindent%%
+!!  endif!!
+!!else!!
+            propertyList.Clear();
+!!  ifempty:INITIALIZE_MATERIAL_PROPERTIES_AND_LIST!!
+            //propertyList.Add(customVariable = FindProperty("_CustomVariable", props));
+!!  else!!
+            %%INITIALIZE_MATERIAL_PROPERTIES_AND_LIST:keepindent%%
+!!  endif!!
 !!endif!!
         }
 
@@ -89,6 +103,13 @@ namespace %%NAMESPACE%%
             // boxInner         inner box without label
             // customBox        box (similar to unity default box)
             // customToggleFont label for box
+!!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
+
+            if (!ShouldDrawBlock(propertyList))
+            {
+                return;
+            }
+!!endif!!
 
             isShowCustomProperties = Foldout("Custom Properties", "Custom Properties", isShowCustomProperties);
             if(isShowCustomProperties)
@@ -97,10 +118,18 @@ namespace %%NAMESPACE%%
                 EditorGUILayout.LabelField(GetLoc("Custom Properties"), customToggleFont);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
 
-!!ifempty:DRAW_MATERIAL_PROPERTIES!!
+!!ifempty:SUPPORT_PROPERTY_SEARCH!!
+!!  ifempty:DRAW_MATERIAL_PROPERTIES!!
                 //m_MaterialEditor.ShaderProperty(customVariable, "Custom Variable");
-!!else!!
+!!  else!!
                 %%DRAW_MATERIAL_PROPERTIES:keepindent%%
+!!  endif!!
+!!else!!
+!!  ifempty:DRAW_LOCALIZED_MATERIAL_PROPERTIES!!
+                //lilEditorGUI.LocalizedProperty(m_MaterialEditor, customVariable);
+!!  else!!
+                %%DRAW_LOCALIZED_MATERIAL_PROPERTIES:keepindent%%
+!!  endif!!
 !!endif!!
 
                 EditorGUILayout.EndVertical();
@@ -112,7 +141,7 @@ namespace %%NAMESPACE%%
             {
                 if (IsAllShaderKeyword(keyword))
                 {
-                    _shaderKeywordList.Add(keyword);
+                    shaderKeywordList.Add(keyword);
                 }
             }
 !!  endif!!
@@ -268,6 +297,20 @@ namespace %%NAMESPACE%%
             {
                 return false;
             }
+        }
+!!endif!!
+!!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
+
+        private static bool ShouldDrawBlock(List<MaterialProperty> propertyList)
+        {
+            foreach (var property in propertyList)
+            {
+                if (lilEditorGUI.CheckPropertyToDraw(property))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 !!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
