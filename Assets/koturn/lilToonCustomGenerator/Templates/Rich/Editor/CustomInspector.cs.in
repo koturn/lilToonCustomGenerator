@@ -1,8 +1,12 @@
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System;
 using System.IO;
+!!endif!!
 using System.Collections.Generic;
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System.Runtime.InteropServices;
 using System.Security;
+!!endif!!
 using UnityEditor;
 using UnityEngine;
 !!ifnotempty:SHOULD_EMIT_USING_LILTOON!!
@@ -702,7 +706,7 @@ namespace %%NAMESPACE%%
             /// </summary>
 !!  endif!!
             private const CallingConvention CallConv = CallingConvention.StdCall;
-#endif
+#endif  // UNITY_EDITOR && !UNITY_EDITOR_WIN
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
             /// Open database.

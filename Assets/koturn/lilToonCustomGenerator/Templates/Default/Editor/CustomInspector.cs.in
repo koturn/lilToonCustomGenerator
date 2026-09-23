@@ -1,6 +1,14 @@
 #if UNITY_EDITOR
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
+using System;
+using System.IO;
+!!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
 using System.Collections.Generic;
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
+using System.Runtime.InteropServices;
+using System.Security;
 !!endif!!
 using UnityEditor;
 using UnityEngine;
@@ -27,6 +35,10 @@ namespace %%NAMESPACE%%
         private const string shaderName = "%%SHADER_NAME%%";
 !!else!!
         public const string shaderName = "%%SHADER_NAME%%";
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
+        private const string GuidShaderDir = "%%GUID_SHADER_DIR%%";
+        private const string GuidLilToonShaderDir = "ac0a8f602b5e72f458f4914bf08f0269";
 !!endif!!
 !!ifnotempty:SHOULD_EMIT_ONGUI!!
 
@@ -191,7 +203,75 @@ namespace %%NAMESPACE%%
 !!ifempty:SHOULD_GENERATE_CONVERT_MENU!!
         */
 !!endif!!
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
+
+        [MenuItem("Assets/" + shaderName + "/Refresh shader cache", false, 2000)]
+        private static void RefreshShaderCacheMenu()
+        {
+            var result = SafeNativeMethods.Open("Library/ShaderCache.db", out var pDb);
+            if (result != 0)
+            {
+                Debug.LogErrorFormat("Failed to open Library/ShaderCache.db [{0}]", result);
+                return;
+            }
+
+            try
+            {
+                result = SafeNativeMethods.Execute(pDb, "DELETE FROM shadererrors");
+                if (result != 0)
+                {
+                    Debug.LogErrorFormat("SQL failed [{0}]", result);
+                    return;
+                }
+            }
+            finally
+            {
+                result = SafeNativeMethods.Close(pDb);
+                if (result != 0)
+                {
+                    Debug.LogErrorFormat("Failed to close database [{0}]", result);
+                }
+            }
+
+            var shaderDirPath = AssetDatabase.GUIDToAssetPath(GuidShaderDir);
+            if (shaderDirPath.Length == 0)
+            {
+                Debug.LogWarning("Cannot find file or directory corresponding to GUID: " + GuidShaderDir);
+                return;
+            }
+            if (!Directory.Exists(shaderDirPath))
+            {
+                Debug.LogWarningFormat("Directory not found: {0} ({1})", shaderDirPath, GuidShaderDir);
+                return;
+            }
+
+            AssetDatabase.ImportAsset(shaderDirPath, ImportAssetOptions.ImportRecursive);
+
+            var lilToonShaderDir = AssetDatabase.GUIDToAssetPath(GuidLilToonShaderDir);
+            if (lilToonShaderDir.Length == 0)
+            {
+                Debug.LogWarningFormat("Shader directory of lilToon not found: {0}", GuidLilToonShaderDir);
+                return;
+            }
+            AssetDatabase.ImportAsset(lilToonShaderDir, ImportAssetOptions.ImportRecursive);
+        }
+
+        [MenuItem("Assets/" + shaderName + "/Refresh shader cache", true)]
+        private static bool ValidateRefreshShaderCacheMenu()
+        {
+            try
+            {
+                SafeNativeMethods.Close(IntPtr.Zero);
+                return true;
+            }
+            catch (DllNotFoundException)
+            {
+                return false;
+            }
+        }
+!!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
+
         private static bool IsAllShaderKeyword(string keyword)
         {
             switch (keyword)
@@ -201,6 +281,29 @@ namespace %%NAMESPACE%%
                 default:
                     return false;
             }
+        }
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
+
+
+        [SuppressUnmanagedCodeSecurity]
+        internal static class SafeNativeMethods
+        {
+#if UNITY_EDITOR && !UNITY_EDITOR_WIN
+            private const string LibraryName = "sqlite3";
+            private const CallingConvention CallConv = CallingConvention.Cdecl;
+#else
+            private const string LibraryName = "winsqlite3";
+            private const CallingConvention CallConv = CallingConvention.StdCall;
+#endif
+            [DllImport(LibraryName, EntryPoint = "sqlite3_open16", ExactSpelling = true, CallingConvention = CallConv, CharSet = CharSet.Unicode)]
+            public static extern int Open(string filePath, out IntPtr pDb);
+
+            [DllImport(LibraryName, EntryPoint = "sqlite3_close", ExactSpelling = true, CallingConvention = CallConv)]
+            public static extern int Close(IntPtr pDb);
+
+            [DllImport(LibraryName, EntryPoint = "sqlite3_exec", ExactSpelling = true, CallingConvention = CallConv)]
+            public static extern int Execute(IntPtr pDb, string sql, IntPtr pCallback = default(IntPtr), IntPtr pCallbackArg = default(IntPtr), IntPtr pErrMsg = default(IntPtr));
         }
 !!endif!!
     }
