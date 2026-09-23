@@ -172,6 +172,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _allowUnsafeCode = true;
         /// <summary>
+        /// True to get version from package.json of lilToon.
+        /// </summary>
+        private bool _shouldGetVersionFromPackageJson = false;
+        /// <summary>
         /// True to generate <c>Editor/lang_custom.tsv</c>.
         /// </summary>
         private bool _shouldGenerateLangTsv = true;
@@ -906,6 +910,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         using (new EditorGUI.IndentLevelScope())
                         {
                             _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
+                            _shouldGetVersionFromPackageJson = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, _shouldGetVersionFromPackageJson);
                         }
                     }
                     _shouldGenerateLangTsv = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateLanguageFile, _shouldGenerateLangTsv);
@@ -2098,6 +2103,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 if (_allowUnsafeCode)
                 {
                     tagDict.Add("ALLOW_UNSAFE_CODE", "true");
+                }
+                if (_shouldGetVersionFromPackageJson)
+                {
+                    tagDict.Add("SHOULD_GET_VERSION_FROM_PACKAGE_JSON", "true");
                 }
 #if LILTOON
                 tagDict.Add("LIL_CURRENT_VERSION_VALUE", lilConstants.currentVersionValue.ToString());

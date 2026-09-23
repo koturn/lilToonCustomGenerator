@@ -240,6 +240,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 + "  - z: X offset value\n"
                 + "  - w: Y offset value");
         /// <summary>
+        /// <see cref="GUIContent"/> for description of ToggleLeft of "Get version from package.json...".
+        /// </summary>
+        public static GUIContent GetVersionFromPackageJson { get; } = new GUIContent(
+            "Get version from package.json of lilToon (Support lilToon 1.2.11 and 1.2.12)",
+            "Retrieve the version string from lilToon’s `package.json` rather than from the `lilConstans` class.\n"
+                + "The `lilConstans` class was introduced in lilToon 1.3.0.\n"
+                + "Therefore, if you need to support lilToon 1.2.11 or lilToon 1.2.12, it is recommended that you retrieve the version from `package.json`.\n"
+                + "We do not support code generation that uses reflection to determine which class to retrieve the version from.");
+        /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Generate version detection script".
         /// </summary>
         public static GUIContent GenerateVersionDetectionScript { get; } = new GUIContent(

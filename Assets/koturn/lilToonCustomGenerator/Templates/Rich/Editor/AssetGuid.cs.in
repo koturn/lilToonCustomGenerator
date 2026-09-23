@@ -23,9 +23,17 @@ namespace %%NAMESPACE%%
         public const string ShaderDir = "%%GUID_SHADER_DIR%%";
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
-        /// GUID of "Packages/jp.lilxyzw.liltoon/Shader/".
+        /// GUID of "Assets/lilToon/Shader/" or "Packages/jp.lilxyzw.liltoon/Shader/".
         /// </summary>
+!!endif!!
         public const string LilToonShaderDir = "ac0a8f602b5e72f458f4914bf08f0269";
+!!ifnotempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// GUID of "Assets/lilToon/package.json" or "Packages/jp.lilxyzw.liltoon/package.json".
+        /// </summary>
+!!  endif!!
+        public const string LilToonPackageJson = "397d2fa9e93fb5d44a9540d5f01437fc";
 !!endif!!
     }
 }

@@ -1,4 +1,7 @@
 using System;
+!!ifnotempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
+using System.Collections.Generic;
+!!endif!!
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -24,6 +27,44 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!endif!!
         private const int DefaultBufferSize = 1024;
+!!ifnotempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Current version number dictionary.
+        /// </summary>
+!!  endif!!
+        private static readonly Dictionary<string, int> _currentVersionNumberDict = new Dictionary<string, int>()
+        {
+            { "1.2.11", 24 },
+            { "1.2.12", 24 },
+            { "1.3.0", 26 },
+            { "1.3.1", 27 },
+            { "1.3.2", 28 },
+            { "1.3.3", 29 },
+            { "1.3.4", 30 },
+            { "1.3.5", 31 },
+            { "1.3.6", 32 },
+            { "1.3.7", 33 },
+            { "1.4.0", 34 },
+            { "1.4.1", 35 },
+            { "1.5.0", 36 },
+            { "1.5.1", 37 },
+            { "1.6.0", 38 },
+            { "1.6.1", 39 },
+            { "1.7.0", 40 },
+            { "1.7.1", 41 },
+            { "1.7.2", 42 },
+            { "1.7.3", 43 },
+            { "1.8.0", 44 },
+            { "1.8.1", 44 },
+            { "1.8.2", 44 },
+            { "1.8.3", 44 },
+            { "1.8.4", 44 },
+            { "1.8.5", 44 }
+        };
+!!endif!!
+
 
 #if UNITY_2021_2_OR_NEWER
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -125,12 +166,28 @@ namespace %%NAMESPACE%%
                 NewLine = "\n"
             })
             {
+!!ifnotempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
+                var jsonFilePath = AssetDatabase.GUIDToAssetPath(AssetGuid.LilToonPackageJson);
+                if (jsonFilePath.Length == 0)
+                {
+                    throw new FileNotFoundException("No file corresponding to the GUID was found: 397d2fa9e93fb5d44a9540d5f01437fc");
+                }
+                var currentVersionName = JsonUtility.FromJson<LilToonVersion>(File.ReadAllText(jsonFilePath)).Version;
+                if (!_currentVersionNumberDict.TryGetValue(currentVersionName, out var currentVersionValue))
+                {
+                    currentVersionValue = 45;
+                }
+!!else!!
+                var currentVersionValue = lilConstants.currentVersionValue;
+                var currentVersionName = lilConstants.currentVersionName;
+!!endif!!
+
                 writer.WriteLine("#ifndef LIL_CURRENT_VERSION_INCLUDED");
                 writer.WriteLine("#define LIL_CURRENT_VERSION_INCLUDED");
                 writer.WriteLine();
-                writer.WriteLine("#define LIL_CURRENT_VERSION_VALUE {0}", lilConstants.currentVersionValue);
+                writer.WriteLine("#define LIL_CURRENT_VERSION_VALUE {0}", currentVersionValue);
 
-                var match = new Regex(@"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)").Match(lilConstants.currentVersionName);
+                var match = new Regex(@"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)").Match(currentVersionName);
                 if (match.Success)
                 {
                     var groups = match.Groups;
@@ -342,6 +399,42 @@ namespace %%NAMESPACE%%
             }
 
             return true;
+        }
+!!endif!!
+
+!!ifnotempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Version number class.
+        /// </summary>
+!!  endif!!
+        [Serializable]
+        private class LilToonVersion
+        {
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Version number string.
+            /// </summary>
+!!  endif!!
+            public string Version => version;
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Backing field of <see cref="Version"/>.
+            /// </summary>
+!!  endif!!
+            [SerializeField]
+            private string version;
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Hidden ctor.
+            /// </summary>
+!!  endif!!
+            [Obsolete("Should not be instanciated directly")]
+            private LilToonVersion()
+            {
+            }
         }
 !!endif!!
     }
