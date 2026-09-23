@@ -5,6 +5,7 @@
 #    define SUPPORT_GENERATED_REGEX
 #endif  // NET7_0_OR_GREATER
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 
@@ -28,62 +29,76 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching identifier.
         /// </summary>
-        internal const string IdentifierPattern = @"^([a-zA-Z_])(\w*)$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string IdentifierPattern = @"^([a-zA-Z_])(\w*)$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching non-identifier characters.
         /// </summary>
-        internal const string NonIdentifierCharPattern = @"\W";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string NonIdentifierCharPattern = @"\W";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching identifier.
         /// </summary>
-        internal const string NamespacePattern = @"^([a-zA-Z_])(\w*)(\.([a-zA-Z_])(\w*))*$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string NamespacePattern = @"^([a-zA-Z_])(\w*)(\.([a-zA-Z_])(\w*))*$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching package name.
         /// </summary>
-        internal const string PackageNamePattern = @"^[a-z0-9][a-z0-9_-]*(\.[a-z0-9][a-z0-9_-]*){2}(?:\.[a-z0-9][a-z0-9_-]*)*$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string PackageNamePattern = @"^[a-z0-9][a-z0-9_-]*(\.[a-z0-9][a-z0-9_-]*){2}(?:\.[a-z0-9][a-z0-9_-]*)*$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching non-package name characters.
         /// </summary>
-        internal const string NonPackageNameCharPattern = @"[^a-z0-9\.\-_]";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string NonPackageNameCharPattern = @"[^a-z0-9\.\-_]";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching property name.
         /// </summary>
-        internal const string PropertyNamePattern = @"^_*(\w)(\w*)$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string PropertyNamePattern = @"^_*(\w)(\w*)$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching drawer arguments.
         /// </summary>
-        internal const string DrawerArgumentPattern = @"^[a-zA-Z0-9\._ ]+$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string DrawerArgumentPattern = @"^[a-zA-Z0-9\._ ]+$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching <c>MaterialKeywordEnum</c> arguments.
         /// </summary>
-        internal const string KeywordEnumArgumentPattern = @"^[a-zA-Z0-9_ ]+$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string KeywordEnumArgumentPattern = @"^[a-zA-Z0-9_ ]+$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching version number.
         /// </summary>
-        internal const string VersionNumberPattern = @"^(0|[1-9]\d*)(?:\.(0|[1-9]\d*)(?:\.(0|[1-9]\d*)(?:\.((0|[1-9]\d*)))?)?)?$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string VersionNumberPattern = @"^(0|[1-9]\d*)(?:\.(0|[1-9]\d*)(?:\.(0|[1-9]\d*)(?:\.((0|[1-9]\d*)))?)?)?$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching version number of semantic versioning 2.0.0.
         /// </summary>
         /// <remarks>
         /// <see href="https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string"/>
         /// </remarks>
-        internal const string SemVerPattern = @"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string SemVerPattern = @"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching ifempty tags.
         /// </summary>
-        internal const string TagIfemptyPattern = @"^!!\s*(el)?if(not)?empty:\s*(\w+)\s*!!\s*$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string TagIfemptyPattern = @"^!!\s*(el)?if(not)?empty:\s*(\w+)\s*!!\s*$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching else tag.
         /// </summary>
-        internal const string TagElsePattern = @"^!!\s*else!!\s*$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string TagElsePattern = @"^!!\s*else!!\s*$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching endif tag.
         /// </summary>
-        internal const string TagEndIfPattern = @"^!!\s*endif\s*!!\s*$";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string TagEndIfPattern = @"^!!\s*endif\s*!!\s*$";
         /// <summary>
         /// <see cref="Regex"/> pattern <see cref="string"/> matching replacement tags.
         /// </summary>
-        internal const string TagPattern = @"%%(\w+)\s*(?::\s*(.+))?%%";
+        [StringSyntax(StringSyntaxAttribute.Regex)]
+        private const string TagPattern = @"%%(\w+)\s*(?::\s*(.+))?%%";
 
 
         /// <summary>
