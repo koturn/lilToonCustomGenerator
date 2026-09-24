@@ -1,6 +1,10 @@
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System;
 using System.IO;
+!!else!!
+#if !UNITY_2018_3_OR_NEWER
+using System;
+#endif  // !UNITY_2018_3_OR_NEWER
 !!endif!!
 using System.Collections.Generic;
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
@@ -29,6 +33,14 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!endif!!
         public const string ShaderName = "%%SHADER_NAME%%";
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// "VRCFallback" tag.
+        /// </summary>
+!!  endif!!
+        private const string TagVRCFallback = "VRCFallback";
+!!endif!!
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -275,7 +287,6 @@ namespace %%NAMESPACE%%
             ltsmfur     = Shader.Find("Hidden/" + ShaderName + "/MultiFur");
             ltsmgem     = Shader.Find("Hidden/" + ShaderName + "/MultiGem");
         }
-
 !!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -288,6 +299,12 @@ namespace %%NAMESPACE%%
         private static void ConvertMaterialToCustomShaderMenu()
 #pragma warning restore IDE0052 // Remove unread private members
         {
+#if UNITY_2020_3_OR_NEWER
+#elif UNITY_2018_3_OR_NEWER
+            var materialTagvalTupleList = new List<(Material material, string tag)>();
+#else
+            var materialTagvalTupleList = new List<Tuple<Material, string>>();
+#endif  // UNITY_2020_3_OR_NEWER
             foreach (var material in Selection.GetFiltered<Material>(SelectionMode.Assets))
             {
 #if UNITY_2022_1_OR_NEWER
@@ -307,10 +324,38 @@ namespace %%NAMESPACE%%
 
                 Undo.RecordObject(material, ShaderName + "/ConvertMaterialToCustomShaderMenu");
 
+                var tagval = material.GetTag(TagVRCFallback, false);
                 var renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);
                 material.shader = shader;
                 material.renderQueue = renderQueue;
+
+                if (tagval.Length != 0)
+                {
+#if UNITY_2020_3_OR_NEWER
+                    AssetDatabase.SaveAssetIfDirty(material);
+                    material.SetOverrideTag(TagVRCFallback, tagval);
+#elif UNITY_2018_3_OR_NEWER
+                    materialTagvalTupleList.Add((material, tagval));
+#else
+                    materialTagvalTupleList.Add(Tuple.Create(material, tagval));
+#endif  // UNITY_2020_3_OR_NEWER
+                }
             }
+
+#if UNITY_2020_3_OR_NEWER
+#elif UNITY_2018_3_OR_NEWER
+            AssetDatabase.SaveAssets();
+            foreach (var (material, tagval) in materialTagvalTupleList)
+            {
+                material.SetOverrideTag(TagVRCFallback, tagval);
+            }
+#else
+            AssetDatabase.SaveAssets();
+            foreach (var tuple in materialTagvalTupleList)
+            {
+                tuple.Item1.SetOverrideTag(TagVRCFallback, tuple.Item2);
+            }
+#endif  // UNITY_2020_3_OR_NEWER
         }
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -352,6 +397,12 @@ namespace %%NAMESPACE%%
         private static void ConvertMaterialToOriginalShaderMenu()
 #pragma warning restore IDE0051 // Remove unused private members
         {
+#if UNITY_2020_3_OR_NEWER
+#elif UNITY_2018_3_OR_NEWER
+            var materialTagvalTupleList = new List<(Material material, string tag)>();
+#else
+            var materialTagvalTupleList = new List<Tuple<Material, string>>();
+#endif  // UNITY_2020_3_OR_NEWER
             foreach (var material in Selection.GetFiltered<Material>(SelectionMode.Assets))
             {
 #if UNITY_2022_1_OR_NEWER
@@ -371,10 +422,38 @@ namespace %%NAMESPACE%%
 
                 Undo.RecordObject(material, ShaderName + "/ConvertMaterialToOriginalShaderMenu");
 
+                var tagval = material.GetTag(TagVRCFallback, false);
                 var renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);
                 material.shader = shader;
                 material.renderQueue = renderQueue;
+
+                if (tagval.Length != 0)
+                {
+#if UNITY_2020_3_OR_NEWER
+                    AssetDatabase.SaveAssetIfDirty(material);
+                    material.SetOverrideTag(TagVRCFallback, tagval);
+#elif UNITY_2018_3_OR_NEWER
+                    materialTagvalTupleList.Add((material, tagval));
+#else
+                    materialTagvalTupleList.Add(Tuple.Create(material, tagval));
+#endif  // UNITY_2020_3_OR_NEWER
+                }
             }
+
+#if UNITY_2020_3_OR_NEWER
+#elif UNITY_2018_3_OR_NEWER
+            AssetDatabase.SaveAssets();
+            foreach (var (material, tagval) in materialTagvalTupleList)
+            {
+                material.SetOverrideTag(TagVRCFallback, tagval);
+            }
+#else
+            AssetDatabase.SaveAssets();
+            foreach (var tuple in materialTagvalTupleList)
+            {
+                tuple.Item1.SetOverrideTag(TagVRCFallback, tuple.Item2);
+            }
+#endif  // UNITY_2020_3_OR_NEWER
         }
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
