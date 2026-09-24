@@ -1168,6 +1168,27 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                             }
 
+                            //
+                            // Compare minimal unity version and lilToon version.
+                            //
+                            foreach (var checkTuple in _lilToonUnityVersionCheckTuples)
+                            {
+                                if (CompareVersionArray(_packageMinimalLilToonVersion, checkTuple.Item1) >= 0
+                                    && CompareVersionArray(_packageUnityVersion, checkTuple.Item2) < 0)
+                                {
+                                    using (new EditorGUILayout.HorizontalScope())
+                                    {
+                                        EditorGUILayout.HelpBox(checkTuple.Item3, MessageType.Warning);
+                                        if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                        {
+                                            Buffer.BlockCopy(checkTuple.Item2, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
+                                            GUI.FocusControl(null);
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+
                             _packageChangeLogUrl = EditorGUILayout.TextField("Change log URL", _packageChangeLogUrl);
                             _packageDocumentationUrl = EditorGUILayout.TextField("Documentation URL", _packageDocumentationUrl);
                             _packageLicense = EditorGUILayout.TextField("License type", _packageLicense);
@@ -1200,27 +1221,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     if (CompareVersionArray(_packageMinimalLilToonVersion, _defaultMinimalLilToonVersion) < 0)
                                     {
                                         Buffer.BlockCopy(_defaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
-                                    }
-                                }
-
-                                //
-                                // Compare minimal unity version and lilToon version.
-                                //
-                                foreach (var checkTuple in _lilToonUnityVersionCheckTuples)
-                                {
-                                    if (CompareVersionArray(_packageMinimalLilToonVersion, checkTuple.Item1) >= 0
-                                        && CompareVersionArray(_packageUnityVersion, checkTuple.Item2) < 0)
-                                    {
-                                        using (new EditorGUILayout.HorizontalScope())
-                                        {
-                                            EditorGUILayout.HelpBox(checkTuple.Item3, MessageType.Warning);
-                                            if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
-                                            {
-                                                Buffer.BlockCopy(checkTuple.Item2, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
-                                                GUI.FocusControl(null);
-                                            }
-                                        }
-                                        break;
                                     }
                                 }
 
