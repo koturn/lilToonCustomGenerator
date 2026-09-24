@@ -234,7 +234,7 @@ namespace %%NAMESPACE%%
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 
-        [MenuItem("Assets/" + shaderName + "/Refresh shader cache", false, 2000)]
+        [MenuItem("Assets/%%SHADER_NAME%%/Refresh shader cache", false, 2000)]
         private static void RefreshShaderCacheMenu()
         {
             var result = SafeNativeMethods.Open("Library/ShaderCache.db", out var pDb);
@@ -283,20 +283,6 @@ namespace %%NAMESPACE%%
                 return;
             }
             AssetDatabase.ImportAsset(lilToonShaderDir, ImportAssetOptions.ImportRecursive);
-        }
-
-        [MenuItem("Assets/" + shaderName + "/Refresh shader cache", true)]
-        private static bool ValidateRefreshShaderCacheMenu()
-        {
-            try
-            {
-                SafeNativeMethods.Close(IntPtr.Zero);
-                return true;
-            }
-            catch (DllNotFoundException)
-            {
-                return false;
-            }
         }
 !!endif!!
 !!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
