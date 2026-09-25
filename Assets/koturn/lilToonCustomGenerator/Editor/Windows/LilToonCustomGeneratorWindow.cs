@@ -1028,7 +1028,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         }
                     }
 
-                    _shouldEmitDocComments = CustomEditorGUILayout.ToggleLeftAdjusted("Emit documentation comments", _shouldEmitDocComments);
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        _shouldEmitDocComments = CustomEditorGUILayout.ToggleLeftAdjusted("Emit documentation comments", _shouldEmitDocComments);
+                        GUILayout.FlexibleSpace();
+                        CustomEditorGUILayout.WebButton("About C# documentation comments", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/xmldoc/recommended-tags");
+                        GUILayout.Space(4.0f);
+                    }
                 }
 
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
