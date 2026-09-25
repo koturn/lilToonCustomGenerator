@@ -322,7 +322,7 @@ namespace %%NAMESPACE%%
                     continue;
                 }
 
-                Undo.RecordObject(material, ShaderName + "/ConvertMaterialToCustomShaderMenu");
+                Undo.RecordObject(material, "Assign customized lilToon shader (MenuItem: \"Assets/" + ShaderName + "/Convert material to custom shader)\"");
 
                 var tagval = material.GetTag(TagVRCFallback, false);
                 var renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);
@@ -420,7 +420,7 @@ namespace %%NAMESPACE%%
                     continue;
                 }
 
-                Undo.RecordObject(material, ShaderName + "/ConvertMaterialToOriginalShaderMenu");
+                Undo.RecordObject(material, "Assign original lilToon shader (MenuItem: \"Assets/" + ShaderName + "/Convert material to custom shader)\"");
 
                 var tagval = material.GetTag(TagVRCFallback, false);
                 var renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);
