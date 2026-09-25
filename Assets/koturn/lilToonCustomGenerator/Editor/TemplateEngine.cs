@@ -105,107 +105,169 @@ namespace Koturn.LilToonCustomGenerator.Editor
         public void ExpandTemplate(StreamReader reader, StreamWriter writer)
         {
             var replaceDef = TagDictionary;
-            var state = IfState.ShouldEmit;
-            var stateStack = new Stack<IfState>();
-            var skipLevel = int.MaxValue;
-            var lineCount = 0;
+            var fs = reader.BaseStream as FileStream;
+            var msgPrefix = fs == null ? "" : fs.Name + ":";
+
+            // Whether the parent block itself is to be output
+            var emitStack = new Stack<bool>();
+            // Has the parent block already printed the output of any branch within that `if` block.
+            var branchEmittedStack = new Stack<bool>();
+            // Whether the current block is to be output.
+            var shouldEmitCurrent = true;
+            // Has any branch already been executed within the current `if` block.
+            var currentBranchEmitted = false;
+
+            int lineCount = 0;
 
             string line;
             while ((line = reader.ReadLine()) != null)
             {
                 lineCount++;
-
                 if (line.StartsWith("!!"))
                 {
+                    //
+                    // ---- endif ----
+                    //
                     if (RegexProvider.TagEndIfRegex.IsMatch(line))
                     {
-                        // endif-tag
-                        if (stateStack.Count <= skipLevel)
+                        if (emitStack.Count == 0)
                         {
-                            state = stateStack.Pop();
+                            throw new InvalidOperationException(msgPrefix + lineCount + ":\"endif\" is detected out of if context");
+                        }
+
+                        // Exit the current if block and return to the parent block.
+                        shouldEmitCurrent = emitStack.Pop();
+                        currentBranchEmitted = branchEmittedStack.Pop();
+
+                        // Skip !!endif!! line.
+                        continue;
+                    }
+                    //
+                    // ---- else ----
+                    //
+                    if (RegexProvider.TagElseRegex.IsMatch(line))
+                    {
+                        if (emitStack.Count == 0)
+                        {
+                            throw new InvalidOperationException(msgPrefix + lineCount + "\"else\" is detected out of if context");
+                        }
+
+                        // If the parent block is not to be emitted, this else block will not be emitted either.
+                        if (!emitStack.Peek())
+                        {
+                            shouldEmitCurrent = false;
                         }
                         else
                         {
-                            stateStack.Pop();
+                            // If any of the branches within this if block have already been emitted, this else statement will not be emitted.
+                            if (currentBranchEmitted)
+                            {
+                                shouldEmitCurrent = false;
+                            }
+                            else
+                            {
+                                shouldEmitCurrent = true;
+                                currentBranchEmitted = true;
+                            }
                         }
-                        continue;  // Not emit !!endif!! line
+                        // Skip !!else!! line.
+                        continue;
                     }
-                    else if (RegexProvider.TagElseRegex.IsMatch(line))
+                    //
+                    // ---- if / elif ----
+                    //
+                    var m = RegexProvider.TagIfemptyRegex.Match(line);
+                    if (m.Success)
                     {
-                        // else-tag
-                        if (stateStack.Count == 0)
+                        var g = m.Groups;
+                        var isElif = !string.IsNullOrEmpty(g[1].Value);
+                        var isNot = !string.IsNullOrEmpty(g[2].Value);
+                        var tag = g[3].Value;
+
+                        if (!isElif)
                         {
-                            throw new InvalidOperationException("\"else\" is detected out of if context at line " + lineCount + ".");
-                        }
-                        if (stateStack.Count <= skipLevel)
-                        {
-                            if (state == IfState.ShouldNotEmit)
+                            //
+                            // ---- ifempty / ifnotempty ----
+                            //
+
+                            // Since we're starting a new `if` block, we push the parent block's state onto the stack.
+                            emitStack.Push(shouldEmitCurrent);
+                            branchEmittedStack.Push(currentBranchEmitted);
+
+                            // Reset the "branch output flag" within this `if` block.
+                            currentBranchEmitted = false;
+
+                            if (!emitStack.Peek())
                             {
-                                state = IfState.ShouldEmit;
-                                skipLevel = int.MaxValue;
+                                // If the parent is not to be emitted, this `if` block will not be emitted either.
+                                shouldEmitCurrent = false;
                             }
-                            else if (state == IfState.ShouldEmit)
+                            else
                             {
-                                state = IfState.AlreadyEmit;
-                            }
-                        }
-                        continue;  // Not emit !!else!! line
-                    }
-                    else
-                    {
-                        var m = RegexProvider.TagIfemptyRegex.Match(line);
-                        if (m.Success)
-                        {
-                            var g = m.Groups;
-                            if (string.IsNullOrEmpty(g[1].Value))
-                            {
-                                // if
-                                stateStack.Push(state);
-                            }
-                            else if (state == IfState.ShouldEmit || state == IfState.AlreadyEmit)
-                            {
-                                // elif
-                                if (stateStack.Count <= skipLevel)
+                                // Since parent is the target for output, evaluate the condition of this `if` block.
+                                var hasTagValue = replaceDef.ContainsKey(tag) && !string.IsNullOrEmpty(replaceDef[tag]);
+                                //
+                                // ifnotempty / ifempty
+                                //
+                                if (isNot ? hasTagValue : !hasTagValue)
                                 {
-                                    state = IfState.AlreadyEmit;
+                                    shouldEmitCurrent = true;
+                                    currentBranchEmitted = true;
                                 }
-                                continue;
+                                else
+                                {
+                                    shouldEmitCurrent = false;
+                                }
                             }
-
-                            if (stateStack.Count > skipLevel)
-                            {
-                                continue;
-                            }
-
-                            // if
-                            // var hasTagValue = string.IsNullOrEmpty(replaceDef.GetValueOrDefault(g[3].Value));
-                            var tag = g[3].Value;
-                            var hasTagValue = replaceDef.ContainsKey(tag) && !string.IsNullOrEmpty(replaceDef[tag]);
-
-                            if (string.IsNullOrEmpty(g[2].Value))
-                            {
-                                // ifempty
-                                state = hasTagValue ? IfState.ShouldNotEmit : IfState.ShouldEmit;
-                            }
-                            else
-                            {
-                                // ifnotempty
-                                state = hasTagValue ? IfState.ShouldEmit : IfState.ShouldNotEmit;
-                            }
-                            if (state == IfState.ShouldEmit)
-                            {
-                                skipLevel = int.MaxValue;
-                            }
-                            else
-                            {
-                                skipLevel = stateStack.Count;
-                            }
-
-                            continue;  // Not emit !!ifempty!!, !!ifnotempty!!, !!elifempty!!, !!elifnotempty!! line
                         }
+                        else
+                        {
+                            //
+                            // ---- elifempty / elifnotempty ----
+                            //
+                            if (emitStack.Count == 0)
+                            {
+                                throw new InvalidOperationException(msgPrefix + lineCount + ":\"elif\" is detected out of if context.");
+                            }
+
+                            if (!emitStack.Peek())
+                            {
+                                // If the parent is not to be emitted, this `elif` block will not be emitted either.
+                                shouldEmitCurrent = false;
+                            }
+                            else
+                            {
+                                if (currentBranchEmitted)
+                                {
+                                    // If a branch within this `if` block has already been executed, this `elif` will not be emitted.
+                                    shouldEmitCurrent = false;
+                                }
+                                else
+                                {
+                                    // Since nothing has been emitted yet, evaluate the condition in this `elif` statement.
+                                    var hasTagValue = replaceDef.ContainsKey(tag) && !string.IsNullOrEmpty(replaceDef[tag]);
+
+                                    // elifnotempty / elifempty
+                                    if (isNot ? hasTagValue : !hasTagValue)
+                                    {
+                                        shouldEmitCurrent = true;
+                                        currentBranchEmitted = true;
+                                    }
+                                    else
+                                    {
+                                        shouldEmitCurrent = false;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Skip lines containing !!ifxxx!! / !!elifxxx!!.
+                        continue;
                     }
                 }
-                if (state != IfState.ShouldEmit)
+
+                // If the current block is not to be output, the line is skipped as usual.
+                if (!shouldEmitCurrent)
                 {
                     continue;
                 }
@@ -218,17 +280,9 @@ namespace Koturn.LilToonCustomGenerator.Editor
                 }
             }
 
-            if (stateStack.Count > 0)
+            if (emitStack.Count > 0)
             {
-                var fs = reader.BaseStream as FileStream;
-                if (fs == null)
-                {
-                    throw new InvalidOperationException("Non closed if detected");
-                }
-                else
-                {
-                    throw new InvalidOperationException("Non closed if detected: " + fs.Name);
-                }
+                throw new InvalidOperationException(fs.Name + lineCount + ": Non closed if detected");
             }
         }
 
@@ -332,25 +386,6 @@ namespace Koturn.LilToonCustomGenerator.Editor
             sb.Append(text.Substring(parsedIndex));
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// If condition state.
-        /// </summary>
-        private enum IfState
-        {
-            /// <summary>
-            /// Indicates that should not be emitted.
-            /// </summary>
-            ShouldNotEmit,
-            /// <summary>
-            /// Indicates that should be emitted.
-            /// </summary>
-            ShouldEmit,
-            /// <summary>
-            /// Indicates that it has already been emitted.
-            /// </summary>
-            AlreadyEmit,
         }
     }
 }
