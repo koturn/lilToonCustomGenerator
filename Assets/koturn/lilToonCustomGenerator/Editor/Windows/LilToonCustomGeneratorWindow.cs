@@ -1322,7 +1322,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
                             using (new EditorGUILayout.HorizontalScope())
                             {
-                                _shouldEmitVpmEntries = CustomEditorGUILayout.ToggleLeftAdjusted("Emit VRM entries", _shouldEmitVpmEntries);
+                                _shouldEmitVpmEntries = CustomEditorGUILayout.ToggleLeftAdjusted("Emit VPM entries", _shouldEmitVpmEntries);
                                 GUILayout.FlexibleSpace();
                                 CustomEditorGUILayout.WebButton("About VPM", "https://vcc.docs.vrchat.com/vpm/packages/");
                                 GUILayout.Space(4.0f);
