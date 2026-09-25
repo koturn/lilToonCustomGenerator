@@ -93,6 +93,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             new GUIContent("Build")
         };
         /// <summary>
+        /// <para>Maximum minor version number dict of lilToon.</para>
+        /// <para>key: Major version number.</para>
+        /// <para>Value: Maximum minor version number.</para>
+        /// </summary>
+        private static Dictionary<int, int> _unityMaxMinorNumberDict;
+        /// <summary>
         /// Array of the tuple; Unity version, lilToon version and message.
         /// </summary>
         private static Tuple<int[], int[], string>[] _lilToonUnityVersionCheckTuples;
@@ -580,6 +586,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 { nameof(_namespace), ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor" },
                 { nameof(_assemblyDescription), $"Material inspector for \"{_shaderName}/*\"." },
                 { nameof(_packageName), ConvertShaderNameToPackageName(_shaderName) }
+            };
+            _unityMaxMinorNumberDict = new Dictionary<int, int>()
+            {
+                { 2023, 2 },
+                { 2022, 3 },
+                { 2021, 2 },
+                { 2020, 3 },
+                { 2019, 4 }
             };
             _lilToonUnityVersionCheckTuples = new[]
             {
@@ -1175,6 +1189,37 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             }
 
                             //
+                            // Check whether old Unity version has been released or not.
+                            //
+                            if (_packageUnityVersion[0] > 2023 && _packageUnityVersion[0] < 6000)
+                            {
+                                EditorGUILayout.HelpBox(
+                                    $"Unity {_packageUnityVersion[0]}.X has not been released.",
+                                    MessageType.Warning);
+                                if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                {
+                                    _packageUnityVersion[0] = 2023;
+                                    _packageUnityVersion[1] = 2;
+                                    GUI.FocusControl(null);
+                                }
+                            }
+                            else if (_unityMaxMinorNumberDict.TryGetValue(_packageUnityVersion[0], out var minorVersion)
+                                && _packageUnityVersion[1] > minorVersion)
+                            {
+                                // Major - Minor
+                                using (new EditorGUILayout.HorizontalScope())
+                                {
+                                    EditorGUILayout.HelpBox(
+                                        $"Unity {string.Join('.', _packageUnityVersion)} has not been released.",
+                                        MessageType.Warning);
+                                    if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
+                                    {
+                                        _packageUnityVersion[1] = minorVersion;
+                                        GUI.FocusControl(null);
+                                    }
+                                }
+                            }
+                            //
                             // Compare minimal unity version and lilToon version.
                             //
                             foreach (var checkTuple in _lilToonUnityVersionCheckTuples)
@@ -1239,7 +1284,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
-                                            $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.\n",
+                                            $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.",
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
@@ -1256,7 +1301,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
-                                            $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.\n",
+                                            $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.",
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
