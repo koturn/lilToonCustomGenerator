@@ -1836,7 +1836,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 if (_shouldEmitDocComments)
                 {
                     sb.AppendLine("/// <summary>")
-                        .AppendFormat("/// <see cref=\"MaterialProperty\" of \"{0}\".", shaderProp.Name).AppendLine()
+                        .AppendFormat("/// <see cref=\"MaterialProperty\"> of \"{0}\".", shaderProp.Name).AppendLine()
                         .AppendLine("/// </summary>");
                 }
                 sb.AppendFormat("private MaterialProperty {0};", materialPropNames[index])
