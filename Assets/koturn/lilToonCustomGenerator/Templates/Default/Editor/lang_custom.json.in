@@ -1,0 +1,57 @@
+{
+  "en_US": {
+!!ifnotempty:SHADER_TITLE!!
+    "sCustomShaderTitle": "%%SHADER_TITLE%%",
+!!  ifempty:JSON_LANGUAGE_FILE_CONTENT!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%"
+!!  else!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%",
+!!  endif!!
+!!endif!!
+    %%JSON_LANGUAGE_FILE_CONTENT:skipempty:keepindent%%
+  },
+  "ja_JP": {
+!!ifnotempty:SHADER_TITLE!!
+    "sCustomShaderTitle": "%%SHADER_TITLE%%",
+!!  ifempty:JSON_LANGUAGE_FILE_CONTENT!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%"
+!!  else!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%",
+!!  endif!!
+!!endif!!
+    %%JSON_LANGUAGE_FILE_CONTENT:skipempty:keepindent%%
+  },
+  "ko_KR": {
+!!ifnotempty:SHADER_TITLE!!
+    "sCustomShaderTitle": "%%SHADER_TITLE%%",
+!!  ifempty:JSON_LANGUAGE_FILE_CONTENT!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%"
+!!  else!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%",
+!!  endif!!
+!!endif!!
+    %%JSON_LANGUAGE_FILE_CONTENT:skipempty:keepindent%%
+  },
+  "zh_Hans": {
+!!ifnotempty:SHADER_TITLE!!
+    "sCustomShaderTitle": "%%SHADER_TITLE%%",
+!!  ifempty:JSON_LANGUAGE_FILE_CONTENT!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%"
+!!  else!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%",
+!!  endif!!
+!!endif!!
+    %%JSON_LANGUAGE_FILE_CONTENT:skipempty:keepindent%%
+  },
+  "zh_Hant": {
+!!ifnotempty:SHADER_TITLE!!
+    "sCustomShaderTitle": "%%SHADER_TITLE%%",
+!!  ifempty:JSON_LANGUAGE_FILE_CONTENT!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%"
+!!  else!!
+    "sCustomPropertyCategory": "%%SHADER_TITLE%%",
+!!  endif!!
+!!endif!!
+    %%JSON_LANGUAGE_FILE_CONTENT:skipempty:keepindent%%
+  }
+}

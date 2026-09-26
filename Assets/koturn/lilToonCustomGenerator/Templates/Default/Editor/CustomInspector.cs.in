@@ -73,10 +73,12 @@ namespace %%NAMESPACE%%
             // If not, set isShowRenderMode to false
             //isShowRenderMode = false;
 
-!!ifnotempty:GUID_LANG_CUSTOM!!
-            LoadCustomLanguage("%%GUID_LANG_CUSTOM%%");
+!!ifnotempty:GUID_LANG_CUSTOM_TSV!!
+            LoadCustomLanguage("%%GUID_LANG_CUSTOM_TSV%%");
 !!elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
             LocalizationInjector.Load("%%GUID_PORTABLE_OBJECT_DIR%%");
+!!elifnotempty:GUID_LANG_CUSTOM_JSON!!
+            JsonLocalizationInjector.Load("%%GUID_LANG_CUSTOM_JSON%%");
 !!else!!
             //LoadCustomLanguage("");
 !!endif!!

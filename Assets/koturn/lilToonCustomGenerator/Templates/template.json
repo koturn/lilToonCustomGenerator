@@ -20,12 +20,20 @@
           "destination": "Editor/%%INSPECTOR_NAME%%.cs"
         },
         {
+          "guid": "30fa3cf12edc65e4daafb64163e6937c",
+          "destination": "Editor/JsonLocalizationInjector.cs"
+        },
+        {
           "guid": "fcead3cab69fa13469e434ed42ec1242",
           "destination": "Editor/LocalizationInjector.cs"
         },
         {
           "guid": "c6fdfa3b426b06e40b8f746df1864f5d",
           "destination": "Editor/Startup.cs"
+        },
+        {
+          "guid": "7e35e07a48cf2f74a8c15177398fb657",
+          "destination": "Editor/lang_custom.json"
         },
         {
           "guid": "e24e9827e102db54abf7fad4800f01a2",

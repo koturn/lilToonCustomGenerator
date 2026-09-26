@@ -13,6 +13,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Enums
         /// <summary>
         /// Portable Object file.
         /// </summary>
-        PortableObject = 1
+        PortableObject = 1,
+        /// <summary>
+        /// Json file.
+        /// </summary>
+        Json = 2
     }
 }

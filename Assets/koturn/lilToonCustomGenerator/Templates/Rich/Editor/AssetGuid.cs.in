@@ -7,13 +7,13 @@ namespace %%NAMESPACE%%
 !!endif!!
     internal static class AssetGuid
     {
-!!ifnotempty:GUID_LANG_CUSTOM!!
+!!ifnotempty:GUID_LANG_CUSTOM_TSV!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// GUID of "%%BASE_DIRECTORY%%Editor/lang_custom.tsv".
         /// </summary>
 !!  endif!!
-        public const string LangCustom = "%%GUID_LANG_CUSTOM%%";
+        public const string LangCustomTsv = "%%GUID_LANG_CUSTOM_TSV%%";
 !!endif!!
 !!ifnotempty:GUID_PORTABLE_OBJECT_DIR!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -22,6 +22,14 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!  endif!!
         public const string PortableObjectDir = "%%GUID_PORTABLE_OBJECT_DIR%%";
+!!endif!!
+!!ifnotempty:GUID_LANG_CUSTOM_JSON!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// GUID of "%%BASE_DIRECTORY%%Editor/lang_custom.json".
+        /// </summary>
+!!  endif!!
+        public const string LangCustomJson = "%%GUID_LANG_CUSTOM_JSON%%";
 !!endif!!
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>

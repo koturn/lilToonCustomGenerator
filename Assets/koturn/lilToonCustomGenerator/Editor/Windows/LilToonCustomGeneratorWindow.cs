@@ -56,7 +56,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private static readonly string[] _languageResourceTypeNames =
         {
             "TSV",
-            "Portable Object (.po)"
+            "Portable Object (.po)",
+            "Json"
         };
         /// <summary>
         /// Default minimal unity version array for package.json.
@@ -1608,14 +1609,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var templates = new List<TemplateFileConfig>(config.Templates);
 
             // Try to find `Editor/lang_custom.tsv`.
-            var langCustomIndex = IndexOfDestination(templates, "Editor/lang_custom.tsv");
+            var langCustomTsvIndex = IndexOfDestination(templates, "Editor/lang_custom.tsv");
 
             // Generate `Editor/lang_custom.tsv` and obtain its GUID.
-            if (langCustomIndex != -1)
+            if (langCustomTsvIndex != -1)
             {
                 if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.TSV)
                 {
-                    var tfcLangCustom = templates[langCustomIndex];
+                    var tfcLangCustom = templates[langCustomTsvIndex];
 
                     var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcLangCustom.Destination);
                     Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
@@ -1632,7 +1633,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         tagDict.Add("GUID_LANG_CUSTOM", guidLangCustom);
                     }
                 }
-                templates.RemoveAt(langCustomIndex);
+                templates.RemoveAt(langCustomTsvIndex);
             }
 
             if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.PortableObject)
@@ -1668,6 +1669,43 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         templates.RemoveAt(index);
                     }
+                }
+            }
+
+            // Try to find `Editor/lang_custom.json`.
+            var langCustomJsonIndex = IndexOfDestination(templates, "Editor/lang_custom.json");
+
+            // Generate `Editor/lang_custom.json` and obtain its GUID.
+            if (langCustomJsonIndex != -1)
+            {
+                if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.Json)
+                {
+                    var tfcLangCustom = templates[langCustomJsonIndex];
+
+                    var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcLangCustom.Destination);
+                    Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
+
+                    var path = AssetDatabase.GUIDToAssetPath(tfcLangCustom.Guid);
+
+                    Debug.LogFormat("  {0} -> {1}", path, dstFilePath);
+                    templateEngine.ExpandTemplate(path, dstFilePath);
+                    filePathSet.Remove(Path.GetFullPath(dstFilePath));
+
+                    var guidLangCustom = ReadOrGenerateGuid(dstFilePath, isInProject);
+                    if (guidLangCustom.Length != 0)
+                    {
+                        tagDict.Add("GUID_LANG_CUSTOM_JSON", guidLangCustom);
+                    }
+                }
+                templates.RemoveAt(langCustomJsonIndex);
+            }
+
+            if (!_shouldGenerateLanguageFile || _languageResourceType != LanguageResourceTypes.Json)
+            {
+                var index = IndexOfDestination(templates, "Editor/JsonLocalizationInjector.cs");
+                if (index != -1)
+                {
+                    templates.RemoveAt(index);
                 }
             }
 
@@ -1963,7 +2001,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         index = 0;
                         foreach (var shaderProp in shaderPropDefList)
                         {
-                            sb.AppendFormat("{0}\t{1}\t{1}\t{1}\t{1}\t{1}", langTags[index], shaderProp.Description.Length == 0 ? langTags[index] : shaderProp.Description)
+                            var tag = langTags[index];
+                            sb.AppendFormat("{0}\t{1}\t{1}\t{1}\t{1}\t{1}", tag, shaderProp.Description.Length == 0 ? tag : shaderProp.Description)
                                 .AppendLine();
                             index++;
                         }
@@ -1985,6 +2024,36 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             index++;
                         }
                         tagDict.Add("PORTABLE_OBJECT_CONTENT", sb.ToString());
+                        break;
+                    case LanguageResourceTypes.Json:
+                        index = 0;
+                        foreach (var shaderProp in shaderPropDefList)
+                        {
+                            if (sb.Length > 0)
+                            {
+                                sb.Append(',').AppendLine();
+                            }
+                            var tag = langTags[index];
+                            sb.AppendFormat("\"{0}\": \"{1}\"", tag, shaderProp.Description.Length == 0 ? tag : EscapeString(shaderProp.Description));
+                            index++;
+                        }
+                        tagDict.Add("JSON_LANGUAGE_FILE_CONTENT", sb.ToString());
+
+                        sb.Clear();
+                        index = 0;
+                        foreach (var shaderProp in shaderPropDefList)
+                        {
+                            if (_shouldEmitDocComments)
+                            {
+                                sb.AppendLine("/// <summary>")
+                                    .AppendFormat("/// Translated description text of the <see cref=\"MaterialProperty\"> of \"{0}\".", shaderProp.Name).AppendLine()
+                                    .AppendLine("/// </summary>");
+                            }
+                            sb.AppendLine("[SerializeField]")
+                                .AppendFormat("private string {0};", langTags[index]).AppendLine();
+                            index++;
+                        }
+                        tagDict.Add("DECLARE_JSON_LANG_SERIALIZATION_CLASS_MEMBERS", sb.ToString());
                         break;
                     default:
                         break;

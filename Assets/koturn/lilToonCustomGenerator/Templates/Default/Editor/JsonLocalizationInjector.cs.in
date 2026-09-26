@@ -1,0 +1,451 @@
+// #define USE_EXPRESSION_TREE
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+#if USE_EXPRESSION_TREE
+using System.Linq.Expressions;
+#endif  // USE_EXPRESSION_TREE
+using System.Reflection;
+#if !USE_EXPRESSION_TREE
+using System.Reflection.Emit;
+#endif  // USE_EXPRESSION_TREE
+using UnityEditor;
+using UnityEngine;
+using lilToon;
+
+
+namespace %%NAMESPACE%%
+{
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// <para>Additional Portable Object file loader for <see cref="lilLanguageManager"/>.</para>
+    /// <para>You must add language key as a members of <see cref="TranslationMap"/> when you add new translation.</para>
+    /// </summary>
+!!endif!!
+    internal static class JsonLocalizationInjector
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Fallback language name.
+        /// </summary>
+!!endif!!
+        private const string FallbackLangName = "en-US";
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Cached reference to <c>lilLanguageManager.loc</c>.
+        /// </summary>
+!!endif!!
+        private static readonly Dictionary<string, string> _loc = GetLoc();
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Language json instance.
+        /// </summary>
+!!endif!!
+        private static LangJsonRoot _langJsonRoot;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Last loaded json file path.
+        /// </summary>
+!!endif!!
+        private static string _lastLoadedJsonPath;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Last write time of the <see cref="_lastLoadedJsonPath"/>.
+        /// </summary>
+!!endif!!
+        private static DateTime _lastWriteTime;
+
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Load language json file and inject its result to the language directory in <see cref="lilLanguageManager"/>.
+        /// </summary>
+        /// <param name="guidJson">GUID of language json file.</param>
+!!endif!!
+        public static void Load(string guidJson)
+        {
+            Load(guidJson, lilLanguageManager.langSet.languageName);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Load language json file and inject its result to the language directory in <see cref="lilLanguageManager"/>.
+        /// </summary>
+        /// <param name="guidJson">GUID of portable object directory.</param>
+        /// <param name="langName">Target language name.</param>
+!!endif!!
+        public static void Load(string guidJson, string langName)
+        {
+            var jsonAssetPath = AssetDatabase.GUIDToAssetPath(guidJson);
+            if (jsonAssetPath.Length == 0)
+            {
+                throw new FileNotFoundException("File not found; which is corresponding to GUID: " + guidJson);
+            }
+
+            var lastWriteTime = new FileInfo(jsonAssetPath).LastWriteTime;
+            if (_lastWriteTime != lastWriteTime
+                || _lastLoadedJsonPath != jsonAssetPath
+                || _langJsonRoot == null)
+            {
+                try
+                {
+                    _langJsonRoot = JsonUtility.FromJson<LangJsonRoot>(File.ReadAllText(jsonAssetPath));
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                    return;
+                }
+                _lastLoadedJsonPath = jsonAssetPath;
+                _lastWriteTime = lastWriteTime;
+            }
+
+            var translation = _langJsonRoot[langName];
+            if (translation == null)
+            {
+                translation = _langJsonRoot[FallbackLangName];
+                if (translation == null)
+                {
+                    return;
+                }
+            }
+
+            InjectLocalizationDict(translation.LocalizationDict);
+        }
+
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Get <see cref="lilLanguageManager"/>.loc using reflection.
+        /// </summary>
+        /// <returns>Localization dictionary in <see cref="lilLanguageManager"/> class.</returns>
+!!endif!!
+        private static Dictionary<string, string> GetLoc()
+        {
+            // lilLanguageManager implemented in lilToon 1.3.0.
+            var tLilToonInspector = typeof(lilToonInspector);
+            var tLilLanguageManager = tLilToonInspector.Assembly.GetType("lilToon.lilLanguageManager");
+            return (Dictionary<string, string>)(tLilLanguageManager ?? tLilToonInspector)
+                .GetField(
+                    "loc",
+                    BindingFlags.NonPublic | BindingFlags.Static)
+                .GetValue(null);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Inject localization dictionary to <see cref="_loc"/>.
+        /// </summary>
+        /// <param name="localizationDict">Localization dictionary.</param>
+!!endif!!
+        private static void InjectLocalizationDict(Dictionary<string, string> localizationDict)
+        {
+            var loc = _loc;
+            var fallbackTranslationMap = _langJsonRoot[FallbackLangName];
+            if (fallbackTranslationMap != null)
+            {
+                var fallbackLocalizationDict = fallbackTranslationMap.LocalizationDict;
+                foreach (var kv in localizationDict)
+                {
+                    string val;
+                    if (!string.IsNullOrEmpty(kv.Value))
+                    {
+                        val = kv.Value;
+                    }
+                    else if (!fallbackLocalizationDict.TryGetValue(kv.Key, out val) || string.IsNullOrEmpty(val))
+                    {
+                        val = kv.Key;
+                    }
+                    loc[kv.Key] = val;
+                }
+            }
+            else
+            {
+                foreach (var kv in localizationDict)
+                {
+                    loc[kv.Key] = kv.Value;
+                }
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Root object of localization json file.
+        /// </summary>
+!!endif!!
+        [Serializable]
+        private sealed class LangJsonRoot
+        {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Get <see cref="TranslationMap"/> instance.
+            /// </summary>
+!!endif!!
+            public TranslationMap this[string langName]
+            {
+                get
+                {
+                    switch (langName)
+                    {
+                        case "en-US":
+                        case nameof(en_US):
+                            return en_US;
+                        case "ja-JP":
+                        case nameof(ja_JP):
+                            return ja_JP;
+                        case "ko-KR":
+                        case nameof(ko_KR):
+                            return ko_KR;
+                        case "zh-Hans":
+                        case nameof(zh_Hans):
+                            return zh_Hans;
+                        case "zh-Hant":
+                        case nameof(zh_Hant):
+                            return zh_Hant;
+                        default:
+                            throw new InvalidOperationException("Language translation map not found: \"" + langName + "\"");
+                    }
+                }
+            }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// <see cref="TranslationMap"/> for "en-US".
+            /// </summary>
+!!endif!!
+            [SerializeField]
+            private TranslationMap en_US;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// <see cref="TranslationMap"/> for "ja-JP".
+            /// </summary>
+!!endif!!
+            [SerializeField]
+            private TranslationMap ja_JP;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// <see cref="TranslationMap"/> for "ko-KR".
+            /// </summary>
+!!endif!!
+            [SerializeField]
+            private TranslationMap ko_KR;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// <see cref="TranslationMap"/> for "zh-Hans".
+            /// </summary>
+!!endif!!
+            [SerializeField]
+            private TranslationMap zh_Hans;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// <see cref="TranslationMap"/> for "zh-Hant".
+            /// </summary>
+!!endif!!
+            [SerializeField]
+            private TranslationMap zh_Hant;
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Hidden ctor.
+            /// </summary>
+!!endif!!
+            [Obsolete("Should not be instanciated directly")]
+            private LangJsonRoot()
+            {
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Translation map.
+        /// </summary>
+!!endif!!
+        [Serializable]
+        private sealed class TranslationMap
+        {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Field accessor of this class.
+            /// </summary>
+!!endif!!
+            private static readonly FieldAccessor[] _accessors = FieldAccessor.CreateAccessors(typeof(TranslationMap), fieldInfo => fieldInfo.FieldType == typeof(string));
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Translation dictionary.
+            /// </summary>
+!!endif!!
+            public Dictionary<string, string> LocalizationDict => _localizationDict ?? (_localizationDict = BuildLocalizationDict());
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Cache field of <see cref="LocalizationDict"/>.
+            /// </summary>
+!!endif!!
+            private Dictionary<string, string> _localizationDict;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Translation text for the text shown in the property block.
+            /// </summary>
+!!endif!!
+            [SerializeField]
+            private string sCustomShaderTitle;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Translation text for the text shown in the category block.
+            /// </summary>
+!!endif!!
+            [SerializeField]
+            private string sCustomPropertyCategory;
+            %%DECLARE_JSON_LANG_SERIALIZATION_CLASS_MEMBERS:skipempty:keepindent%%
+
+            //
+            // NOTE: Add language key members here.
+            //
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Hidden ctor.
+            /// </summary>
+!!endif!!
+            [Obsolete("Should not be instanciated directly")]
+            private TranslationMap()
+            {
+            }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Build translation dictionary.
+            /// </summary>
+            /// <returns></returns>
+!!endif!!
+            private Dictionary<string, string> BuildLocalizationDict()
+            {
+                var dict = new Dictionary<string, string>();
+                foreach (var accessor in _accessors)
+                {
+                    dict[accessor.Name] = (string)accessor.GetValue(this);
+                }
+                return dict;
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Field accessor.
+        /// </summary>
+!!endif!!
+        private sealed class FieldAccessor
+        {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Field name.
+            /// </summary>
+!!endif!!
+            public string Name { get; }
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Type of the field.
+            /// </summary>
+!!endif!!
+            public Type Type { get; }
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Get field value as object.
+            /// </summary>
+!!endif!!
+            public Func<object, object> GetValue { get; }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Initialize <see cref="Name"/> and <see cref="GetValue"/>.
+            /// </summary>
+            /// <param name="name">Field name.</param>
+            /// <param name="type">Type of the field.</param>
+            /// <param name="getValue">Getter function.</param>
+!!endif!!
+            public FieldAccessor(string name, Type type, Func<object, object> getValue)
+            {
+                Name = name;
+                Type = type;
+                GetValue = getValue;
+            }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Create accessor array.
+            /// </summary>
+            /// <param name="type"><see cref="Type"/> of target class.</param>
+            /// <param name="filter">Filter delegate.</param>
+            /// <returns>Accessor array.</returns>
+!!endif!!
+            public static FieldAccessor[] CreateAccessors(Type type, Func<FieldInfo, bool> filter)
+            {
+                var fieldInfoArray = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+                var accessors = new List<FieldAccessor>();
+
+                if (filter == null)
+                {
+                    foreach (var fieldInfo in fieldInfoArray)
+                    {
+                        accessors.Add(new FieldAccessor(fieldInfo.Name, fieldInfo.FieldType, CreateGetter(type, fieldInfo)));
+                    }
+                }
+                else
+                {
+                    foreach (var fieldInfo in fieldInfoArray)
+                    {
+                        if (filter(fieldInfo))
+                        {
+                            accessors.Add(new FieldAccessor(fieldInfo.Name, fieldInfo.FieldType, CreateGetter(type, fieldInfo)));
+                        }
+                    }
+                }
+
+                return accessors.ToArray();
+            }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Create <see cref="Func{T, R}"/> of getter.
+            /// </summary>
+            /// <param name="type"><see cref="Type"/> of target class.</param>
+            /// <param name="fieldInfo">Field information.</param>
+            /// <returns><see cref="Func{T, R}"/> of getter.</returns>
+!!endif!!
+            public static Func<object, object> CreateGetter(Type type, FieldInfo fieldInfo)
+            {
+#if USE_EXPRESSION_TREE
+                var pInstance = Expression.Parameter(typeof(object), "instance");
+                return Expression.Lambda<Func<object, object>>(
+                    Expression.Field(
+                        Expression.Convert(pInstance, type),
+                        fieldInfo),
+                    "get_" + fieldInfo.Name,
+                    new[]
+                    {
+                        pInstance
+                    }).Compile();
+#else
+                var method = new DynamicMethod(
+                    "get_" + fieldInfo.Name,
+                    typeof(string),
+                    new[] { typeof(object) },
+                    type,
+                    true);
+
+                var il = method.GetILGenerator();
+
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Castclass, type);
+                il.Emit(OpCodes.Ldfld, fieldInfo);
+                il.Emit(OpCodes.Ret);
+
+                return (Func<object, object>)method.CreateDelegate(typeof(Func<object, object>));
+#endif  // USE_EXPRESSION_TREE
+            }
+        }
+    }
+}

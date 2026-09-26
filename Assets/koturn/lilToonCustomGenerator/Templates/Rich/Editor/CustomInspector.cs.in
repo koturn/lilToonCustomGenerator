@@ -133,24 +133,32 @@ namespace %%NAMESPACE%%
             //isShowRenderMode = false;
 
 !!ifempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
-!!  ifnotempty:GUID_LANG_CUSTOM!!
-            LoadCustomLanguage(AssetGuid.LangCustom);
+!!  ifnotempty:GUID_LANG_CUSTOM_TSV!!
+            LoadCustomLanguage(AssetGuid.LangCustomTsv);
 !!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
             LocalizationInjector.Load(AssetGuid.PortableObjectDir);
+!!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
+            JsonLocalizationInjector.Load(AssetGuid.LangCustomJson);
 !!  else!!
             // LoadCustomLanguage("");
 !!  endif!!
 !!else!!
-!!  ifnotempty:GUID_LANG_CUSTOM!!
+!!  ifnotempty:GUID_LANG_CUSTOM_TSV!!
             if (_shouldLoadLanguage)
             {
-                LoadCustomLanguage(AssetGuid.LangCustom);
+                LoadCustomLanguage(AssetGuid.LangCustomTsv);
                 prevLanguageName = lilLanguageManager.langSet.languageName;
             }
 !!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
             if (_shouldLoadLanguage)
             {
                 LocalizationInjector.Load(AssetGuid.PortableObjectDir);
+                prevLanguageName = lilLanguageManager.langSet.languageName;
+            }
+!!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
+            if (_shouldLoadLanguage)
+            {
+                JsonLocalizationInjector.Load(AssetGuid.LangCustomJson);
                 prevLanguageName = lilLanguageManager.langSet.languageName;
             }
 !!  else!!
