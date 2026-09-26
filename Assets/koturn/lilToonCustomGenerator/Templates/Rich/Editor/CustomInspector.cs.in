@@ -66,7 +66,7 @@ namespace %%NAMESPACE%%
 !!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
-        /// <see cref="List{T}"/> of <see cref="MaterialProperty"/> about elapsed time.
+        /// <see cref="List{T}"/> of the <see cref="MaterialProperty"/> specific to the custom shader.
         /// </summary>
 !!  endif!!
         private readonly List<MaterialProperty> _propertyList = new List<MaterialProperty>();
