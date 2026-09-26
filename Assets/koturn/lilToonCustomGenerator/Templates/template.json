@@ -20,12 +20,36 @@
           "destination": "Editor/%%INSPECTOR_NAME%%.cs"
         },
         {
+          "guid": "fcead3cab69fa13469e434ed42ec1242",
+          "destination": "Editor/LocalizationInjector.cs"
+        },
+        {
           "guid": "c6fdfa3b426b06e40b8f746df1864f5d",
           "destination": "Editor/Startup.cs"
         },
         {
           "guid": "e24e9827e102db54abf7fad4800f01a2",
           "destination": "Editor/lang_custom.tsv"
+        },
+        {
+          "guid": "26978bbbb051fc84381c9cac06cb1710",
+          "destination": "Editor/lang/en-US.po"
+        },
+        {
+          "guid": "8f72be682534d8846b16464d0d107d5d",
+          "destination": "Editor/lang/ja-JP.po"
+        },
+        {
+          "guid": "b5546dc3503b49544b3f534846e89126",
+          "destination": "Editor/lang/ko-KR.po"
+        },
+        {
+          "guid": "814459536c9397d478edfffcdc2db7e6",
+          "destination": "Editor/lang/zh-Hans.po"
+        },
+        {
+          "guid": "495a468e968713048b201e4a900ed41f",
+          "destination": "Editor/lang/zh-Hant.po"
         },
         {
           "guid": "06f1d51b437cf034f93e59db08a3ca3b",

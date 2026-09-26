@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh-Hans\n"
+!!ifnotempty:SHADER_TITLE!!
+
+msgid "sCustomShaderTitle"
+msgstr "%%SHADER_TITLE%%"
+
+msgid "sCustomPropertyCategory"
+msgstr "%%SHADER_TITLE%%"
+!!endif!!
+!!ifnotempty:PORTABLE_OBJECT_CONTENT!!
+
+%%PORTABLE_OBJECT_CONTENT%%
+!!endif!!

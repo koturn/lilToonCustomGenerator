@@ -48,7 +48,7 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!endif!!
         private static bool isShowCustomProperties;
-!!ifnotempty:GUID_LANG_CUSTOM!!
+!!ifnotempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// A language name when the language file was last loaded.
@@ -80,6 +80,7 @@ namespace %%NAMESPACE%%
         private readonly List<string> _shaderKeywordList = new List<string>();
 !!endif!!
 !!ifempty:DECLARE_MATERIAL_PROPERTIES!!
+
         // MaterialProperty _customVariable;
 !!else!!
         %%DECLARE_MATERIAL_PROPERTIES:keepindent%%
@@ -96,7 +97,7 @@ namespace %%NAMESPACE%%
 !!  endif!!
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
         {
-!!  ifnotempty:GUID_LANG_CUSTOM!!
+!!  ifnotempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
             _shouldLoadLanguage = lts == null || lts.name != ShaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
 
 !!  endif!!
@@ -131,14 +132,32 @@ namespace %%NAMESPACE%%
             // If not, set isShowRenderMode to false
             //isShowRenderMode = false;
 
-!!ifnotempty:GUID_LANG_CUSTOM!!
+!!ifempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
+!!  ifnotempty:GUID_LANG_CUSTOM!!
+            LoadCustomLanguage(AssetGuid.LangCustom);
+!!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
+            LocalizationInjector.Load(AssetGuid.PortableObjectDir);
+!!  else!!
+            // LoadCustomLanguage("");
+!!  endif!!
+!!else!!
+!!  ifnotempty:GUID_LANG_CUSTOM!!
             if (_shouldLoadLanguage)
             {
                 LoadCustomLanguage(AssetGuid.LangCustom);
                 prevLanguageName = lilLanguageManager.langSet.languageName;
             }
-
+!!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
+            if (_shouldLoadLanguage)
+            {
+                LocalizationInjector.Load(AssetGuid.PortableObjectDir);
+                prevLanguageName = lilLanguageManager.langSet.languageName;
+            }
+!!  else!!
+            // LoadCustomLanguage("");
+!!  endif!!
 !!endif!!
+
 !!ifempty:SUPPORT_PROPERTY_SEARCH!!
 !!  ifempty:INITIALIZE_MATERIAL_PROPERTIES!!
             // _customVariable = FindProperty("_CustomVariable", props);

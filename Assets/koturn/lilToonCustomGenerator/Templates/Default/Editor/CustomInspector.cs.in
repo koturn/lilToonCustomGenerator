@@ -73,10 +73,12 @@ namespace %%NAMESPACE%%
             // If not, set isShowRenderMode to false
             //isShowRenderMode = false;
 
-!!ifempty:GUID_LANG_CUSTOM!!
-            //LoadCustomLanguage("");
-!!else!!
+!!ifnotempty:GUID_LANG_CUSTOM!!
             LoadCustomLanguage("%%GUID_LANG_CUSTOM%%");
+!!elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
+            LocalizationInjector.Load("%%GUID_PORTABLE_OBJECT_DIR%%");
+!!else!!
+            //LoadCustomLanguage("");
 !!endif!!
 !!ifempty:SUPPORT_PROPERTY_SEARCH!!
 !!  ifempty:INITIALIZE_MATERIAL_PROPERTIES!!

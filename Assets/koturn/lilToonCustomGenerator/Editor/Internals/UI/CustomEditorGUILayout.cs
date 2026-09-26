@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -84,7 +85,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         }
 
         /// <summary>
-        /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
+        /// Draw button, where the clickable area is limited to just the checkbox and label.
         /// </summary>
         /// <param name="text">Button text.</param>
         /// <returns>True if checked, false otherwise.</returns>
@@ -94,7 +95,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         }
 
         /// <summary>
-        /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
+        /// Draw button, where the clickable area is limited to just the checkbox and label.
         /// </summary>
         /// <param name="label">Button label.</param>
         /// <returns>True if checked, false otherwise.</returns>
@@ -104,7 +105,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         }
 
         /// <summary>
-        /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
+        /// Draw ToggleLeft, where the clickable area is limited to just the checkbox and label.
         /// </summary>
         /// <param name="text">Label text.</param>
         /// <param name="value">A boolean value indicating whether it is checked.</param>
@@ -115,7 +116,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
         }
 
         /// <summary>
-        /// ToggleLeft, where the clickable area is limited to just the checkbox and label.
+        /// Draw ToggleLeft, where the clickable area is limited to just the checkbox and label.
         /// </summary>
         /// <param name="label">Label.</param>
         /// <param name="value">A boolean value indicating whether it is checked.</param>
@@ -125,6 +126,40 @@ namespace Koturn.LilToonCustomGenerator.Editor.Internals.UI
             var rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight);
             rect.width = EditorStyles.toggle.CalcSize(label).x + EditorGUI.indentLevel * 15.0f + 2.0f;
             return EditorGUI.ToggleLeft(rect, label, value);
+        }
+
+        /// <summary>
+        /// Draw Popup, where the clickable area is limited to just the checkbox and label.
+        /// </summary>
+        /// <param name="label">Label.</param>
+        /// <param name="selectedIndex">Selected index.</param>
+        /// <param name="displayOptions">Popup candidates.</param>
+        /// <returns>Selected index.</returns>
+        public static int PopupAdjusted(string label, int selectedIndex, string[] displayOptions)
+        {
+            var maxPopupWidth = 0.0f;
+            foreach (var popupText in displayOptions)
+            {
+                maxPopupWidth = Math.Max(maxPopupWidth, EditorStyles.popup.CalcSize(GetTempLabel(popupText)).x);
+            }
+            var labelWidth = EditorStyles.label.CalcSize(new GUIContent(label)).x;
+
+            var oldLabelWidth = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = labelWidth + 4.0f + EditorGUI.indentLevel * 15.0f + 2.0f;
+
+            var rect = EditorGUILayout.GetControlRect(false, EditorGUIUtility.singleLineHeight);
+            rect.x += 2.0f;
+            rect.width = labelWidth + maxPopupWidth + EditorGUI.indentLevel * 15.0f + 12.0f;
+
+            selectedIndex = EditorGUI.Popup(
+                rect,
+                label,
+                selectedIndex,
+                displayOptions);
+
+            EditorGUIUtility.labelWidth = oldLabelWidth;
+
+            return selectedIndex;
         }
 
         /// <summary>

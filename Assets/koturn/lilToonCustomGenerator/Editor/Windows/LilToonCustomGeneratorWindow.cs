@@ -51,6 +51,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "TwoPass"
         };
         /// <summary>
+        /// Candidates of language resource popup.
+        /// </summary>
+        private static readonly string[] _languageResourceTypeNames =
+        {
+            "TSV",
+            "Portable Object (.po)"
+        };
+        /// <summary>
         /// Default minimal unity version array for package.json.
         /// </summary>
         private static readonly int[] _defaultMinimalUnityVersion = { 2019, 4 };
@@ -188,7 +196,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to generate <c>Editor/Startup.cs</c>.
         /// </summary>
-        private bool _shouldGenerateVersionDetectionHeader = false;
+        private bool _shouldGenerateVersionDetectionScript = false;
         /// <summary>
         /// True to allow unsafe code.
         /// </summary>
@@ -200,7 +208,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to generate <c>Editor/lang_custom.tsv</c>.
         /// </summary>
-        private bool _shouldGenerateLangTsv = true;
+        private bool _shouldGenerateLanguageFile = true;
+        /// <summary>
+        /// Language resource type.
+        /// </summary>
+        private LanguageResourceTypes _languageResourceType = LanguageResourceTypes.TSV;
         /// <summary>
         /// True to emit shader conversion menu.
         /// </summary>
@@ -939,18 +951,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     EditorGUILayout.LabelField("Inspector options", EditorStyles.boldLabel);
                     _isPropertySearchSupported = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.SupportPropertySearch, _isPropertySearchSupported);
-                    _shouldGenerateVersionDetectionHeader = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateVersionDetectionScript, _shouldGenerateVersionDetectionHeader);
-                    if (_shouldGenerateVersionDetectionHeader)
+                    _shouldGenerateVersionDetectionScript = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateVersionDetectionScript, _shouldGenerateVersionDetectionScript);
+                    if (_shouldGenerateVersionDetectionScript)
                     {
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
                             if (_isPropertySearchSupported)
                             {
                                 using (new EditorGUI.DisabledScope(true))
                                 {
-                                    var shouldGetVersionFromPackageJson = false;
-                                    CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, shouldGetVersionFromPackageJson);
+                                    CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, false);
                                 }
                             }
                             else
@@ -959,7 +969,37 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             }
                         }
                     }
-                    _shouldGenerateLangTsv = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateLanguageFile, _shouldGenerateLangTsv);
+                    _shouldGenerateLanguageFile = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateLanguageFile, _shouldGenerateLanguageFile);
+                    if (_shouldGenerateLanguageFile)
+                    {
+                        using (new EditorGUI.IndentLevelScope(2))
+                        {
+                            using (new EditorGUILayout.HorizontalScope())
+                            {
+                                _languageResourceType = (LanguageResourceTypes)CustomEditorGUILayout.PopupAdjusted(
+                                    "Resource Type",
+                                    (int)_languageResourceType,
+                                    _languageResourceTypeNames);
+                                if (_languageResourceType == LanguageResourceTypes.PortableObject)
+                                {
+                                    GUILayout.FlexibleSpace();
+                                    CustomEditorGUILayout.WebButton("About Portable Object file", "https://www.gnu.org/software/gettext/manual/gettext.html#PO-Files");
+                                    GUILayout.Space(4.0f);
+                                }
+                            }
+                        }
+                    }
+                    if (_shouldGenerateVersionDetectionScript || _languageResourceType == LanguageResourceTypes.PortableObject)
+                    {
+                        _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
+                    }
+                    else
+                    {
+                        using (new EditorGUI.DisabledScope(true))
+                        {
+                            CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", false);
+                        }
+                    }
                     _shouldGenerateConvertMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateConvertMenu, _shouldGenerateConvertMenu);
                     _shouldGenerateCacheClearMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateCacheClearMenu, _shouldGenerateCacheClearMenu);
                     using (new EditorGUILayout.HorizontalScope())
@@ -1573,7 +1613,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             // Generate `Editor/lang_custom.tsv` and obtain its GUID.
             if (langCustomIndex != -1)
             {
-                if (_shouldGenerateLangTsv)
+                if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.TSV)
                 {
                     var tfcLangCustom = templates[langCustomIndex];
 
@@ -1590,10 +1630,45 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     if (guidLangCustom.Length != 0)
                     {
                         tagDict.Add("GUID_LANG_CUSTOM", guidLangCustom);
-                        tagDict["SHOULD_EMIT_ONGUI"] = "true";
                     }
                 }
                 templates.RemoveAt(langCustomIndex);
+            }
+
+            if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.PortableObject)
+            {
+                var poIndex = IndexOfDestination(templates, "Editor/lang/en-US.po");
+                if (poIndex != -1)
+                {
+                    var tfcPoFile = templates[poIndex];
+                    var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcPoFile.Destination);
+                    var poDirPath = Path.GetDirectoryName(dstFilePath);
+                    Directory.CreateDirectory(poDirPath);
+                    var guidPoDir = ReadOrGenerateGuid(poDirPath, isInProject);
+                    if (guidPoDir.Length != 0)
+                    {
+                        tagDict.Add("GUID_PORTABLE_OBJECT_DIR", guidPoDir);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var filePath in new[]
+                {
+                    "Editor/LocalizationInjector.cs",
+                    "Editor/lang/en-US.po",
+                    "Editor/lang/ja-JP.po",
+                    "Editor/lang/ko-KR.po",
+                    "Editor/lang/zh-Hans.po",
+                    "Editor/lang/zh-Hant.po"
+                })
+                {
+                    var index = IndexOfDestination(templates, filePath);
+                    if (index != -1)
+                    {
+                        templates.RemoveAt(index);
+                    }
+                }
             }
 
             if (!_shouldEmitGeometryShader && !_shouldGenerateInsertPost)
@@ -1626,7 +1701,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
 
-            if (!_shouldGenerateVersionDetectionHeader)
+            if (!_shouldGenerateVersionDetectionScript)
             {
                 var index = IndexOfDestination(templates, "Editor/Startup.cs");
                 if (index != -1)
@@ -1865,8 +1940,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             }
             tagDict.Add("INITIALIZE_MATERIAL_PROPERTIES_AND_LIST", sb.ToString());
 
-            if (_shouldGenerateLangTsv)
+            if (_shouldGenerateLanguageFile)
             {
+                tagDict.Add("PREVENT_LANGUAGE_LOADING_EVERY_RENDERING", "true");
+                tagDict["SHOULD_EMIT_ONGUI"] = "true";
+
                 sb.Clear();
                 index = 0;
                 foreach (var shaderProp in shaderPropDefList)
@@ -1879,14 +1957,38 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("DRAW_MATERIAL_PROPERTIES", sb.ToString());
 
                 sb.Clear();
-                index = 0;
-                foreach (var shaderProp in shaderPropDefList)
+                switch (_languageResourceType)
                 {
-                    sb.AppendFormat("{0}\t{1}\t{1}\t{1}\t{1}\t{1}", langTags[index], shaderProp.Description.Length == 0 ? langTags[index] : shaderProp.Description)
-                        .AppendLine();
-                    index++;
+                    case LanguageResourceTypes.TSV:
+                        index = 0;
+                        foreach (var shaderProp in shaderPropDefList)
+                        {
+                            sb.AppendFormat("{0}\t{1}\t{1}\t{1}\t{1}\t{1}", langTags[index], shaderProp.Description.Length == 0 ? langTags[index] : shaderProp.Description)
+                                .AppendLine();
+                            index++;
+                        }
+                        tagDict.Add("LANGUAGE_FILE_CONTENT", sb.ToString());
+                        break;
+                    case LanguageResourceTypes.PortableObject:
+                        index = 0;
+                        foreach (var shaderProp in shaderPropDefList)
+                        {
+                            if (sb.Length > 0)
+                            {
+                                sb.AppendLine();
+                            }
+                            var msgId = langTags[index];
+                            sb.AppendFormat("msgid \"{0}\"", msgId)
+                                .AppendLine()
+                                .AppendFormat("msgstr \"{0}\"", shaderProp.Description.Length == 0 ? msgId : EscapeString(shaderProp.Description))
+                                .AppendLine();
+                            index++;
+                        }
+                        tagDict.Add("PORTABLE_OBJECT_CONTENT", sb.ToString());
+                        break;
+                    default:
+                        break;
                 }
-                tagDict.Add("LANGUAGE_FILE_CONTENT", sb.ToString());
             }
             else
             {
@@ -1924,7 +2026,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             tagDict.Add("DRAW_LOCALIZED_MATERIAL_PROPERTIES", sb.ToString());
 
             sb.Clear();
-            if (_shouldGenerateLangTsv)
+            if (_shouldGenerateLanguageFile)
             {
                 index = 0;
                 foreach (var shaderProp in shaderPropDefList)
@@ -2233,13 +2335,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 tagDict.Add("SUPPORT_PROPERTY_SEARCH", "true");
             }
-            if (_shouldGenerateVersionDetectionHeader)
+            if (_allowUnsafeCode && (_shouldGenerateVersionDetectionScript || _languageResourceType == LanguageResourceTypes.PortableObject))
+            {
+                tagDict.Add("ALLOW_UNSAFE_CODE", "true");
+            }
+            if (_shouldGenerateVersionDetectionScript)
             {
                 tagDict.Add("SHOULD_GENERATE_VERSION_DEF_FILE", "true");
-                if (_allowUnsafeCode)
-                {
-                    tagDict.Add("ALLOW_UNSAFE_CODE", "true");
-                }
                 if (_shouldGetVersionFromPackageJson)
                 {
                     tagDict.Add("SHOULD_GET_VERSION_FROM_PACKAGE_JSON", "true");
