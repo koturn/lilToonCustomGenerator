@@ -6,7 +6,11 @@ using System.IO;
 using System;
 #endif  // !UNITY_2018_3_OR_NEWER
 !!endif!!
+!!ifnotempty:SHADER_KEYWORD_CASES!!
 using System.Collections.Generic;
+!!elifnotempty:SUPPORT_PROPERTY_SEARCH!!
+using System.Collections.Generic;
+!!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System.Runtime.InteropServices;
 using System.Security;
@@ -237,7 +241,7 @@ namespace %%NAMESPACE%%
 
             foreach (var keyword in material.shaderKeywords)
             {
-                if (IsAllShaderKeyword(keyword))
+                if (IsAllowedKeyword(keyword))
                 {
                     _shaderKeywordList.Add(keyword);
                 }
@@ -624,7 +628,7 @@ namespace %%NAMESPACE%%
         /// <param name="keyword">Shader keyword.</param>
         /// <returns>True if the keyword is used in all shader variations, otherwise false.</returns>
 !!  endif!!
-        private static bool IsAllShaderKeyword(string keyword)
+        private static bool IsAllowedKeyword(string keyword)
         {
             switch (keyword)
             {
