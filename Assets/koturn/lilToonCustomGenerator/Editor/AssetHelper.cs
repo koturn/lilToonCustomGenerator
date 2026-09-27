@@ -22,6 +22,25 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private static readonly GUID LilShaderContainerImporterGuid = new GUID("3089979ac9fdd004ba564a7e5418ee8d");
 
         /// <summary>
+        /// Read or generate GUID string of specified asset.
+        /// </summary>
+        /// <param name="path">Target path.</param>
+        /// <param name="isInProject">True to import specified path with <see cref="AssetDatabase.ImportAsset(string)"/>.</param>
+        /// <returns>GUID string of specified path.</returns>
+        public static string ReadOrGenerateGuid(string path, bool isInProject)
+        {
+            if (isInProject)
+            {
+                AssetDatabase.ImportAsset(path);
+                return AssetDatabase.AssetPathToGUID(path);
+            }
+            else
+            {
+                return CreateMetaFileIfNotExists(path).ToString();
+            }
+        }
+
+        /// <summary>
         /// Create meta file if not exists.
         /// </summary>
         /// <param name="path">File path or directory path for which meta file is to be created.</param>

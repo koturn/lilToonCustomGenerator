@@ -32,25 +32,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "CR + LF"
         };
         /// <summary>
-        /// Substrings of shader names that can lead to incorrect determinations.
-        /// </summary>
-        private static readonly string[] _specificShaderNameSubstrings =
-        {
-            "Blur",
-            "Cutout",
-            "Fur",
-            "Gem",
-            "Lite",
-            "Multi",
-            "OnePass",
-            "Outline",
-            "Overlay",
-            "Refraction",
-            "Tessellation",
-            "Transparent",
-            "TwoPass"
-        };
-        /// <summary>
         /// Candidates of language resource popup.
         /// </summary>
         private static readonly string[] _languageResourceTypeNames =
@@ -59,34 +40,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "Portable Object (.po)",
             "Json"
         };
-        /// <summary>
-        /// Default minimal unity version array for package.json.
-        /// </summary>
-        private static readonly int[] _defaultMinimalUnityVersion = { 2019, 4 };
-        /// <summary>
-        /// Default minimal lilToon version array.
-        /// </summary>
-        private static readonly int[] _defaultMinimalLilToonVersion = { 1, 2, 11 };
-        /// <summary>
-        /// Default minimal lilToon version array for VPM.
-        /// </summary>
-        private static readonly int[] _defaultVpmMinimalLilToonVersion = { 1, 3, 7 };
-        /// <summary>
-        /// lilToon 1.2.11 version array.
-        /// </summary>
-        private static readonly int[] _lilToonVersion1211 = { 1, 2, 11 };
-        /// <summary>
-        /// lilToon 1.3.0 version array.
-        /// </summary>
-        private static readonly int[] _lilToonVersion130 = { 1, 3, 0 };
-        /// <summary>
-        /// lilToon 1.4.0 version array.
-        /// </summary>
-        private static readonly int[] _lilToonVersion140 = { 1, 4, 0 };
-        /// <summary>
-        /// lilToon 1.4.1 version array.
-        /// </summary>
-        private static readonly int[] _lilToonVersion141 = { 1, 4, 1 };
         /// <summary>
         /// Invalid characters for shader name.
         /// </summary>
@@ -101,23 +54,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             new GUIContent("Patch"),
             new GUIContent("Build")
         };
-        /// <summary>
-        /// <para>Maximum minor version number dict of lilToon.</para>
-        /// <para>key: Major version number.</para>
-        /// <para>Value: Maximum minor version number.</para>
-        /// </summary>
-        private static Dictionary<int, int> _unityMaxMinorNumberDict;
-        /// <summary>
-        /// Array of the tuple; Unity version, lilToon version and message.
-        /// </summary>
-        private static Tuple<int[], int[], string>[] _lilToonUnityVersionCheckTuples;
-        /// <summary>
-        /// <para>Maximum patch number dict of lilToon.</para>
-        /// <para>key: The upper 16 bits represent the major version, and the lower 16 bits represent the minor version.</para>
-        /// <para>Value: Maximum patch number.</para>
-        /// </summary>
-        private static Dictionary<uint, int> _lilToonMaxPatchNumberDict;
-
         /// <summary>
         /// <see cref="ReorderableListContainer{T}"/> for <see cref="ShaderPropertyDefinition"/>.
         /// </summary>
@@ -544,7 +480,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 _shaderName = "lilToonCustom";
             }
-            _namespace = ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor";
+            _namespace = NameHelper.ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor";
 
             _assemblyTitle = _namespace;
             _assemblyDescription = $"Material inspector for \"{_shaderName}/*\".";
@@ -559,12 +495,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyFileVersionNumbers = new[] { 1, 0, 0, 0 };
             _assemblyInformationalVersion = "1.0.0.0";
 
-            _packageName = ConvertShaderNameToPackageName(_shaderName);
+            _packageName = NameHelper.ConvertShaderNameToPackageName(_shaderName);
             _packageVersion = "1.0.0";
             _packageDisplayName = _shaderTitle;
             _packageDescription = "Customized lilToon shaders.";
-            _packageUnityVersion = new int[_defaultMinimalUnityVersion.Length];
-            Buffer.BlockCopy(_defaultMinimalUnityVersion, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
+            _packageUnityVersion = new int[VersionHelper.DefaultMinimalUnityVersion.Length];
+            Buffer.BlockCopy(VersionHelper.DefaultMinimalUnityVersion, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
             _packageUnityReleaseVersion = "";
             _packageChangeLogUrl = "";
             _packageDocumentationUrl = "";
@@ -596,50 +532,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         {
             _defaultTextCacheDict = new Dictionary<string, string>()
             {
-                { nameof(_namespace), ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor" },
+                { nameof(_namespace), NameHelper.ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor" },
                 { nameof(_assemblyDescription), $"Material inspector for \"{_shaderName}/*\"." },
-                { nameof(_packageName), ConvertShaderNameToPackageName(_shaderName) }
-            };
-            _unityMaxMinorNumberDict = new Dictionary<int, int>()
-            {
-                { 2023, 2 },
-                { 2022, 3 },
-                { 2021, 2 },
-                { 2020, 3 },
-                { 2019, 4 }
-            };
-            _lilToonUnityVersionCheckTuples = new[]
-            {
-                Tuple.Create(
-                    new[] { 2, 0, 0 },
-                    new[] { 2022, 1 },
-                    "Starting with lilToon 2.0.0, it is compatible only with Unity 2022 and later.\n"
-                        + "Please consider fixing either the \"Minimal lilToon version\" or the \"Minimal Unity Version\"."),
-                Tuple.Create(
-                    new[] { 1, 10, 0 },
-                    new[] { 2021, 2 },
-                    "The C# scripts of lilToon 1.10.0 cannot be compiled unless using Unity 2021.2 or later.\n"
-                        + "Please consider fixing either the \"Minimal lilToon version\" or the \"Minimal Unity Version\"."),
-                Tuple.Create(
-                    new[] { 1, 9, 0 },
-                    new[] { 2020, 2 },
-                    "The C# scripts of lilToon 1.9.0 cannot be compiled unless using Unity 2020.2 or later.\n"
-                        + "Please consider fixing either the \"Minimal lilToon version\" or the \"Minimal Unity Version\"."),
-            };
-            _lilToonMaxPatchNumberDict = new Dictionary<uint, int>()
-            {
-                { (uint)1 << 16 | (uint)2, 12 },
-                { (uint)1 << 16 | (uint)3, 7 },
-                { (uint)1 << 16 | (uint)4, 1 },
-                { (uint)1 << 16 | (uint)5, 1 },
-                { (uint)1 << 16 | (uint)6, 1 },
-                { (uint)1 << 16 | (uint)7, 3 },
-                { (uint)1 << 16 | (uint)8, 5 },
-                { (uint)1 << 16 | (uint)9, 0 },
-                { (uint)1 << 16 | (uint)10, 3 },
-                { (uint)2 << 16 | (uint)0, 0 },
-                { (uint)2 << 16 | (uint)1, 10 },
-                { (uint)2 << 16 | (uint)2, 1 },
+                { nameof(_packageName), NameHelper.ConvertShaderNameToPackageName(_shaderName) }
             };
         }
 
@@ -668,12 +563,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         _shaderName = EditorGUILayout.TextField("Shader name", _shaderName);
                         if (ccScope.changed)
                         {
-                            _defaultTextCacheDict[nameof(_namespace)] = ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor";
+                            _defaultTextCacheDict[nameof(_namespace)] = NameHelper.ConvertShaderNameToCSharpNamespace(_shaderName) + ".Editor";
                             _defaultTextCacheDict[nameof(_assemblyDescription)] = $"Material inspector for \"{_shaderName}/*\".";
-                            _defaultTextCacheDict[nameof(_packageName)] = ConvertShaderNameToPackageName(_shaderName);
+                            _defaultTextCacheDict[nameof(_packageName)] = NameHelper.ConvertShaderNameToPackageName(_shaderName);
                         }
                     }
-                    if (!CheckShaderName(_shaderName))
+                    if (!NameHelper.CheckShaderName(_shaderName))
                     {
                         EditorGUILayout.HelpBox(
                             "In versions of lilToon prior to 2.3.0, if a shader name contains any of the following 13 strings,\n"
@@ -1207,9 +1102,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     CustomEditorGUILayout.LabelMultiIntField("Minimal Unity version", _versionNumberLabels, _packageUnityVersion);
                                     if (ccScope.changed)
                                     {
-                                        if (CompareVersionArray(_packageUnityVersion, _defaultMinimalUnityVersion) < 0)
+                                        if (VersionHelper.CompareVersionArray(_packageUnityVersion, VersionHelper.DefaultMinimalUnityVersion) < 0)
                                         {
-                                            Buffer.BlockCopy(_defaultMinimalUnityVersion, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
+                                            Buffer.BlockCopy(VersionHelper.DefaultMinimalUnityVersion, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
                                         }
                                     }
                                     EditorGUI.indentLevel -= 2;
@@ -1244,7 +1139,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     GUI.FocusControl(null);
                                 }
                             }
-                            else if (_unityMaxMinorNumberDict.TryGetValue(_packageUnityVersion[0], out var minorVersion)
+                            else if (VersionHelper.UnityMaxMinorNumberDict.TryGetValue(_packageUnityVersion[0], out var minorVersion)
                                 && _packageUnityVersion[1] > minorVersion)
                             {
                                 // Major - Minor
@@ -1263,21 +1158,20 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             //
                             // Compare minimal unity version and lilToon version.
                             //
-                            foreach (var checkTuple in _lilToonUnityVersionCheckTuples)
+                            if (!VersionHelper.CheckMinimalUnityAndLilToonVersion(
+                                _packageUnityVersion,
+                                _packageMinimalLilToonVersion,
+                                out var recommendedUnityVersion,
+                                out var message))
                             {
-                                if (CompareVersionArray(_packageMinimalLilToonVersion, checkTuple.Item1) >= 0
-                                    && CompareVersionArray(_packageUnityVersion, checkTuple.Item2) < 0)
+                                using (new EditorGUILayout.HorizontalScope())
                                 {
-                                    using (new EditorGUILayout.HorizontalScope())
+                                    EditorGUILayout.HelpBox(message, MessageType.Warning);
+                                    if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                     {
-                                        EditorGUILayout.HelpBox(checkTuple.Item3, MessageType.Warning);
-                                        if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
-                                        {
-                                            Buffer.BlockCopy(checkTuple.Item2, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
-                                            GUI.FocusControl(null);
-                                        }
+                                        Buffer.BlockCopy(recommendedUnityVersion, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
+                                        GUI.FocusControl(null);
                                     }
-                                    break;
                                 }
                             }
 
@@ -1296,10 +1190,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     MessageType.Warning);
                             }
 
-                            var minimalLilToonVersion = _v2fMemberReorderableListContainer.List.Count > 0 && !_shouldEmitVer140Workaround ? _lilToonVersion141
-                                : _isPropertySearchSupported ? _lilToonVersion140
-                                : !_shouldGetVersionFromPackageJson ? _lilToonVersion130
-                                : _lilToonVersion1211;
+                            var minimalLilToonVersion = _v2fMemberReorderableListContainer.List.Count > 0 && !_shouldEmitVer140Workaround ? VersionHelper.LilToonVersion010401
+                                : _isPropertySearchSupported ? VersionHelper.LilToonVersion010400
+                                : !_shouldGetVersionFromPackageJson ? VersionHelper.LilToonVersion010300
+                                : VersionHelper.LilToonVersion010211;
 
                             using (var ccScope = new EditorGUI.ChangeCheckScope())
                             {
@@ -1310,9 +1204,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 }
                                 else if (ccScope.changed)
                                 {
-                                    if (CompareVersionArray(_packageMinimalLilToonVersion, _defaultMinimalLilToonVersion) < 0)
+                                    if (VersionHelper.CompareVersionArray(_packageMinimalLilToonVersion, VersionHelper.DefaultMinimalLilToonVersion) < 0)
                                     {
-                                        Buffer.BlockCopy(_defaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                        Buffer.BlockCopy(VersionHelper.DefaultMinimalLilToonVersion, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                     }
                                 }
 
@@ -1335,7 +1229,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                         }
                                     }
                                 }
-                                else if (_lilToonMaxPatchNumberDict.TryGetValue(((uint)_packageMinimalLilToonVersion[0] << 16) | (uint)_packageMinimalLilToonVersion[1], out var patchVersion)
+                                else if (VersionHelper.LilToonMaxPatchNumberDict.TryGetValue(((uint)_packageMinimalLilToonVersion[0] << 16) | (uint)_packageMinimalLilToonVersion[1], out var patchVersion)
                                     && _packageMinimalLilToonVersion[2] > patchVersion)
                                 {
                                     // Major and Minor - Patch
@@ -1357,7 +1251,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 //
                                 if (_v2fMemberReorderableListContainer.List.Count > 0
                                     && !_shouldEmitVer140Workaround
-                                    && CompareVersionArray(_packageMinimalLilToonVersion, _lilToonVersion141) < 0)
+                                    && VersionHelper.CompareVersionArray(_packageMinimalLilToonVersion, VersionHelper.LilToonVersion010401) < 0)
                                 {
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
@@ -1367,13 +1261,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
-                                            Buffer.BlockCopy(_lilToonVersion141, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010401, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                             GUI.FocusControl(null);
                                         }
                                     }
                                 }
                                 else if (_isPropertySearchSupported
-                                    && CompareVersionArray(_packageMinimalLilToonVersion, _lilToonVersion140) < 0)
+                                    && VersionHelper.CompareVersionArray(_packageMinimalLilToonVersion, VersionHelper.LilToonVersion010400) < 0)
                                 {
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
@@ -1383,13 +1277,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
-                                            Buffer.BlockCopy(_lilToonVersion140, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010400, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                             GUI.FocusControl(null);
                                         }
                                     }
                                 }
                                 else if (!_shouldGetVersionFromPackageJson
-                                    && CompareVersionArray(_packageMinimalLilToonVersion, _lilToonVersion130) < 0)
+                                    && VersionHelper.CompareVersionArray(_packageMinimalLilToonVersion, VersionHelper.LilToonVersion010300) < 0)
                                 {
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
@@ -1399,7 +1293,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
-                                            Buffer.BlockCopy(_lilToonVersion130, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010300, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                             GUI.FocusControl(null);
                                         }
                                     }
@@ -1455,12 +1349,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     {
                                         Buffer.BlockCopy(_packageMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                     }
-                                    if (CompareVersionArray(_packageVpmMinimalLilToonVersion, _defaultVpmMinimalLilToonVersion) < 0)
+                                    if (VersionHelper.CompareVersionArray(_packageVpmMinimalLilToonVersion, VersionHelper.DefaultVpmMinimalLilToonVersion) < 0)
                                     {
-                                        Buffer.BlockCopy(_defaultVpmMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageVpmMinimalLilToonVersion.Length);
+                                        Buffer.BlockCopy(VersionHelper.DefaultVpmMinimalLilToonVersion, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageVpmMinimalLilToonVersion.Length);
                                     }
 
-                                    if (CompareVersionArray(_packageVpmMinimalLilToonVersion, _packageMinimalLilToonVersion) < 0)
+                                    if (VersionHelper.CompareVersionArray(_packageVpmMinimalLilToonVersion, _packageMinimalLilToonVersion) < 0)
                                     {
                                         using (new EditorGUILayout.HorizontalScope())
                                         {
@@ -1578,7 +1472,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var shaderDirAssetPath = dstDirAssetPath + "/" + "Shaders";
             Directory.CreateDirectory(shaderDirAssetPath);
 
-            var guidShaderDir = ReadOrGenerateGuid(shaderDirAssetPath, isInProject);
+            var guidShaderDir = AssetHelper.ReadOrGenerateGuid(shaderDirAssetPath, isInProject);
             if (guidShaderDir.Length != 0)
             {
                 tagDict.Add("GUID_SHADER_DIR", guidShaderDir);
@@ -1591,14 +1485,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     var sb = new StringBuilder();
                     sb.AppendFormat("\"Assets/Shaders\": \"{0}\",", guidShaderDir)
                         .AppendLine()
-                        .AppendFormat("\"Assets/Editor\": \"{0}\"", ReadOrGenerateGuid("Assets/Editor", isInProject));
+                        .AppendFormat("\"Assets/Editor\": \"{0}\"", AssetHelper.ReadOrGenerateGuid("Assets/Editor", isInProject));
                     tagDict.Add("PACKAGE_VPM_LEGACY_FOLDERS", sb.ToString());
                 }
                 else
                 {
                     tagDict.Add(
                         "PACKAGE_VPM_LEGACY_FOLDERS",
-                        $"\"{dstDirAssetPath.Replace("/", @"\\")}\": \"{ReadOrGenerateGuid(dstDirAssetPath, isInProject)}\"");
+                        $"\"{dstDirAssetPath.Replace("/", @"\\")}\": \"{AssetHelper.ReadOrGenerateGuid(dstDirAssetPath, isInProject)}\"");
                 }
             }
 
@@ -1616,24 +1510,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.TSV)
                 {
-                    var tfcLangCustom = templates[langCustomTsvIndex];
-
-                    var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcLangCustom.Destination);
-                    Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
-
-                    var path = AssetDatabase.GUIDToAssetPath(tfcLangCustom.Guid);
-
-                    Debug.LogFormat("  {0} -> {1}", path, dstFilePath);
-                    templateEngine.ExpandTemplate(path, dstFilePath);
-                    filePathSet.Remove(Path.GetFullPath(dstFilePath));
-
-                    var guidLangCustom = ReadOrGenerateGuid(dstFilePath, isInProject);
-                    if (guidLangCustom.Length != 0)
-                    {
-                        tagDict.Add("GUID_LANG_CUSTOM", guidLangCustom);
-                    }
+                    tagDict.Add(
+                        "GUID_LANG_CUSTOM",
+                        ExpandTemplateAt(templateEngine, templates, langCustomTsvIndex, filePathSet, dstDirAssetPath, isInProject));
                 }
-                templates.RemoveAt(langCustomTsvIndex);
+                else
+                {
+                    templates.RemoveAt(langCustomTsvIndex);
+                }
             }
 
             if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.PortableObject)
@@ -1645,31 +1529,17 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcPoFile.Destination);
                     var poDirPath = Path.GetDirectoryName(dstFilePath);
                     Directory.CreateDirectory(poDirPath);
-                    var guidPoDir = ReadOrGenerateGuid(poDirPath, isInProject);
-                    if (guidPoDir.Length != 0)
-                    {
-                        tagDict.Add("GUID_PORTABLE_OBJECT_DIR", guidPoDir);
-                    }
+                    tagDict.Add("GUID_PORTABLE_OBJECT_DIR", AssetHelper.ReadOrGenerateGuid(poDirPath, isInProject));
                 }
             }
             else
             {
-                foreach (var filePath in new[]
-                {
-                    "Editor/LocalizationInjector.cs",
-                    "Editor/lang/en-US.po",
-                    "Editor/lang/ja-JP.po",
-                    "Editor/lang/ko-KR.po",
-                    "Editor/lang/zh-Hans.po",
-                    "Editor/lang/zh-Hant.po"
-                })
-                {
-                    var index = IndexOfDestination(templates, filePath);
-                    if (index != -1)
-                    {
-                        templates.RemoveAt(index);
-                    }
-                }
+                RemoveByDestination(templates, "Editor/LocalizationInjector.cs");
+                RemoveByDestination(templates, "Editor/lang/en-US.po");
+                RemoveByDestination(templates, "Editor/lang/ja-JP.po");
+                RemoveByDestination(templates, "Editor/lang/ko-KR.po");
+                RemoveByDestination(templates, "Editor/lang/zh-Hans.po");
+                RemoveByDestination(templates, "Editor/lang/zh-Hant.po");
             }
 
             // Try to find `Editor/lang_custom.json`.
@@ -1680,78 +1550,37 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.Json)
                 {
-                    var tfcLangCustom = templates[langCustomJsonIndex];
-
-                    var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcLangCustom.Destination);
-                    Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
-
-                    var path = AssetDatabase.GUIDToAssetPath(tfcLangCustom.Guid);
-
-                    Debug.LogFormat("  {0} -> {1}", path, dstFilePath);
-                    templateEngine.ExpandTemplate(path, dstFilePath);
-                    filePathSet.Remove(Path.GetFullPath(dstFilePath));
-
-                    var guidLangCustom = ReadOrGenerateGuid(dstFilePath, isInProject);
-                    if (guidLangCustom.Length != 0)
-                    {
-                        tagDict.Add("GUID_LANG_CUSTOM_JSON", guidLangCustom);
-                    }
+                    tagDict.Add(
+                        "GUID_LANG_CUSTOM_JSON",
+                        ExpandTemplateAt(templateEngine, templates, langCustomJsonIndex, filePathSet, dstDirAssetPath, isInProject));
                 }
-                templates.RemoveAt(langCustomJsonIndex);
+                else
+                {
+                    templates.RemoveAt(langCustomJsonIndex);
+                }
             }
 
             if (!_shouldGenerateLanguageFile || _languageResourceType != LanguageResourceTypes.Json)
             {
-                var index = IndexOfDestination(templates, "Editor/JsonLocalizationInjector.cs");
-                if (index != -1)
-                {
-                    templates.RemoveAt(index);
-                }
+                RemoveByDestination(templates, "Editor/JsonLocalizationInjector.cs");
             }
 
             if (!_shouldEmitGeometryShader && !_shouldGenerateInsertPost)
             {
-                var index = IndexOfDestination(templates, "Shaders/custom_insert_post.hlsl");
-                if (index != -1)
-                {
-                    templates.RemoveAt(index);
-                }
-
-                index = IndexOfDestination(templates, "Shaders/lilCustomShaderInsertPost.lilblock");
-                if (index != -1)
-                {
-                    templates.RemoveAt(index);
-                }
+                RemoveByDestination(templates, "Shaders/custom_insert_post.hlsl");
+                RemoveByDestination(templates, "Shaders/lilCustomShaderInsertPost.lilblock");
             }
 
             if (!_shouldEmitGrabPass)
             {
-                var index = IndexOfDestination(templates, "Shaders/PrePassBRP.lilblock");
-                if (index != -1)
-                {
-                    templates.RemoveAt(index);
-                }
-
-                index = IndexOfDestination(templates, "Shaders/PrePassNoneBRP.lilblock");
-                if (index != -1)
-                {
-                    templates.RemoveAt(index);
-                }
+                RemoveByDestination(templates, "Shaders/PrePassBRP.lilblock");
+                RemoveByDestination(templates, "Shaders/PrePassNoneBRP.lilblock");
             }
 
             if (!_shouldGenerateVersionDetectionScript)
             {
-                var index = IndexOfDestination(templates, "Editor/Startup.cs");
-                if (index != -1)
-                {
-                    templates.RemoveAt(index);
-                }
-
-                index = IndexOfDestination(templates, "Shaders/lil_current_version.hlsl");
-                if (index != -1)
-                {
-                    templates.RemoveAt(index);
-                }
+                RemoveByDestination(templates, "Editor/Startup.cs");
+                RemoveByDestination(templates, "Shaders/lil_current_version.hlsl");
             }
 
             var asmInfoIndex = IndexOfDestination(templates, "Editor/AssemblyInfo.cs");
@@ -1773,7 +1602,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             templateEngine.ExpandTemplate(asmdefTemplatePath, asmdefPath);
                             filePathSet.Remove(Path.GetFullPath(asmdefPath));
 
-                            var guidAsmdef = ReadOrGenerateGuid(asmdefPath, isInProject);
+                            var guidAsmdef = AssetHelper.ReadOrGenerateGuid(asmdefPath, isInProject);
                             if (guidAsmdef.Length != 0)
                             {
                                 tagDict.Add("GUID_D_ASMDEF", Guid.ParseExact(guidAsmdef, "N").ToString("D"));
@@ -1801,7 +1630,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         File.Create(asmInfoPath).Dispose();
 
                         // Generate GUID.
-                        var guidAsmInfo = ReadOrGenerateGuid(asmInfoPath, isInProject);
+                        var guidAsmInfo = AssetHelper.ReadOrGenerateGuid(asmInfoPath, isInProject);
                         if (guidAsmInfo.Length != 0)
                         {
                             tagDict.Add("GUID_D_ASSEMBLY_INFO", Guid.ParseExact(guidAsmInfo, "N").ToString("D"));
@@ -2536,136 +2365,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         }
 
         /// <summary>
-        /// Convert shader name to C# namespace.
-        /// </summary>
-        /// <param name="shaderName">Shader name.</param>
-        /// <returns>C# namespace.</returns>
-        private static string ConvertShaderNameToCSharpNamespace(string shaderName)
-        {
-            var sb = new StringBuilder();
-            foreach (var part in shaderName.Replace('/', '.').Split('.'))
-            {
-                var part2 = RegexProvider.NonIdentifierCharRegex.Replace(part, "");
-                if (part2.Length == 0)
-                {
-                    continue;
-                }
-                if (sb.Length > 0)
-                {
-                    sb.Append('.');
-                }
-                sb.Append(char.ToUpper(part2[0]));
-                if (part2.Length > 1)
-                {
-                    sb.Append(part2, 1, part2.Length - 1);
-                }
-            }
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Convert shader name to package name.
-        /// </summary>
-        /// <param name="shaderName">Shader name.</param>
-        /// <returns>Package name.</returns>
-        private static string ConvertShaderNameToPackageName(string shaderName)
-        {
-            return ConvertShaderNameToPackageName(shaderName, "com");
-        }
-
-        /// <summary>
-        /// Convert shader name to package name.
-        /// </summary>
-        /// <param name="shaderName">Shader name.</param>
-        /// <param name="domainName">Domain name.</param>
-        /// <returns>Package name.</returns>
-        private static string ConvertShaderNameToPackageName(string shaderName, string domainName)
-        {
-            var packageName = domainName + ".";
-            shaderName = shaderName.Replace('.', '-').Replace('/', '.').ToLower();
-
-            var isContainsDot = false;
-            foreach (var c in shaderName)
-            {
-                if (c == '.')
-                {
-                    isContainsDot = true;
-                    break;
-                }
-            }
-            if (!isContainsDot)
-            {
-                packageName += Environment.UserName.Replace('.', '-').Replace('/', '.') + ".";
-            }
-
-            packageName += shaderName;
-            return RegexProvider.NonPackageNameCharRegex.Replace(packageName, "");
-        }
-
-        /// <summary>
-        /// Check whether the shader name contains any substrings that could lead to incorrect determinations.
-        /// </summary>
-        /// <returns>True if shader name NOT contains any substrings that could lead to incorrect determinations, false otherwise.</returns>
-        private static bool CheckShaderName(string shaderName)
-        {
-            foreach (var substr in _specificShaderNameSubstrings)
-            {
-                if (shaderName.Contains(substr))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Compare two version array.
-        /// </summary>
-        /// <param name="versions1">First version array.</param>
-        /// <param name="versions2">Second version array.</param>
-        /// <returns>
-        /// 1: <paramref name="versions1"/> is greater than <paramref name="versions2"/>.
-        /// 0: <paramref name="versions1"/> is equals to <paramref name="versions2"/>.
-        /// -1: <paramref name="versions1"/> is less than <paramref name="versions2"/>.
-        /// </returns>
-        private static int CompareVersionArray(int[] versions1, int[] versions2)
-        {
-            int count = Math.Min(versions1.Length, versions2.Length);
-            int ret = 0;
-            for (int i = 0; i < count; i++)
-            {
-                if (versions1[i] > versions2[i])
-                {
-                    ret = 1;
-                    break;
-                }
-
-                if (versions1[i] < versions2[i])
-                {
-                    ret = -1;
-                    break;
-                }
-            }
-
-            if (ret != 0)
-            {
-                return ret;
-            }
-
-            var versions = versions1.Length > versions2.Length ? versions1 : versions2;
-            for (int i = count; i < versions.Length; i++)
-            {
-                if (versions[i] > 0)
-                {
-                    ret = versions == versions1 ? 1 : -1;
-                    break;
-                }
-            }
-
-            return ret;
-        }
-
-        /// <summary>
         /// Deserialize specified json file.
         /// </summary>
         /// <param name="filePath">Json file path.</param>
@@ -2797,22 +2496,56 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         }
 
         /// <summary>
-        /// Read or generate GUID string of specified asset.
+        /// Remove list item by destination.
         /// </summary>
-        /// <param name="path">Target path.</param>
-        /// <param name="isInProject">True to import specified path with <see cref="AssetDatabase.ImportAsset(string)"/>.</param>
-        /// <returns>GUID string of specified path.</returns>
-        private static string ReadOrGenerateGuid(string path, bool isInProject)
+        /// <param name="tfcList"><see cref="List{T}"/> of <see cref="TemplateFileConfig"/>.</param>
+        /// <param name="destination">Target destination.</param>
+        /// <returns>True if an item is removed, false otherwise.</returns>
+        private static bool RemoveByDestination(List<TemplateFileConfig> tfcList, string destination)
         {
-            if (isInProject)
+            var index = IndexOfDestination(tfcList, destination);
+            if (index == -1)
             {
-                AssetDatabase.ImportAsset(path);
-                return AssetDatabase.AssetPathToGUID(path);
+                return false;
             }
             else
             {
-                return AssetHelper.CreateMetaFileIfNotExists(path).ToString();
+                tfcList.RemoveAt(index);
+                return true;
             }
+        }
+
+        /// <summary>
+        /// Expand template file.
+        /// </summary>
+        /// <param name="templateEngine">Template engine.</param>
+        /// <param name="tfcList">Template file list.</param>
+        /// <param name="index">Index of <paramref name="tfcList"/>.</param>
+        /// <param name="filePathSet">File path set.</param>
+        /// <param name="dstDirAssetPath">Destination directory asset path.</param>
+        /// <param name="isInProject">True if dstDirAssetPath is in the project, false otherwise.</param>
+        /// <returns>GUID of generated file.</returns>
+        private static string ExpandTemplateAt(
+            TemplateEngine templateEngine,
+            List<TemplateFileConfig> tfcList,
+            int index,
+            HashSet<string> filePathSet,
+            string dstDirAssetPath,
+            bool isInProject)
+        {
+            var tfcLangCustom = tfcList[index];
+
+            var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcLangCustom.Destination);
+            Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
+
+            var path = AssetDatabase.GUIDToAssetPath(tfcLangCustom.Guid);
+
+            Debug.LogFormat("  {0} -> {1}", path, dstFilePath);
+            templateEngine.ExpandTemplate(path, dstFilePath);
+            tfcList.RemoveAt(index);
+            filePathSet.Remove(Path.GetFullPath(dstFilePath));
+
+            return AssetHelper.ReadOrGenerateGuid(dstFilePath, isInProject);
         }
     }
 }
