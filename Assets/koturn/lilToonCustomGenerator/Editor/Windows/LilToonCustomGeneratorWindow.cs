@@ -1146,7 +1146,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 using (new EditorGUILayout.HorizontalScope())
                                 {
                                     EditorGUILayout.HelpBox(
+#if UNITY_2021_2_OR_NEWER
                                         $"Unity {string.Join('.', _packageUnityVersion)} has not been released.",
+#else
+                                        $"Unity {string.Join(".", _packageUnityVersion)} has not been released.",
+#endif  // UNITY_2021_2_OR_NEWER
                                         MessageType.Warning);
                                     if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                     {
@@ -1219,7 +1223,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
+#if UNITY_2021_2_OR_NEWER
                                             $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.",
+#else
+                                            $"lilToon {string.Join(".", _packageMinimalLilToonVersion)} has not been released.",
+#endif  // UNITY_2021_2_OR_NEWER
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
@@ -1236,7 +1244,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
+#if UNITY_2021_2_OR_NEWER
                                             $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.",
+#else
+                                            $"lilToon {string.Join(".", _packageMinimalLilToonVersion)} has not been released.",
+#endif  // UNITY_2021_2_OR_NEWER
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
