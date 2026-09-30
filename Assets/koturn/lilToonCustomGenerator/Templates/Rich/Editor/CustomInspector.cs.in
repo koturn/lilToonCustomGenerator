@@ -1,5 +1,13 @@
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System;
+!!elifnotempty:GUID_LANG_CUSTOM_TSV!!
+using System;
+!!elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
+using System;
+!!elifnotempty:GUID_LANG_CUSTOM_JSON!!
+using System;
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System.IO;
 !!else!!
 #if !UNITY_2018_3_OR_NEWER
@@ -138,11 +146,32 @@ namespace %%NAMESPACE%%
 
 !!ifempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
 !!  ifnotempty:GUID_LANG_CUSTOM_TSV!!
-            LoadCustomLanguage(AssetGuid.LangCustomTsv);
+            try
+            {
+                LoadCustomLanguage(AssetGuid.LangCustomTsv);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
 !!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
-            LocalizationInjector.Load(AssetGuid.PortableObjectDir);
+            try
+            {
+                LocalizationInjector.Load(AssetGuid.PortableObjectDir);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
 !!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
-            JsonLocalizationInjector.Load(AssetGuid.LangCustomJson);
+            try
+            {
+                JsonLocalizationInjector.Load(AssetGuid.LangCustomJson);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
 !!  else!!
             // LoadCustomLanguage("");
 !!  endif!!
@@ -150,20 +179,41 @@ namespace %%NAMESPACE%%
 !!  ifnotempty:GUID_LANG_CUSTOM_TSV!!
             if (_shouldLoadLanguage)
             {
-                LoadCustomLanguage(AssetGuid.LangCustomTsv);
-                prevLanguageName = lilLanguageManager.langSet.languageName;
+                try
+                {
+                    LoadCustomLanguage(AssetGuid.LangCustomTsv);
+                    prevLanguageName = lilLanguageManager.langSet.languageName;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
             }
 !!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
             if (_shouldLoadLanguage)
             {
-                LocalizationInjector.Load(AssetGuid.PortableObjectDir);
-                prevLanguageName = lilLanguageManager.langSet.languageName;
+                try
+                {
+                    LocalizationInjector.Load(AssetGuid.PortableObjectDir);
+                    prevLanguageName = lilLanguageManager.langSet.languageName;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
             }
 !!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
             if (_shouldLoadLanguage)
             {
-                JsonLocalizationInjector.Load(AssetGuid.LangCustomJson);
-                prevLanguageName = lilLanguageManager.langSet.languageName;
+                try
+                {
+                    JsonLocalizationInjector.Load(AssetGuid.LangCustomJson);
+                    prevLanguageName = lilLanguageManager.langSet.languageName;
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
             }
 !!  else!!
             // LoadCustomLanguage("");
