@@ -1523,7 +1523,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.TSV)
                 {
                     tagDict.Add(
-                        "GUID_LANG_CUSTOM",
+                        "GUID_LANG_CUSTOM_TSV",
                         ExpandTemplateAt(templateEngine, templates, langCustomTsvIndex, filePathSet, dstDirAssetPath, isInProject));
                 }
                 else
@@ -1554,27 +1554,23 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 RemoveByDestination(templates, "Editor/lang/zh-Hant.po");
             }
 
-            // Try to find `Editor/lang_custom.json`.
-            var langCustomJsonIndex = IndexOfDestination(templates, "Editor/lang_custom.json");
-
-            // Generate `Editor/lang_custom.json` and obtain its GUID.
-            if (langCustomJsonIndex != -1)
+            if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.Json)
             {
-                if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.Json)
+                var langCustomJsonIndex = IndexOfDestination(templates, "Editor/lang_custom.json");
+                if (langCustomJsonIndex != -1)
                 {
                     tagDict.Add(
                         "GUID_LANG_CUSTOM_JSON",
                         ExpandTemplateAt(templateEngine, templates, langCustomJsonIndex, filePathSet, dstDirAssetPath, isInProject));
                 }
-                else
-                {
-                    templates.RemoveAt(langCustomJsonIndex);
-                }
             }
-
-            if (!_shouldGenerateLanguageFile || _languageResourceType != LanguageResourceTypes.Json)
+            else
             {
+                RemoveByDestination(templates, "Editor/lang_custom.json");
+                RemoveByDestination(templates, "Editor/FieldAccessor.cs");
                 RemoveByDestination(templates, "Editor/JsonLocalizationInjector.cs");
+                RemoveByDestination(templates, "Editor/LangJsonRoot.cs");
+                RemoveByDestination(templates, "Editor/LocalizationEntry.cs");
             }
 
             if (!_shouldEmitGeometryShader && !_shouldGenerateInsertPost)

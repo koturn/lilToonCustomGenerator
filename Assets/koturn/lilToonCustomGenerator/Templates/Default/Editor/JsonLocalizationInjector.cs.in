@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 #if !USE_EXPRESSION_TREE
 using System.Reflection.Emit;
-#endif  // USE_EXPRESSION_TREE
+#endif  // !USE_EXPRESSION_TREE
 using UnityEditor;
 using UnityEngine;
 using lilToon;
@@ -20,17 +20,17 @@ namespace %%NAMESPACE%%
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
     /// <summary>
     /// <para>Additional Portable Object file loader for <see cref="lilLanguageManager"/>.</para>
-    /// <para>You must add language key as a members of <see cref="TranslationMap"/> when you add new translation.</para>
+    /// <para>You must add language key as a members of <see cref="LocalizationEntry"/> when you add new translation.</para>
     /// </summary>
 !!endif!!
-    internal static class JsonLocalizationInjector
+    internal static partial class JsonLocalizationInjector
     {
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
-        /// Fallback language name.
+        /// Fallback locale code.
         /// </summary>
 !!endif!!
-        private const string FallbackLangName = "en-US";
+        private const string FallbackLocaleCode = "en-US";
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -38,6 +38,12 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!endif!!
         private static readonly Dictionary<string, string> _loc = GetLoc();
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Cached reflection result delegate to get current selected language name.
+        /// </summary>
+!!endif!!
+        private static Func<string> _getLanguageName;
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Language json instance.
@@ -66,7 +72,7 @@ namespace %%NAMESPACE%%
 !!endif!!
         public static void Load(string guidJson)
         {
-            Load(guidJson, lilLanguageManager.langSet.languageName);
+            Load(guidJson, GetLanguageName());
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -89,23 +95,15 @@ namespace %%NAMESPACE%%
                 || _lastLoadedJsonPath != jsonAssetPath
                 || _langJsonRoot == null)
             {
-                try
-                {
-                    _langJsonRoot = JsonUtility.FromJson<LangJsonRoot>(File.ReadAllText(jsonAssetPath));
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogException(ex);
-                    return;
-                }
+                _langJsonRoot = JsonUtility.FromJson<LangJsonRoot>(File.ReadAllText(jsonAssetPath));
                 _lastLoadedJsonPath = jsonAssetPath;
                 _lastWriteTime = lastWriteTime;
             }
 
-            var translation = _langJsonRoot[langName];
+            var translation = _langJsonRoot[ToLocaleCode(langName)];
             if (translation == null)
             {
-                translation = _langJsonRoot[FallbackLangName];
+                translation = _langJsonRoot[FallbackLocaleCode];
                 if (translation == null)
                 {
                     return;
@@ -136,6 +134,196 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
+        /// Get current selected language name.
+        /// </summary>
+        /// <returns>Selected language name.</returns>
+!!endif!!
+        private static string GetLanguageName()
+        {
+            return (_getLanguageName ?? (_getLanguageName = CreateGetLanguageNameFunc()))();
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create delegate to get <c>lilToonInspector.edSet.languageName</c> or <c>lilLanguageManager.langSet.languageName</c>.
+        /// </summary>
+        /// <returns>A delegate that returns current selected language name.</returns>
+!!endif!!
+        private static Func<string> CreateGetLanguageNameFunc()
+        {
+            var tLilToonInspector = typeof(lilToonInspector);
+            var tLilLanguageManager = tLilToonInspector.Assembly.GetType("lilToon.lilLanguageManager");
+            return tLilLanguageManager == null
+                ? CreateGetLanguageNameFuncFromLilToonInspector(tLilToonInspector)
+                : CreateGetLanguageNameFuncFromLilLanguageManager(tLilLanguageManager);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create delegate to get <c>lilToonInspector.edSet.languageName</c>.
+        /// </summary>
+        /// <param name="tLilToonInspector"><c>typeof(lilToonInspector)</c></param>
+        /// <returns>A delegate that returns <c>lilToonInspector.edSet.languageName</c>.</returns>
+        /// <exception cref="MissingFieldException">Thrown when neither <c>lilToonInspector.edSet</c>
+        /// nor <c>lilToonInspector.edSet.languageName</c> is found.</exception>
+        /// <remarks>
+        /// This method is intended for lilToon 1.2.11 and lilToon 1.2.12.
+        /// </remarks>
+!!endif!!
+        private static Func<string> CreateGetLanguageNameFuncFromLilToonInspector(Type tLilToonInspector)
+        {
+            var fiEdSet = tLilToonInspector.GetField(
+                "edSet",
+                BindingFlags.Public | BindingFlags.Static);
+            if (fiEdSet == null)
+            {
+                throw new MissingFieldException(tLilToonInspector.FullName, "edSet");
+            }
+
+            var tEdSet = fiEdSet.FieldType;
+            var fiLanguageName = tEdSet.GetField(
+                "languageName",
+                BindingFlags.Public | BindingFlags.Instance);
+            if (fiLanguageName == null)
+            {
+                throw new MissingFieldException(tEdSet.FullName, "languageName");
+            }
+
+#if USE_EXPRESSION_TREE
+            return Expression.Lambda<Func<string>>(
+                Expression.Field(
+                    Expression.Field(
+                        null,
+                        fiEdSet),
+                    fiLanguageName)).Compile();
+#else
+                var method = new DynamicMethod(
+                    "GetLanguageName",
+                    typeof(string),
+                    Type.EmptyTypes,
+                    typeof(JsonLocalizationInjector),
+                    true);
+
+                var il = method.GetILGenerator();
+
+                il.Emit(OpCodes.Ldsfld, fiEdSet);
+                il.Emit(OpCodes.Ldfld, fiLanguageName);
+                il.Emit(OpCodes.Ret);
+
+                return (Func<string>)method.CreateDelegate(typeof(Func<string>));
+#endif  // USE_EXPRESSION_TREE
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create delegate to get <c>lilLanguageManager.langSet.languageName</c>.
+        /// </summary>
+        /// <param name="tLilLanguageManager"><c>typeof(lilLanguageManager)</c></param>
+        /// <returns>A delegate that returns <c>lilLanguageManager.langSet.languageName</c>.</returns>
+        /// <exception cref="MissingMemberException">Thrown when neither <c>lilLanguageManager.langSet</c>
+        /// nor <c>lilLanguageManager.langSet.languageName</c> is not found.</exception>
+        /// <exception cref="MissingMethodException">Thrown when the getter method for <c>lilLanguageManager.langSet</c>
+        /// or <c>lilLanguageManager.langSet.languageName</c> is not found.</exception>
+        /// <remarks>
+        /// This method is intended for lilToon 1.3.0 and later.
+        /// </remarks>
+!!endif!!
+        private static Func<string> CreateGetLanguageNameFuncFromLilLanguageManager(Type tLilLanguageManager)
+        {
+            var langSetProperty = tLilLanguageManager.GetProperty(
+                "langSet",
+                BindingFlags.Public | BindingFlags.Static);
+            if (langSetProperty == null)
+            {
+                throw new MissingMemberException(tLilLanguageManager.FullName, "langSet");
+            }
+
+            var tLanguageSettings = langSetProperty.PropertyType;
+            var piLanguageName = tLanguageSettings.GetProperty(
+                "languageName",
+                BindingFlags.Public | BindingFlags.Instance);
+            if (piLanguageName == null)
+            {
+                throw new MissingMemberException(tLanguageSettings.FullName, "languageName");
+            }
+
+#if USE_EXPRESSION_TREE
+            return Expression.Lambda<Func<string>>(
+                Expression.Property(
+                    Expression.Property(
+                        null,
+                        langSetProperty),
+                    piLanguageName),
+                "GetLanguageName",
+                null).Compile();
+#else
+                var langSetGetter = langSetProperty.GetGetMethod();
+                if (langSetGetter == null)
+                {
+                    throw new MissingMethodException(tLilLanguageManager.FullName, "get_langSet");
+                }
+
+                var miLanguageNameGetter = piLanguageName.GetGetMethod();
+                if (miLanguageNameGetter == null)
+                {
+                    throw new MissingMethodException(tLanguageSettings.FullName, "get_languageName");
+                }
+
+                var method = new DynamicMethod(
+                    "GetLanguageName",
+                    typeof(string),
+                    Type.EmptyTypes,
+                    typeof(JsonLocalizationInjector),
+                    true);
+
+                var il = method.GetILGenerator();
+
+                il.Emit(OpCodes.Call, langSetGetter);
+                il.Emit(OpCodes.Call, miLanguageNameGetter);
+                il.Emit(OpCodes.Ret);
+
+                return (Func<string>)method.CreateDelegate(typeof(Func<string>));
+#endif
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Convert language name to locale code.
+        /// </summary>
+        /// <param name="langName">Target language name.</param>
+        /// <returns>Locale code.</returns>
+!!endif!!
+        private static string ToLocaleCode(string langName)
+        {
+            switch (langName)
+            {
+                case "English":
+                case "en-US":
+                case "en_US":
+                    return "en-US";
+                case "Japanese":
+                case "ja-JP":
+                case "ja_JP":
+                    return "ja-JP";
+                case "Korean":
+                case "ko-KR":
+                case "ko_KR":
+                    return "ko-KR";
+                case "Chinese Simplified":
+                case "zh-Hans":
+                case "zh_Hans":
+                    return "zh-Hans";
+                case "Chinese Traditional":
+                case "zh-Hant":
+                case "zh_Hant":
+                    return "zh-Hant";
+                default:
+                    return FallbackLocaleCode;
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
         /// Inject localization dictionary to <see cref="_loc"/>.
         /// </summary>
         /// <param name="localizationDict">Localization dictionary.</param>
@@ -143,7 +331,7 @@ namespace %%NAMESPACE%%
         private static void InjectLocalizationDict(Dictionary<string, string> localizationDict)
         {
             var loc = _loc;
-            var fallbackTranslationMap = _langJsonRoot[FallbackLangName];
+            var fallbackTranslationMap = _langJsonRoot[FallbackLocaleCode];
             if (fallbackTranslationMap != null)
             {
                 var fallbackLocalizationDict = fallbackTranslationMap.LocalizationDict;
@@ -167,284 +355,6 @@ namespace %%NAMESPACE%%
                 {
                     loc[kv.Key] = kv.Value;
                 }
-            }
-        }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Root object of localization json file.
-        /// </summary>
-!!endif!!
-        [Serializable]
-        private sealed class LangJsonRoot
-        {
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Get <see cref="TranslationMap"/> instance.
-            /// </summary>
-!!endif!!
-            public TranslationMap this[string langName]
-            {
-                get
-                {
-                    switch (langName)
-                    {
-                        case "en-US":
-                        case nameof(en_US):
-                            return en_US;
-                        case "ja-JP":
-                        case nameof(ja_JP):
-                            return ja_JP;
-                        case "ko-KR":
-                        case nameof(ko_KR):
-                            return ko_KR;
-                        case "zh-Hans":
-                        case nameof(zh_Hans):
-                            return zh_Hans;
-                        case "zh-Hant":
-                        case nameof(zh_Hant):
-                            return zh_Hant;
-                        default:
-                            throw new InvalidOperationException("Language translation map not found: \"" + langName + "\"");
-                    }
-                }
-            }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// <see cref="TranslationMap"/> for "en-US".
-            /// </summary>
-!!endif!!
-            [SerializeField]
-            private TranslationMap en_US;
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// <see cref="TranslationMap"/> for "ja-JP".
-            /// </summary>
-!!endif!!
-            [SerializeField]
-            private TranslationMap ja_JP;
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// <see cref="TranslationMap"/> for "ko-KR".
-            /// </summary>
-!!endif!!
-            [SerializeField]
-            private TranslationMap ko_KR;
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// <see cref="TranslationMap"/> for "zh-Hans".
-            /// </summary>
-!!endif!!
-            [SerializeField]
-            private TranslationMap zh_Hans;
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// <see cref="TranslationMap"/> for "zh-Hant".
-            /// </summary>
-!!endif!!
-            [SerializeField]
-            private TranslationMap zh_Hant;
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Hidden ctor.
-            /// </summary>
-!!endif!!
-            [Obsolete("Should not be instanciated directly")]
-            private LangJsonRoot()
-            {
-            }
-        }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Translation map.
-        /// </summary>
-!!endif!!
-        [Serializable]
-        private sealed class TranslationMap
-        {
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Field accessor of this class.
-            /// </summary>
-!!endif!!
-            private static readonly FieldAccessor[] _accessors = FieldAccessor.CreateAccessors(typeof(TranslationMap), fieldInfo => fieldInfo.FieldType == typeof(string));
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Translation dictionary.
-            /// </summary>
-!!endif!!
-            public Dictionary<string, string> LocalizationDict => _localizationDict ?? (_localizationDict = BuildLocalizationDict());
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Cache field of <see cref="LocalizationDict"/>.
-            /// </summary>
-!!endif!!
-            private Dictionary<string, string> _localizationDict;
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Translation text for the text shown in the property block.
-            /// </summary>
-!!endif!!
-            [SerializeField]
-            private string sCustomShaderTitle;
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Translation text for the text shown in the category block.
-            /// </summary>
-!!endif!!
-            [SerializeField]
-            private string sCustomPropertyCategory;
-            %%DECLARE_JSON_LANG_SERIALIZATION_CLASS_MEMBERS:skipempty:keepindent%%
-
-            //
-            // NOTE: Add language key members here.
-            //
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Hidden ctor.
-            /// </summary>
-!!endif!!
-            [Obsolete("Should not be instanciated directly")]
-            private TranslationMap()
-            {
-            }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Build translation dictionary.
-            /// </summary>
-            /// <returns></returns>
-!!endif!!
-            private Dictionary<string, string> BuildLocalizationDict()
-            {
-                var dict = new Dictionary<string, string>();
-                foreach (var accessor in _accessors)
-                {
-                    dict[accessor.Name] = (string)accessor.GetValue(this);
-                }
-                return dict;
-            }
-        }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Field accessor.
-        /// </summary>
-!!endif!!
-        private sealed class FieldAccessor
-        {
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Field name.
-            /// </summary>
-!!endif!!
-            public string Name { get; }
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Type of the field.
-            /// </summary>
-!!endif!!
-            public Type Type { get; }
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Get field value as object.
-            /// </summary>
-!!endif!!
-            public Func<object, object> GetValue { get; }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Initialize <see cref="Name"/> and <see cref="GetValue"/>.
-            /// </summary>
-            /// <param name="name">Field name.</param>
-            /// <param name="type">Type of the field.</param>
-            /// <param name="getValue">Getter function.</param>
-!!endif!!
-            public FieldAccessor(string name, Type type, Func<object, object> getValue)
-            {
-                Name = name;
-                Type = type;
-                GetValue = getValue;
-            }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Create accessor array.
-            /// </summary>
-            /// <param name="type"><see cref="Type"/> of target class.</param>
-            /// <param name="filter">Filter delegate.</param>
-            /// <returns>Accessor array.</returns>
-!!endif!!
-            public static FieldAccessor[] CreateAccessors(Type type, Func<FieldInfo, bool> filter)
-            {
-                var fieldInfoArray = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-                var accessors = new List<FieldAccessor>();
-
-                if (filter == null)
-                {
-                    foreach (var fieldInfo in fieldInfoArray)
-                    {
-                        accessors.Add(new FieldAccessor(fieldInfo.Name, fieldInfo.FieldType, CreateGetter(type, fieldInfo)));
-                    }
-                }
-                else
-                {
-                    foreach (var fieldInfo in fieldInfoArray)
-                    {
-                        if (filter(fieldInfo))
-                        {
-                            accessors.Add(new FieldAccessor(fieldInfo.Name, fieldInfo.FieldType, CreateGetter(type, fieldInfo)));
-                        }
-                    }
-                }
-
-                return accessors.ToArray();
-            }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-            /// <summary>
-            /// Create <see cref="Func{T, R}"/> of getter.
-            /// </summary>
-            /// <param name="type"><see cref="Type"/> of target class.</param>
-            /// <param name="fieldInfo">Field information.</param>
-            /// <returns><see cref="Func{T, R}"/> of getter.</returns>
-!!endif!!
-            public static Func<object, object> CreateGetter(Type type, FieldInfo fieldInfo)
-            {
-#if USE_EXPRESSION_TREE
-                var pInstance = Expression.Parameter(typeof(object), "instance");
-                return Expression.Lambda<Func<object, object>>(
-                    Expression.Field(
-                        Expression.Convert(pInstance, type),
-                        fieldInfo),
-                    "get_" + fieldInfo.Name,
-                    new[]
-                    {
-                        pInstance
-                    }).Compile();
-#else
-                var method = new DynamicMethod(
-                    "get_" + fieldInfo.Name,
-                    typeof(string),
-                    new[] { typeof(object) },
-                    type,
-                    true);
-
-                var il = method.GetILGenerator();
-
-                il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Castclass, type);
-                il.Emit(OpCodes.Ldfld, fieldInfo);
-                il.Emit(OpCodes.Ret);
-
-                return (Func<object, object>)method.CreateDelegate(typeof(Func<object, object>));
-#endif  // USE_EXPRESSION_TREE
             }
         }
     }

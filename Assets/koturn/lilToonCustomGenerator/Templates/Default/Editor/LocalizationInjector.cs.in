@@ -1,7 +1,15 @@
+// #define USE_EXPRESSION_TREE
+
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if USE_EXPRESSION_TREE
+using System.Linq.Expressions;
+#endif  // USE_EXPRESSION_TREE
 using System.Reflection;
+#if !USE_EXPRESSION_TREE
+using System.Reflection.Emit;
+#endif  // !USE_EXPRESSION_TREE
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -22,7 +30,7 @@ namespace %%NAMESPACE%%
         /// Fallback language name.
         /// </summary>
 !!endif!!
-        private const string FallbackLangName = "en-US";
+        private const string FallbackLocaleCode = "en-US";
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -30,6 +38,12 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!endif!!
         private static readonly Dictionary<string, string> _loc = GetLoc();
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Cached reflection result delegate to get current selected language name.
+        /// </summary>
+!!endif!!
+        private static Func<string> _getLanguageName;
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Cached reference to <c>lilLanguageManager.loc</c>.
@@ -46,7 +60,7 @@ namespace %%NAMESPACE%%
 !!endif!!
         public static void Load(string guidPoDir)
         {
-            Load(guidPoDir, lilLanguageManager.langSet.languageName);
+            Load(guidPoDir, GetLanguageName());
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -59,15 +73,16 @@ namespace %%NAMESPACE%%
         public static void Load(string guidPoDir, string langName)
         {
             var dirAssetPath = AssetDatabase.GUIDToAssetPath(guidPoDir);
+            var localeCode = ToLocaleCode(langName);
 
             //
             // Update fallback cache if needed.
             //
-            if (langName != FallbackLangName)
+            if (localeCode != FallbackLocaleCode)
             {
-                var fallbackFileAssetPath = dirAssetPath + "/" + FallbackLangName + ".po";
+                var fallbackFileAssetPath = dirAssetPath + "/" + FallbackLocaleCode + ".po";
 
-                if (!_cacheDict.TryGetValue(langName, out var fallbackCache))
+                if (!_cacheDict.TryGetValue(localeCode, out var fallbackCache))
                 {
                     fallbackCache = new LocalizationCache(Path.GetFullPath(fallbackFileAssetPath));
                 }
@@ -82,12 +97,12 @@ namespace %%NAMESPACE%%
                 }
             }
 
-            var fileAssetPath = dirAssetPath + "/" + langName + ".po";
+            var fileAssetPath = dirAssetPath + "/" + localeCode + ".po";
 
             //
             // Search cache.
             //
-            if (_cacheDict.TryGetValue(langName, out var cache)
+            if (_cacheDict.TryGetValue(localeCode, out var cache)
                 && cache.LastWriteTime == new FileInfo(fileAssetPath).LastWriteTime
                 && cache.FilePath == Path.GetFullPath(fileAssetPath))
             {
@@ -103,9 +118,9 @@ namespace %%NAMESPACE%%
                 var newCache = new LocalizationCache(Path.GetFullPath(fileAssetPath));
                 LoadPortableObject(fileAssetPath, newCache.LocalizationDict);
                 InjectLocalizationDict(newCache.LocalizationDict);
-                _cacheDict[langName] = newCache;
+                _cacheDict[localeCode] = newCache;
             }
-            else if (_cacheDict.TryGetValue(FallbackLangName, out var fallbackCache))
+            else if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
             {
                 InjectLocalizationDict(fallbackCache.LocalizationDict);
             }
@@ -128,6 +143,196 @@ namespace %%NAMESPACE%%
                     "loc",
                     BindingFlags.NonPublic | BindingFlags.Static)
                 .GetValue(null);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Get current selected language name.
+        /// </summary>
+        /// <returns>Selected language name.</returns>
+!!endif!!
+        private static string GetLanguageName()
+        {
+            return (_getLanguageName ?? (_getLanguageName = CreateGetLanguageNameFunc()))();
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create delegate to get <c>lilToonInspector.edSet.languageName</c> or <c>lilLanguageManager.langSet.languageName</c>.
+        /// </summary>
+        /// <returns>A delegate that returns current selected language name.</returns>
+!!endif!!
+        private static Func<string> CreateGetLanguageNameFunc()
+        {
+            var tLilToonInspector = typeof(lilToonInspector);
+            var tLilLanguageManager = tLilToonInspector.Assembly.GetType("lilToon.lilLanguageManager");
+            return tLilLanguageManager == null
+                ? CreateGetLanguageNameFuncFromLilToonInspector(tLilToonInspector)
+                : CreateGetLanguageNameFuncFromLilLanguageManager(tLilLanguageManager);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create delegate to get <c>lilToonInspector.edSet.languageName</c>.
+        /// </summary>
+        /// <param name="tLilToonInspector"><c>typeof(lilToonInspector)</c></param>
+        /// <returns>A delegate that returns <c>lilToonInspector.edSet.languageName</c>.</returns>
+        /// <exception cref="MissingFieldException">Thrown when neither <c>lilToonInspector.edSet</c>
+        /// nor <c>lilToonInspector.edSet.languageName</c> is found.</exception>
+        /// <remarks>
+        /// This method is intended for lilToon 1.2.11 and lilToon 1.2.12.
+        /// </remarks>
+!!endif!!
+        private static Func<string> CreateGetLanguageNameFuncFromLilToonInspector(Type tLilToonInspector)
+        {
+            var fiEdSet = tLilToonInspector.GetField(
+                "edSet",
+                BindingFlags.Public | BindingFlags.Static);
+            if (fiEdSet == null)
+            {
+                throw new MissingFieldException(tLilToonInspector.FullName, "edSet");
+            }
+
+            var tEdSet = fiEdSet.FieldType;
+            var fiLanguageName = tEdSet.GetField(
+                "languageName",
+                BindingFlags.Public | BindingFlags.Instance);
+            if (fiLanguageName == null)
+            {
+                throw new MissingFieldException(tEdSet.FullName, "languageName");
+            }
+
+#if USE_EXPRESSION_TREE
+            return Expression.Lambda<Func<string>>(
+                Expression.Field(
+                    Expression.Field(
+                        null,
+                        fiEdSet),
+                    fiLanguageName)).Compile();
+#else
+                var method = new DynamicMethod(
+                    "GetLanguageName",
+                    typeof(string),
+                    Type.EmptyTypes,
+                    typeof(LocalizationInjector),
+                    true);
+
+                var il = method.GetILGenerator();
+
+                il.Emit(OpCodes.Ldsfld, fiEdSet);
+                il.Emit(OpCodes.Ldfld, fiLanguageName);
+                il.Emit(OpCodes.Ret);
+
+                return (Func<string>)method.CreateDelegate(typeof(Func<string>));
+#endif  // USE_EXPRESSION_TREE
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create delegate to get <c>lilLanguageManager.langSet.languageName</c>.
+        /// </summary>
+        /// <param name="tLilLanguageManager"><c>typeof(lilLanguageManager)</c></param>
+        /// <returns>A delegate that returns <c>lilLanguageManager.langSet.languageName</c>.</returns>
+        /// <exception cref="MissingMemberException">Thrown when neither <c>lilLanguageManager.langSet</c>
+        /// nor <c>lilLanguageManager.langSet.languageName</c> is not found.</exception>
+        /// <exception cref="MissingMethodException">Thrown when the getter method for <c>lilLanguageManager.langSet</c>
+        /// or <c>lilLanguageManager.langSet.languageName</c> is not found.</exception>
+        /// <remarks>
+        /// This method is intended for lilToon 1.3.0 and later.
+        /// </remarks>
+!!endif!!
+        private static Func<string> CreateGetLanguageNameFuncFromLilLanguageManager(Type tLilLanguageManager)
+        {
+            var langSetProperty = tLilLanguageManager.GetProperty(
+                "langSet",
+                BindingFlags.Public | BindingFlags.Static);
+            if (langSetProperty == null)
+            {
+                throw new MissingMemberException(tLilLanguageManager.FullName, "langSet");
+            }
+
+            var tLanguageSettings = langSetProperty.PropertyType;
+            var piLanguageName = tLanguageSettings.GetProperty(
+                "languageName",
+                BindingFlags.Public | BindingFlags.Instance);
+            if (piLanguageName == null)
+            {
+                throw new MissingMemberException(tLanguageSettings.FullName, "languageName");
+            }
+
+#if USE_EXPRESSION_TREE
+            return Expression.Lambda<Func<string>>(
+                Expression.Property(
+                    Expression.Property(
+                        null,
+                        langSetProperty),
+                    piLanguageName),
+                "GetLanguageName",
+                null).Compile();
+#else
+                var langSetGetter = langSetProperty.GetGetMethod();
+                if (langSetGetter == null)
+                {
+                    throw new MissingMethodException(tLilLanguageManager.FullName, "get_langSet");
+                }
+
+                var miLanguageNameGetter = piLanguageName.GetGetMethod();
+                if (miLanguageNameGetter == null)
+                {
+                    throw new MissingMethodException(tLanguageSettings.FullName, "get_languageName");
+                }
+
+                var method = new DynamicMethod(
+                    "GetLanguageName",
+                    typeof(string),
+                    Type.EmptyTypes,
+                    typeof(LocalizationInjector),
+                    true);
+
+                var il = method.GetILGenerator();
+
+                il.Emit(OpCodes.Call, langSetGetter);
+                il.Emit(OpCodes.Call, miLanguageNameGetter);
+                il.Emit(OpCodes.Ret);
+
+                return (Func<string>)method.CreateDelegate(typeof(Func<string>));
+#endif
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Convert language name to locale code.
+        /// </summary>
+        /// <param name="langName">Target language name.</param>
+        /// <returns>Locale code.</returns>
+!!endif!!
+        private static string ToLocaleCode(string langName)
+        {
+            switch (langName)
+            {
+                case "English":
+                case "en-US":
+                case "en_US":
+                    return "en-US";
+                case "Japanese":
+                case "ja-JP":
+                case "ja_JP":
+                    return "ja-JP";
+                case "Korean":
+                case "ko-KR":
+                case "ko_KR":
+                    return "ko-KR";
+                case "Chinese Simplified":
+                case "zh-Hans":
+                case "zh_Hans":
+                    return "zh-Hans";
+                case "Chinese Traditional":
+                case "zh-Hant":
+                case "zh_Hant":
+                    return "zh-Hant";
+                default:
+                    return FallbackLocaleCode;
+            }
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -164,7 +369,7 @@ namespace %%NAMESPACE%%
         private static void InjectLocalizationDict(Dictionary<string, string> localizationDict)
         {
             var loc = _loc;
-            if (_cacheDict.TryGetValue(FallbackLangName, out var fallbackCache))
+            if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
             {
                 var fallbackLocalizationDict = fallbackCache.LocalizationDict;
                 foreach (var kv in localizationDict)
@@ -197,7 +402,7 @@ namespace %%NAMESPACE%%
         /// <param name="fileAssetPath">Target Portable Object asset path.</param>
         /// <returns><see cref="List{T}"/> of msgid.</returns>
 !!endif!!
-        public static List<string> ReadMsgIds(string fileAssetPath)
+        private static List<string> ReadMsgIds(string fileAssetPath)
         {
             var msgIdList = new List<string>();
             using (var reader = new StreamReader(fileAssetPath, Encoding.UTF8))
@@ -348,7 +553,7 @@ namespace %%NAMESPACE%%
 !!else!!
             unsafe
             {
-                fixed (char *pQuotedText = quotedText)
+                fixed (char* pQuotedText = quotedText)
                 {
                     // Check the leading `"`.
                     if (offset >= length || pQuotedText[offset] != '"')

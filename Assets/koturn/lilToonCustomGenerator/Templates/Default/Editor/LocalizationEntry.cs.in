@@ -1,0 +1,86 @@
+using System;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+
+
+namespace %%NAMESPACE%%
+{
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// Localization items.
+    /// </summary>
+!!endif!!
+    [Serializable]
+    public sealed class LocalizationEntry
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Field accessor of this class.
+        /// </summary>
+!!endif!!
+        private static readonly FieldAccessor<LocalizationEntry, string>[] _accessors
+            = FieldAccessor.CreateAccessors<LocalizationEntry, string>();
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Translation dictionary.
+        /// </summary>
+!!endif!!
+        public Dictionary<string, string> LocalizationDict => _localizationDict ?? (_localizationDict = BuildLocalizationDict());
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Cache field of <see cref="LocalizationDict"/>.
+        /// </summary>
+!!endif!!
+        private Dictionary<string, string> _localizationDict;
+!!ifnotempty:SHADER_TITLE!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Translation text for the text shown in the property block.
+        /// </summary>
+!!  endif!!
+        [SerializeField]
+        private string sCustomShaderTitle;
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Translation text for the text shown in the category block.
+        /// </summary>
+!!  endif!!
+        [SerializeField]
+        private string sCustomPropertyCategory;
+!!endif!!
+        %%DECLARE_JSON_LANG_SERIALIZATION_CLASS_MEMBERS:skipempty:keepindent%%
+
+        //
+        // NOTE: Add language key members here.
+        //
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Hidden ctor.
+        /// </summary>
+!!endif!!
+        [Obsolete("Should not be instanciated directly")]
+        private LocalizationEntry()
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Build translation dictionary.
+        /// </summary>
+        /// <returns>Lozalization dictionary.</returns>
+!!endif!!
+        private Dictionary<string, string> BuildLocalizationDict()
+        {
+            var dict = new Dictionary<string, string>(_accessors.Length);
+            foreach (var accessor in _accessors)
+            {
+                dict[accessor.Name] = accessor.GetValue(this);
+            }
+            return dict;
+        }
+    }
+}

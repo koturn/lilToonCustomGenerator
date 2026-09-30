@@ -1,0 +1,88 @@
+using System;
+using UnityEngine;
+
+
+namespace %%NAMESPACE%%
+{
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// Root object of localization json file.
+    /// </summary>
+!!endif!!
+    [Serializable]
+    public sealed class LangJsonRoot
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Get <see cref="LocalizationEntry"/> instance.
+        /// </summary>
+!!endif!!
+        public LocalizationEntry this[string langName]
+        {
+            get
+            {
+                switch (langName)
+                {
+                    case "en-US":
+                        return en_US;
+                    case "ja-JP":
+                        return ja_JP;
+                    case "ko-KR":
+                        return ko_KR;
+                    case "zh-Hans":
+                        return zh_Hans;
+                    case "zh-Hant":
+                        return zh_Hant;
+                    default:
+                        throw new InvalidOperationException("Language translation map not found: \"" + langName + "\"");
+                }
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// <see cref="LocalizationEntry"/> for "en-US".
+        /// </summary>
+!!endif!!
+        [SerializeField]
+        private LocalizationEntry en_US;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// <see cref="LocalizationEntry"/> for "ja-JP".
+        /// </summary>
+!!endif!!
+        [SerializeField]
+        private LocalizationEntry ja_JP;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// <see cref="LocalizationEntry"/> for "ko-KR".
+        /// </summary>
+!!endif!!
+        [SerializeField]
+        private LocalizationEntry ko_KR;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// <see cref="LocalizationEntry"/> for "zh-Hans".
+        /// </summary>
+!!endif!!
+        [SerializeField]
+        private LocalizationEntry zh_Hans;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// <see cref="LocalizationEntry"/> for "zh-Hant".
+        /// </summary>
+!!endif!!
+        [SerializeField]
+        private LocalizationEntry zh_Hant;
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Hidden ctor.
+        /// </summary>
+!!endif!!
+        [Obsolete("Should not be instanciated directly")]
+        private LangJsonRoot()
+        {
+        }
+    }
+}

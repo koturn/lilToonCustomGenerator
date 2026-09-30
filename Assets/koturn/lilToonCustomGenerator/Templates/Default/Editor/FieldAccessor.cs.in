@@ -1,0 +1,332 @@
+// #define USE_EXPRESSION_TREE
+
+using System;
+using System.Collections.Generic;
+#if USE_EXPRESSION_TREE
+using System.Linq.Expressions;
+#endif  // USE_EXPRESSION_TREE
+using System.Reflection;
+#if !USE_EXPRESSION_TREE
+using System.Reflection.Emit;
+#endif  // !USE_EXPRESSION_TREE
+
+
+namespace %%NAMESPACE%%
+{
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// Field accessor.
+    /// </summary>
+    /// <typeparam name="TClass">Target class type.</typeparam>
+    /// <typeparam name="TField">Field type.</typeparam>
+!!endif!!
+    public class FieldAccessor<TClass, TField>
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Field name.
+        /// </summary>
+!!endif!!
+        public string Name { get; }
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Type of the field.
+        /// </summary>
+!!endif!!
+        public Type Type { get; }
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Get field value as object.
+        /// </summary>
+!!endif!!
+        public Func<TClass, TField> GetValue { get; }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Initialize <see cref="Name"/>, <see cref="Type"/> and <see cref="GetValue"/>.
+        /// </summary>
+        /// <param name="name">Field name.</param>
+        /// <param name="type">Actual field type.</param>
+        /// <param name="getValue">Getter function.</param>
+!!endif!!
+        public FieldAccessor(string name, Type type, Func<TClass, TField> getValue)
+        {
+            Name = name;
+            Type = type;
+            GetValue = getValue;
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create accessor array.
+        /// </summary>
+        /// <param name="filter">Filter delegate.</param>
+        /// <returns>Accessor array.</returns>
+!!endif!!
+        public static FieldAccessor<TClass, TField>[] CreateAccessors(Func<FieldInfo, bool> filter)
+        {
+            var fieldInfoArray = typeof(TClass).GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            var accessors = new List<FieldAccessor<TClass, TField>>();
+
+            if (filter == null)
+            {
+                foreach (var fieldInfo in fieldInfoArray)
+                {
+                    if (typeof(TField).IsAssignableFrom(fieldInfo.FieldType))
+                    {
+                        accessors.Add(new FieldAccessor<TClass, TField>(fieldInfo.Name, fieldInfo.FieldType, CreateGetter(fieldInfo)));
+                    }
+                }
+            }
+            else
+            {
+                foreach (var fieldInfo in fieldInfoArray)
+                {
+                    if (typeof(TField).IsAssignableFrom(fieldInfo.FieldType) && filter(fieldInfo))
+                    {
+                        accessors.Add(new FieldAccessor<TClass, TField>(fieldInfo.Name, fieldInfo.FieldType, CreateGetter(fieldInfo)));
+                    }
+                }
+            }
+
+            return accessors.ToArray();
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create <see cref="Func{TClass, TField}"/> of getter.
+        /// </summary>
+        /// <param name="fieldInfo">Field information.</param>
+        /// <returns><see cref="Func{TClass, TField}"/> of getter.</returns>
+!!endif!!
+        public static Func<TClass, TField> CreateGetter(FieldInfo fieldInfo)
+        {
+#if USE_EXPRESSION_TREE
+            var pInstance = Expression.Parameter(typeof(TClass), "instance");
+            return Expression.Lambda<Func<TClass, TField>>(
+                Expression.Field(
+                    pInstance,
+                    fieldInfo),
+                "get_" + fieldInfo.Name,
+                new[]
+                {
+                    pInstance
+                }).Compile();
+#else
+            var method = new DynamicMethod(
+                "get_" + fieldInfo.Name,
+                typeof(TField),
+                new[]
+                {
+                    typeof(TClass)
+                },
+                typeof(TClass),
+                true);
+
+            var il = method.GetILGenerator();
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, fieldInfo);
+            il.Emit(OpCodes.Ret);
+
+            return (Func<TClass, TField>)method.CreateDelegate(typeof(Func<TClass, TField>));
+#endif // USE_EXPRESSION_TREE
+        }
+    }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// Field accessor.
+    /// </summary>
+    /// <typeparam name="TClass">Target class type.</typeparam>
+!!endif!!
+    public class FieldAccessor<TClass> : FieldAccessor<TClass, object>
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Initialize <see cref="FieldAccessor{TClass, TField}.Name"/>, <see cref="FieldAccessor{TClass, TField}.Type"/>
+        /// and <see cref="FieldAccessor{TClass, TField}.GetValue"/>.
+        /// </summary>
+        /// <param name="name">Field name.</param>
+        /// <param name="type">Actual field type.</param>
+        /// <param name="getValue">Getter function.</param>
+!!endif!!
+        public FieldAccessor(string name, Type type, Func<TClass, object> getValue)
+            : base(name, type, getValue)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create accessor array.
+        /// </summary>
+        /// <returns>Accessor array.</returns>
+!!endif!!
+        public static FieldAccessor<TClass>[] CreateAccessors()
+        {
+            return CreateAccessors(null);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create accessor array.
+        /// </summary>
+        /// <param name="filter">Filter delegate.</param>
+        /// <returns>Accessor array.</returns>
+!!endif!!
+        public static new FieldAccessor<TClass>[] CreateAccessors(Func<FieldInfo, bool> filter)
+        {
+            return (FieldAccessor<TClass>[])FieldAccessor<TClass, object>.CreateAccessors(filter);
+        }
+    }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// Field accessor.
+    /// </summary>
+!!endif!!
+    public sealed class FieldAccessor : FieldAccessor<object>
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Initialize <see cref="FieldAccessor{TClass, TField}.Name"/>, <see cref="FieldAccessor{TClass, TField}.Type"/>
+        /// and <see cref="FieldAccessor{TClass, TField}.GetValue"/>.
+        /// </summary>
+        /// <param name="name">Field name.</param>
+        /// <param name="type">Actual field type.</param>
+        /// <param name="getValue">Getter function.</param>
+!!endif!!
+        public FieldAccessor(string name, Type type, Func<object, object> getValue)
+            : base(name, type, getValue)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create accessor array.
+        /// </summary>
+        /// <param name="type"><see cref="Type"/> of the target class.</param>
+        /// <param name="filter">Filter delegate.</param>
+        /// <returns>Accessor array.</returns>
+!!endif!!
+        public static FieldAccessor[] CreateAccessors(Type type, Func<FieldInfo, bool> filter)
+        {
+            var fieldInfoArray = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            var accessors = new List<FieldAccessor>();
+
+            if (filter == null)
+            {
+                foreach (var fieldInfo in fieldInfoArray)
+                {
+                    accessors.Add(new FieldAccessor(fieldInfo.Name, fieldInfo.FieldType, CreateGetter(type, fieldInfo)));
+                }
+            }
+            else
+            {
+                foreach (var fieldInfo in fieldInfoArray)
+                {
+                    if (filter(fieldInfo))
+                    {
+                        accessors.Add(new FieldAccessor(fieldInfo.Name, fieldInfo.FieldType, CreateGetter(type, fieldInfo)));
+                    }
+                }
+            }
+
+            return accessors.ToArray();
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create accessor array.
+        /// </summary>
+        /// <typeparam name="TClass">Target class type.</typeparam>
+        /// <returns>Accessor array.</returns>
+!!endif!!
+        public static FieldAccessor<TClass, object>[] CreateAccessors<TClass>()
+        {
+            return CreateAccessors<TClass>(null);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create accessor array.
+        /// </summary>
+        /// <typeparam name="TClass">Target class type.</typeparam>
+        /// <param name="filter">Filter delegate.</param>
+        /// <returns>Accessor array.</returns>
+!!endif!!
+        public static FieldAccessor<TClass, object>[] CreateAccessors<TClass>(Func<FieldInfo, bool> filter)
+        {
+            return FieldAccessor<TClass, object>.CreateAccessors(filter);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create accessor array.
+        /// </summary>
+        /// <typeparam name="TClass">Target class type.</typeparam>
+        /// <typeparam name="TField">Field type.</typeparam>
+        /// <returns>Accessor array.</returns>
+!!endif!!
+        public static FieldAccessor<TClass, TField>[] CreateAccessors<TClass, TField>()
+        {
+            return CreateAccessors<TClass, TField>(null);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create accessor array.
+        /// </summary>
+        /// <typeparam name="TClass">Target class type.</typeparam>
+        /// <typeparam name="TField">Field type.</typeparam>
+        /// <param name="filter">Filter delegate.</param>
+        /// <returns>Accessor array.</returns>
+!!endif!!
+        public static FieldAccessor<TClass, TField>[] CreateAccessors<TClass, TField>(Func<FieldInfo, bool> filter)
+        {
+            return FieldAccessor<TClass, TField>.CreateAccessors(filter);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Create <see cref="Func{T, R}"/> of getter.
+        /// </summary>
+        /// <param name="type"><see cref="Type"/> of target class.</param>
+        /// <param name="fieldInfo">Field information.</param>
+        /// <returns><see cref="Func{T, R}"/> of getter.</returns>
+!!endif!!
+        public static Func<object, object> CreateGetter(Type type, FieldInfo fieldInfo)
+        {
+#if USE_EXPRESSION_TREE
+            var pInstance = Expression.Parameter(typeof(object), "instance");
+            return Expression.Lambda<Func<object, object>>(
+                Expression.Field(
+                    Expression.Convert(pInstance, type),
+                    fieldInfo),
+                "get_" + fieldInfo.Name,
+                new[]
+                {
+                    pInstance
+                }).Compile();
+#else
+            var method = new DynamicMethod(
+                "get_" + fieldInfo.Name,
+                typeof(object),
+                new[]
+                {
+                    type
+                },
+                type,
+                true);
+
+            var il = method.GetILGenerator();
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldfld, fieldInfo);
+            il.Emit(OpCodes.Ret);
+
+            return (Func<object, object>)method.CreateDelegate(typeof(Func<object, object>));
+#endif // USE_EXPRESSION_TREE
+        }
+    }
+}

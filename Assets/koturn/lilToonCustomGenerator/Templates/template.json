@@ -20,8 +20,20 @@
           "destination": "Editor/%%INSPECTOR_NAME%%.cs"
         },
         {
+          "guid": "15da2c86c200ef94ca7b5a9d3f24d958",
+          "destination": "Editor/FieldAccessor.cs"
+        },
+        {
           "guid": "30fa3cf12edc65e4daafb64163e6937c",
           "destination": "Editor/JsonLocalizationInjector.cs"
+        },
+        {
+          "guid": "684729247f311374881dec02bbcd9c12",
+          "destination": "Editor/LangJsonRoot.cs"
+        },
+        {
+          "guid": "f43158e374682a7469c514b61f641123",
+          "destination": "Editor/LocalizationEntry.cs"
         },
         {
           "guid": "fcead3cab69fa13469e434ed42ec1242",
