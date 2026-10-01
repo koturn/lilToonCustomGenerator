@@ -406,7 +406,11 @@ namespace %%NAMESPACE%%
                 Undo.RecordObject(material, "Assign customized lilToon shader (MenuItem: \"Assets/" + ShaderName + "/Convert material to custom shader)\"");
 
                 var tagval = material.GetTag(TagVRCFallback, false);
-                var renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);
+!!  ifempty:SUPPORT_PROPERTY_SEARCH!!
+                var renderQueue = GetTrueRenderQueue(material);
+!!  else!!
+                var renderQueue = lilMaterialUtil.GetTrueRenderQueue(material);
+!!  endif!!
                 material.shader = shader;
                 material.renderQueue = renderQueue;
 
@@ -504,7 +508,11 @@ namespace %%NAMESPACE%%
                 Undo.RecordObject(material, "Assign original lilToon shader (MenuItem: \"Assets/" + ShaderName + "/Convert material to custom shader)\"");
 
                 var tagval = material.GetTag(TagVRCFallback, false);
-                var renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);
+!!  ifempty:SUPPORT_PROPERTY_SEARCH!!
+                var renderQueue = GetTrueRenderQueue(material);
+!!  else!!
+                var renderQueue = lilMaterialUtil.GetTrueRenderQueue(material);
+!!  endif!!
                 material.shader = shader;
                 material.renderQueue = renderQueue;
 
@@ -850,6 +858,23 @@ namespace %%NAMESPACE%%
                 default: return null;
             }
         }
+!!  ifempty:SUPPORT_PROPERTY_SEARCH!!
+
+!!    ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Get the true render queue of the material.
+        /// </summary>
+        /// <param name="material">Target material.</param>
+        /// <returns>The true render queue of the material.</returns>
+        /// <remarks>
+        /// <c>lilMaterialUtil.GetTrueRenderQueue</c> was implemented in lilToon 1.3.2.
+        /// </remarks>
+!!    endif!!
+        private static int GetTrueRenderQueue(Material material)
+        {
+            return new SerializedObject(material).FindProperty("m_CustomRenderQueue").intValue;
+        }
+!!  endif!!
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 
