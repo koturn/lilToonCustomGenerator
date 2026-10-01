@@ -18,6 +18,10 @@ using System;
 using System.Collections.Generic;
 !!elifnotempty:SUPPORT_PROPERTY_SEARCH!!
 using System.Collections.Generic;
+!!elifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
+#if !UNITY_2020_3_OR_NEWER
+using System.Collections.Generic;
+#endif  // !UNITY_2020_3_OR_NEWER
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System.Runtime.InteropServices;
