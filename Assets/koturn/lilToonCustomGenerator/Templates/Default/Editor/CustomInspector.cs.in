@@ -25,6 +25,9 @@ namespace %%NAMESPACE%%
 !!ifnotempty:SHADER_KEYWORD_CASES!!
         private readonly List<string> allowedKeywordList = new List<string>();
 !!endif!!
+!!ifnotempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
+        private bool shouldLoadLanguage;
+!!endif!!
 !!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
         private readonly List<MaterialProperty> propertyList = new List<MaterialProperty>();
 !!endif!!
@@ -36,6 +39,9 @@ namespace %%NAMESPACE%%
 !!endif!!
 
         private static bool isShowCustomProperties;
+!!ifnotempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
+        private static string prevLanguageName;
+!!endif!!
 !!ifempty:SHOULD_GENERATE_VERSION_DEF_FILE!!
         private const string shaderName = "%%SHADER_NAME%%";
 !!else!!
@@ -49,6 +55,14 @@ namespace %%NAMESPACE%%
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
         {
+!!  ifnotempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
+!!    ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
+            shouldLoadLanguage = lts == null || lts.name != shaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
+!!    else!!
+            shouldLoadLanguage = lts == null || lts.name != shaderName + "/lilToon" || prevLanguageName != LilToonAdapter.LanguageName;
+!!    endif!!
+
+!!  endif!!
             base.OnGUI(materialEditor, props);
 !!  ifnotempty:SHADER_KEYWORD_CASES!!
 
@@ -73,14 +87,29 @@ namespace %%NAMESPACE%%
             // If not, set isShowRenderMode to false
             //isShowRenderMode = false;
 
-!!ifnotempty:GUID_LANG_CUSTOM_TSV!!
+!!ifempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
+!!  ifnotempty:GUID_LANG_CUSTOM_TSV!!
             LoadCustomLanguage("%%GUID_LANG_CUSTOM_TSV%%");
-!!elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
+!!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
             LocalizationInjector.Load("%%GUID_PORTABLE_OBJECT_DIR%%");
-!!elifnotempty:GUID_LANG_CUSTOM_JSON!!
+!!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
             JsonLocalizationInjector.Load("%%GUID_LANG_CUSTOM_JSON%%");
-!!else!!
+!!  else!!
             //LoadCustomLanguage("");
+!!  endif!!
+!!else!!
+            if (shouldLoadLanguage)
+            {
+!!  ifnotempty:GUID_LANG_CUSTOM_TSV!!
+                LoadCustomLanguage("%%GUID_LANG_CUSTOM_TSV%%");
+!!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
+                LocalizationInjector.Load("%%GUID_PORTABLE_OBJECT_DIR%%");
+!!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
+                JsonLocalizationInjector.Load("%%GUID_LANG_CUSTOM_JSON%%");
+!!  else!!
+                //LoadCustomLanguage("");
+!!  endif!!
+            }
 !!endif!!
 !!ifempty:SUPPORT_PROPERTY_SEARCH!!
 !!  ifempty:INITIALIZE_MATERIAL_PROPERTIES!!

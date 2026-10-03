@@ -167,6 +167,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private LanguageResourceTypes _languageResourceType = LanguageResourceTypes.TSV;
         /// <summary>
+        /// True to prevent loading language file every rendering.
+        /// </summary>
+        private bool _preventLanguageLoadingEveryRendering;
+        /// <summary>
         /// True to emit shader conversion menu.
         /// </summary>
         private bool _shouldGenerateConvertMenu = true;
@@ -900,6 +904,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     GUILayout.Space(4.0f);
                                 }
                             }
+                        }
+                        using (new EditorGUI.IndentLevelScope(1))
+                        {
+                            _preventLanguageLoadingEveryRendering = CustomEditorGUILayout.ToggleLeftAdjusted("Prevent language resouce loading every rendering (`OnGUI()` calling).", _preventLanguageLoadingEveryRendering);
                         }
                     }
                     if (_shouldGenerateVersionDetectionScript
@@ -1852,9 +1860,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             if (_shouldGenerateLanguageFile)
             {
-                tagDict.Add("PREVENT_LANGUAGE_LOADING_EVERY_RENDERING", "true");
-                tagDict["SHOULD_EMIT_ONGUI"] = "true";
-
                 sb.Clear();
                 index = 0;
                 foreach (var shaderProp in shaderPropDefList)
@@ -2289,6 +2294,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             else if (_isPropertySearchSupported)
             {
                 tagDict.Add("SUPPORT_PROPERTY_SEARCH", "true");
+            }
+            if (_preventLanguageLoadingEveryRendering)
+            {
+                tagDict.Add("PREVENT_LANGUAGE_LOADING_EVERY_RENDERING", "true");
+                tagDict["SHOULD_EMIT_ONGUI"] = "true";
             }
             if (_allowUnsafeCode && (_shouldGenerateVersionDetectionScript || _languageResourceType == LanguageResourceTypes.PortableObject))
             {
