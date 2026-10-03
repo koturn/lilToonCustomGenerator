@@ -1221,7 +1221,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     MessageType.Warning);
                             }
 
-                            var minimalLilToonVersion = _v2fMemberReorderableListContainer.List.Count > 0 && !_shouldEmitVer140Workaround ? VersionHelper.LilToonVersion010401
+                            var minimalLilToonVersion = _isLilToon0102XXSupported ? VersionHelper.LilToonVersion010211
+                                : _v2fMemberReorderableListContainer.List.Count > 0 && !_shouldEmitVer140Workaround ? VersionHelper.LilToonVersion010401
                                 : _isPropertySearchSupported ? VersionHelper.LilToonVersion010400
                                 : !_shouldGetVersionFromPackageJson ? VersionHelper.LilToonVersion010300
                                 : VersionHelper.LilToonVersion010211;
@@ -1300,12 +1301,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
-                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010401, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010401, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                             GUI.FocusControl(null);
                                         }
                                     }
                                 }
-                                else if (_isPropertySearchSupported
+                                else if (!_isLilToon0102XXSupported && _isPropertySearchSupported
                                     && VersionHelper.CompareVersionArray(_packageMinimalLilToonVersion, VersionHelper.LilToonVersion010400) < 0)
                                 {
                                     using (new EditorGUILayout.HorizontalScope())
@@ -1316,23 +1317,25 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
-                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010400, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010400, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                             GUI.FocusControl(null);
                                         }
                                     }
                                 }
-                                else if (!_shouldGetVersionFromPackageJson
+                                else if (!_isLilToon0102XXSupported && !_shouldGetVersionFromPackageJson
                                     && VersionHelper.CompareVersionArray(_packageMinimalLilToonVersion, VersionHelper.LilToonVersion010300) < 0)
                                 {
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
                                             "The `lilConstans` class was introduced in lilToon 1.3.0.\n"
-                                                + "Please consider either setting the minimum lilToon version to 1.3.0 or checking the box for \"" + Labels.GetVersionFromPackageJson.text + "\".",
+                                                + "Please consider either setting the minimum lilToon version to 1.3.0 or checking the box for "
+                                                + "\"" + Labels.SupportLilToon0102XX.text + "\" or"
+                                                + "\"" + Labels.GetVersionFromPackageJson.text + "\".",
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
-                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010300, 0, _packageVpmMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
+                                            Buffer.BlockCopy(VersionHelper.LilToonVersion010300, 0, _packageMinimalLilToonVersion, 0, sizeof(int) * _packageMinimalLilToonVersion.Length);
                                             GUI.FocusControl(null);
                                         }
                                     }
