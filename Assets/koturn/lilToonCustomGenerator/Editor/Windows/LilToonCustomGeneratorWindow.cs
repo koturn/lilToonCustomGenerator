@@ -173,7 +173,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to emit shader conversion menu.
         /// </summary>
-        private bool _shouldGenerateConvertMenu = true;
+        private bool _shouldGenerateConversionMenu = true;
+        /// <summary>
+        /// True to emit reverse shader conversion menu.
+        /// </summary>
+        private bool _shouldGenerateReverseConversionMenu;
         /// <summary>
         /// True to emit cache clear menu.
         /// </summary>
@@ -931,7 +935,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _shouldEmitOrNewerSymbols = CustomEditorGUILayout.ToggleLeftAdjusted("Define `LILTOON_X_Y_Z_OR_NEWER`", _shouldEmitOrNewerSymbols);
                         }
                     }
-                    _shouldGenerateConvertMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateConvertMenu, _shouldGenerateConvertMenu);
+                    _shouldGenerateConversionMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateConversionMenu, _shouldGenerateConversionMenu);
+                    if (_shouldGenerateConversionMenu)
+                    {
+                        using (new EditorGUI.IndentLevelScope(1))
+                        {
+                            _shouldGenerateReverseConversionMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateReverseConversionMenu, _shouldGenerateReverseConversionMenu);
+                        }
+                    }
                     _shouldGenerateCacheClearMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateCacheClearMenu, _shouldGenerateCacheClearMenu);
                     using (new EditorGUILayout.HorizontalScope())
                     {
@@ -2269,9 +2280,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 tagDict.Add("SHOULD_EMIT_GRAB_PASS", "true");
             }
-            if (_shouldGenerateConvertMenu)
+            if (_shouldGenerateConversionMenu)
             {
-                tagDict.Add("SHOULD_GENERATE_CONVERT_MENU", "true");
+                tagDict.Add("SHOULD_GENERATE_CONVERSION_MENU", "true");
+                if (_shouldGenerateReverseConversionMenu)
+                {
+                    tagDict.Add("SHOULD_GENERATE_REVERSE_CONVERSION_MENU", "true");
+                }
             }
             if (_shouldGenerateCacheClearMenu)
             {

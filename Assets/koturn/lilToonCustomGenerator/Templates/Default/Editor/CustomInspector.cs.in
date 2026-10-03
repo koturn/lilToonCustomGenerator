@@ -244,9 +244,80 @@ namespace %%NAMESPACE%%
             ltsmfur     = Shader.Find("Hidden/" + shaderName + "/MultiFur");
             ltsmgem     = Shader.Find("Hidden/" + shaderName + "/MultiGem");
         }
+!!ifnotempty:SHOULD_GENERATE_REVERSE_CONVERSION_MENU!!
+
+        private void ConvertMaterialToOriginalShader(Material material)
+        {
+            ReplaceToCustomShaders();
+            var shader = material.shader;
+                 if(shader == lts)           { lilShaderManager.InitializeShaders(); shader = lts       ;}
+            else if(shader == ltsc)          { lilShaderManager.InitializeShaders(); shader = ltsc      ;}
+            else if(shader == ltst)          { lilShaderManager.InitializeShaders(); shader = ltst      ;}
+            else if(shader == ltsot)         { lilShaderManager.InitializeShaders(); shader = ltsot     ;}
+            else if(shader == ltstt)         { lilShaderManager.InitializeShaders(); shader = ltstt     ;}
+            else if(shader == ltso)          { lilShaderManager.InitializeShaders(); shader = ltso      ;}
+            else if(shader == ltsco)         { lilShaderManager.InitializeShaders(); shader = ltsco     ;}
+            else if(shader == ltsto)         { lilShaderManager.InitializeShaders(); shader = ltsto     ;}
+            else if(shader == ltsoto)        { lilShaderManager.InitializeShaders(); shader = ltsoto    ;}
+            else if(shader == ltstto)        { lilShaderManager.InitializeShaders(); shader = ltstto    ;}
+            else if(shader == ltsoo)         { lilShaderManager.InitializeShaders(); shader = ltsoo     ;}
+            else if(shader == ltscoo)        { lilShaderManager.InitializeShaders(); shader = ltscoo    ;}
+            else if(shader == ltstoo)        { lilShaderManager.InitializeShaders(); shader = ltstoo    ;}
+            else if(shader == ltstess)       { lilShaderManager.InitializeShaders(); shader = ltstess   ;}
+            else if(shader == ltstessc)      { lilShaderManager.InitializeShaders(); shader = ltstessc  ;}
+            else if(shader == ltstesst)      { lilShaderManager.InitializeShaders(); shader = ltstesst  ;}
+            else if(shader == ltstessot)     { lilShaderManager.InitializeShaders(); shader = ltstessot ;}
+            else if(shader == ltstesstt)     { lilShaderManager.InitializeShaders(); shader = ltstesstt ;}
+            else if(shader == ltstesso)      { lilShaderManager.InitializeShaders(); shader = ltstesso  ;}
+            else if(shader == ltstessco)     { lilShaderManager.InitializeShaders(); shader = ltstessco ;}
+            else if(shader == ltstessto)     { lilShaderManager.InitializeShaders(); shader = ltstessto ;}
+            else if(shader == ltstessoto)    { lilShaderManager.InitializeShaders(); shader = ltstessoto;}
+            else if(shader == ltstesstto)    { lilShaderManager.InitializeShaders(); shader = ltstesstto;}
+            else if(shader == ltsl)          { lilShaderManager.InitializeShaders(); shader = ltsl      ;}
+            else if(shader == ltslc)         { lilShaderManager.InitializeShaders(); shader = ltslc     ;}
+            else if(shader == ltslt)         { lilShaderManager.InitializeShaders(); shader = ltslt     ;}
+            else if(shader == ltslot)        { lilShaderManager.InitializeShaders(); shader = ltslot    ;}
+            else if(shader == ltsltt)        { lilShaderManager.InitializeShaders(); shader = ltsltt    ;}
+            else if(shader == ltslo)         { lilShaderManager.InitializeShaders(); shader = ltslo     ;}
+            else if(shader == ltslco)        { lilShaderManager.InitializeShaders(); shader = ltslco    ;}
+            else if(shader == ltslto)        { lilShaderManager.InitializeShaders(); shader = ltslto    ;}
+            else if(shader == ltsloto)       { lilShaderManager.InitializeShaders(); shader = ltsloto   ;}
+            else if(shader == ltsltto)       { lilShaderManager.InitializeShaders(); shader = ltsltto   ;}
+            else if(shader == ltsref)        { lilShaderManager.InitializeShaders(); shader = ltsref    ;}
+            else if(shader == ltsrefb)       { lilShaderManager.InitializeShaders(); shader = ltsrefb   ;}
+            else if(shader == ltsfur)        { lilShaderManager.InitializeShaders(); shader = ltsfur    ;}
+            else if(shader == ltsfurc)       { lilShaderManager.InitializeShaders(); shader = ltsfurc   ;}
+            else if(shader == ltsfurtwo)     { lilShaderManager.InitializeShaders(); shader = ltsfurtwo ;}
+            else if(shader == ltsfuro)       { lilShaderManager.InitializeShaders(); shader = ltsfuro   ;}
+            else if(shader == ltsfuroc)      { lilShaderManager.InitializeShaders(); shader = ltsfuroc  ;}
+            else if(shader == ltsfurotwo)    { lilShaderManager.InitializeShaders(); shader = ltsfurotwo;}
+            else if(shader == ltsgem)        { lilShaderManager.InitializeShaders(); shader = ltsgem    ;}
+            else if(shader == ltsfs)         { lilShaderManager.InitializeShaders(); shader = ltsfs     ;}
+            else if(shader == ltsover)       { lilShaderManager.InitializeShaders(); shader = ltsover   ;}
+            else if(shader == ltsoover)      { lilShaderManager.InitializeShaders(); shader = ltsoover  ;}
+            else if(shader == ltslover)      { lilShaderManager.InitializeShaders(); shader = ltslover  ;}
+            else if(shader == ltsloover)     { lilShaderManager.InitializeShaders(); shader = ltsloover ;}
+            else if(shader == ltsm)          { lilShaderManager.InitializeShaders(); shader = ltsm      ;}
+            else if(shader == ltsmo)         { lilShaderManager.InitializeShaders(); shader = ltsmo     ;}
+            else if(shader == ltsmref)       { lilShaderManager.InitializeShaders(); shader = ltsmref   ;}
+            else if(shader == ltsmfur)       { lilShaderManager.InitializeShaders(); shader = ltsmfur   ;}
+            else if(shader == ltsmgem)       { lilShaderManager.InitializeShaders(); shader = ltsmgem   ;}
+
+            if(material.shader != shader && shader != null)
+            {
+!!  ifempty:SUPPORT_PROPERTY_SEARCH!!
+                int renderQueue = GetTrueRenderQueue(material);
+!!  else!!
+                int renderQueue = lilMaterialUtils.GetTrueRenderQueue(material);
+!!  endif!!
+                material.shader = shader;
+                material.renderQueue = renderQueue;
+            }
+        }
+!!endif!!
 
         // You can create a menu like this
-!!ifempty:SHOULD_GENERATE_CONVERT_MENU!!
+!!ifempty:SHOULD_GENERATE_CONVERSION_MENU!!
         /*
 !!endif!!
         [MenuItem("Assets/%%SHADER_NAME%%/Convert material to custom shader", false, 1100)]
@@ -262,8 +333,24 @@ namespace %%NAMESPACE%%
                 }
             }
         }
-!!ifempty:SHOULD_GENERATE_CONVERT_MENU!!
+!!ifempty:SHOULD_GENERATE_CONVERSION_MENU!!
         */
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_REVERSE_CONVERSION_MENU!!
+
+        [MenuItem("Assets/%%SHADER_NAME%%/Convert material to original shader", false, 1101)]
+        private static void ConvertMaterialToOriginalShaderMenu()
+        {
+            if(Selection.objects.Length == 0) return;
+            %%INSPECTOR_NAME%% inspector = new %%INSPECTOR_NAME%%();
+            for(int i = 0; i < Selection.objects.Length; i++)
+            {
+                if(Selection.objects[i] is Material)
+                {
+                    inspector.ConvertMaterialToOriginalShader((Material)Selection.objects[i]);
+                }
+            }
+        }
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 
@@ -344,6 +431,15 @@ namespace %%NAMESPACE%%
                     return false;
             }
         }
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_REVERSE_CONVERSION_MENU!!
+!!  ifempty:SUPPORT_PROPERTY_SEARCH!!
+
+        private static int GetTrueRenderQueue(Material material)
+        {
+            return new SerializedObject(material).FindProperty("m_CustomRenderQueue").intValue;
+        }
+!!  endif!!
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 

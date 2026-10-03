@@ -272,11 +272,17 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "Generate language file",
             "Create a TSV file named \"lang_custom.tsv\", which is required for multilingual support.");
         /// <summary>
-        /// <see cref="GUIContent"/> for description of ToggleLeft of "Generate convert menu".
+        /// <see cref="GUIContent"/> for description of ToggleLeft of "Generate conversion menu".
         /// </summary>
-        public static GUIContent GenerateConvertMenu { get; } = new GUIContent(
-            "Generate convert menu",
+        public static GUIContent GenerateConversionMenu { get; } = new GUIContent(
+            "Generate conversion menu",
             "Add a menu item to the \"Assets\" menu that converts the shader of the selected materials from the original lilToon to a corresponded custom shader.");
+        /// <summary>
+        /// <see cref="GUIContent"/> for description of ToggleLeft of "Generate reverse conversion menu".
+        /// </summary>
+        public static GUIContent GenerateReverseConversionMenu { get; } = new GUIContent(
+            "Generate reverse conversion menu",
+            "Add a menu item to the \"Assets\" menu that converts the shader of the selected materials from the custom lilToon to a corresponded original shader.");
         /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Generate cache clear menu".
         /// </summary>

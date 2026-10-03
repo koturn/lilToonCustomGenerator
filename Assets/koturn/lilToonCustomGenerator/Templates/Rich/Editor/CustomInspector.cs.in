@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 !!elifnotempty:SUPPORT_PROPERTY_SEARCH!!
 using System.Collections.Generic;
-!!elifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
+!!elifnotempty:SHOULD_GENERATE_CONVERSION_MENU!!
 #if !UNITY_2020_3_OR_NEWER
 using System.Collections.Generic;
 #endif  // !UNITY_2020_3_OR_NEWER
@@ -49,7 +49,7 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!endif!!
         public const string ShaderName = "%%SHADER_NAME%%";
-!!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
+!!ifnotempty:SHOULD_GENERATE_CONVERSION_MENU!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// "VRCFallback" tag.
@@ -388,7 +388,7 @@ namespace %%NAMESPACE%%
             ltsmfur     = Shader.Find("Hidden/" + ShaderName + "/MultiFur");
             ltsmgem     = Shader.Find("Hidden/" + ShaderName + "/MultiGem");
         }
-!!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
+!!ifnotempty:SHOULD_GENERATE_CONVERSION_MENU!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -491,6 +491,8 @@ namespace %%NAMESPACE%%
             }
             return false;
         }
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_REVERSE_CONVERSION_MENU!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -717,7 +719,7 @@ namespace %%NAMESPACE%%
             }
         }
 !!endif!!
-!!ifnotempty:SHOULD_GENERATE_CONVERT_MENU!!
+!!ifnotempty:SHOULD_GENERATE_CONVERSION_MENU!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -798,6 +800,8 @@ namespace %%NAMESPACE%%
                 default: return null;
             }
         }
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_REVERSE_CONVERSION_MENU!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -878,6 +882,8 @@ namespace %%NAMESPACE%%
                 default: return null;
             }
         }
+!!endif!!
+!!ifnotempty:SHOULD_GENERATE_CONVERSION_MENU!!
 !!  ifempty:SUPPORT_PROPERTY_SEARCH!!
 
 !!    ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
