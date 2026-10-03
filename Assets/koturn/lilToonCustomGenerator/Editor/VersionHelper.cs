@@ -39,6 +39,61 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public static int[] LilToonVersion010401 { get; } = { 1, 4, 1 };
         /// <summary>
+        /// Released lilToon version names.
+        /// </summary>
+        public static string[] ReleasedLilToonVersionNames { get; } = {
+            "1.2.11",
+            "1.2.12",
+            "1.3.0",
+            "1.3.1",
+            "1.3.2",
+            "1.3.3",
+            "1.3.4",
+            "1.3.5",
+            "1.3.6",
+            "1.3.7",
+            "1.4.0",
+            "1.4.1",
+            "1.5.0",
+            "1.5.1",
+            "1.6.0",
+            "1.6.1",
+            "1.7.0",
+            "1.7.1",
+            "1.7.2",
+            "1.7.3",
+            "1.8.0",
+            "1.8.1",
+            "1.8.2",
+            "1.8.3",
+            "1.8.4",
+            "1.8.5",
+            "1.9.0",
+            "1.10.0",
+            "1.10.1",
+            "1.10.2",
+            "1.10.3",
+            "2.0.0",
+            "2.1.0",
+            "2.1.1",
+            "2.1.2",
+            "2.1.3",
+            "2.1.4",
+            "2.1.5",
+            "2.1.6",
+            "2.1.7",
+            "2.1.8",
+            "2.1.9",
+            "2.1.10",
+            "2.2.0",
+            "2.2.1",
+            "2.3.0",
+            "2.3.1",
+            "2.3.2",
+            "2.3.3",
+            "2.3.4"
+        };
+        /// <summary>
         /// <para>Maximum minor version number dict of lilToon.</para>
         /// <para>key: Major version number.</para>
         /// <para>Value: Maximum minor version number.</para>

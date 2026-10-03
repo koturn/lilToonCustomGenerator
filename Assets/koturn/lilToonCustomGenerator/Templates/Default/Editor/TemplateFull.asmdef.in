@@ -17,6 +17,12 @@
     "precompiledReferences": [],
     "autoReferenced": false,
     "defineConstraints": [],
+!!ifempty:VERSION_DEFINES!!
     "versionDefines": [],
+!!else!!
+    "versionDefines": [
+        %%VERSION_DEFINES:keepindent%%
+    ],
+!!endif!!
     "noEngineReferences": false
 }

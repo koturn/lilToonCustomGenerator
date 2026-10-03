@@ -143,6 +143,18 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _allowUnsafeCode = true;
         /// <summary>
+        /// True to emit version defines.
+        /// </summary>
+        private bool _shouldEmitVersionDefines;
+        /// <summary>
+        /// True to emit define "LILTOON_X_Y_Z".
+        /// </summary>
+        private bool _shouldEmitEachVersionSymbols;
+        /// <summary>
+        /// True to emit define "LILTOON_X_Y_Z_OR_NEWER".
+        /// </summary>
+        private bool _shouldEmitOrNewerSymbols;
+        /// <summary>
         /// True to get version from package.json of lilToon.
         /// </summary>
         private bool _shouldGetVersionFromPackageJson = false;
@@ -899,6 +911,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         using (new EditorGUI.DisabledScope(true))
                         {
                             CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", false);
+                        }
+                    }
+                    _shouldEmitVersionDefines = CustomEditorGUILayout.ToggleLeftAdjusted("Emit Version Defines", _shouldEmitVersionDefines);
+                    if (_shouldEmitVersionDefines)
+                    {
+                        using (new EditorGUI.IndentLevelScope(1))
+                        {
+                            _shouldEmitEachVersionSymbols = CustomEditorGUILayout.ToggleLeftAdjusted("Define `LILTOON_X_Y_Z`", _shouldEmitEachVersionSymbols);
+                            _shouldEmitOrNewerSymbols = CustomEditorGUILayout.ToggleLeftAdjusted("Define `LILTOON_X_Y_Z_OR_NEWER`", _shouldEmitOrNewerSymbols);
                         }
                     }
                     _shouldGenerateConvertMenu = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateConvertMenu, _shouldGenerateConvertMenu);
@@ -2268,6 +2289,43 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             if (_allowUnsafeCode && (_shouldGenerateVersionDetectionScript || _languageResourceType == LanguageResourceTypes.PortableObject))
             {
                 tagDict.Add("ALLOW_UNSAFE_CODE", "true");
+            }
+            if (_shouldEmitVersionDefines)
+            {
+                sb.Clear();
+                sb.AppendLine("{")
+                    .AppendLine("    \"name\": \"jp.lilxyzw.liltoon\",")
+                    .AppendLine("    \"expression\": \"\",")
+                    .AppendLine("    \"define\": \"LILTOON\"")
+                    .Append('}');
+                foreach (var versionName in VersionHelper.ReleasedLilToonVersionNames)
+                {
+                    var match = RegexProvider.SemVerRegex.Match(versionName);
+                    if (!match.Success)
+                    {
+                        continue;
+                    }
+                    var groups = match.Groups;
+                    if (_shouldEmitEachVersionSymbols)
+                    {
+                        sb.AppendLine(",")
+                            .AppendLine("{")
+                            .AppendLine("    \"name\": \"jp.lilxyzw.liltoon\",")
+                            .AppendFormat("    \"expression\": \"[{0}]\",", versionName).AppendLine()
+                            .AppendFormat("    \"define\": \"LILTOON_{0}_{1}_{2}\"", groups[1].Value, groups[2].Value, groups[3].Value).AppendLine()
+                            .Append('}');
+                    }
+                    if (_shouldEmitOrNewerSymbols)
+                    {
+                        sb.AppendLine(",")
+                            .AppendLine("{")
+                            .AppendLine("    \"name\": \"jp.lilxyzw.liltoon\",")
+                            .AppendFormat("    \"expression\": \"{0}\",", versionName).AppendLine()
+                            .AppendFormat("    \"define\": \"LILTOON_{0}_{1}_{2}_OR_NEWER\"", groups[1].Value, groups[2].Value, groups[3].Value).AppendLine()
+                            .Append('}');
+                    }
+                }
+                tagDict.Add("VERSION_DEFINES", sb.ToString());
             }
             if (_shouldGenerateVersionDetectionScript)
             {
