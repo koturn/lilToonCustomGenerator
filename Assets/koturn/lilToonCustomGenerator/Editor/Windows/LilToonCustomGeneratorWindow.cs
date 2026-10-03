@@ -127,6 +127,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _shouldEmitVer140Workaround = true;
         /// <summary>
+        /// True to support lilToon 1.2.11 and 1.2.12.
+        /// </summary>
+        private bool _isLilToon0102XXSupported;
+        /// <summary>
         /// True to support property search.
         /// </summary>
         private bool _isPropertySearchSupported = true;
@@ -846,23 +850,24 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
                     EditorGUILayout.LabelField("Inspector options", EditorStyles.boldLabel);
-                    _isPropertySearchSupported = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.SupportPropertySearch, _isPropertySearchSupported);
+                    _isLilToon0102XXSupported = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.SupportLilToon0102XX, _isLilToon0102XXSupported);
+                    if (_isLilToon0102XXSupported)
+                    {
+                        using (new EditorGUI.DisabledScope(true))
+                        {
+                            CustomEditorGUILayout.ToggleLeftAdjusted(Labels.SupportPropertySearch, false);
+                        }
+                    }
+                    else
+                    {
+                        _isPropertySearchSupported = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.SupportPropertySearch, _isPropertySearchSupported);
+                    }
                     _shouldGenerateVersionDetectionScript = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateVersionDetectionScript, _shouldGenerateVersionDetectionScript);
                     if (_shouldGenerateVersionDetectionScript)
                     {
                         using (new EditorGUI.IndentLevelScope())
                         {
-                            if (_isPropertySearchSupported)
-                            {
-                                using (new EditorGUI.DisabledScope(true))
-                                {
-                                    CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, false);
-                                }
-                            }
-                            else
-                            {
-                                _shouldGetVersionFromPackageJson = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, _shouldGetVersionFromPackageJson);
-                            }
+                            _shouldGetVersionFromPackageJson = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GetVersionFromPackageJson, _shouldGetVersionFromPackageJson);
                         }
                     }
                     _shouldGenerateLanguageFile = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateLanguageFile, _shouldGenerateLanguageFile);
@@ -1513,6 +1518,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             // Clone template list.
             var templates = new List<TemplateFileConfig>(config.Templates);
+
+            if (!_isLilToon0102XXSupported)
+            {
+                RemoveByDestination(templates, "Editor/LilToonAdapter.cs");
+            }
 
             // Try to find `Editor/lang_custom.tsv`.
             var langCustomTsvIndex = IndexOfDestination(templates, "Editor/lang_custom.tsv");
@@ -2237,7 +2247,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 tagDict.Add("SHOULD_GENERATE_REFRESH_MENU", "true");
             }
-            if (_isPropertySearchSupported)
+            if (_isLilToon0102XXSupported)
+            {
+                tagDict.Add("SUPPORT_LILTOON_1_2_X", "true");
+                if (_shouldGenerateVersionDetectionScript && !_shouldGetVersionFromPackageJson)
+                {
+                    tagDict.Add("REQUIRE_ADAPTER_VERSION", "true");
+                }
+                if (_shouldGenerateLanguageFile
+                    && (_languageResourceType == LanguageResourceTypes.PortableObject || _languageResourceType == LanguageResourceTypes.Json))
+                {
+                    tagDict.Add("REQUIRE_ADAPTER_GET_LOC", "true");
+                }
+                tagDict.Add("REQUIRE_ADAPTER_LANGUAGE_NAME", "true");
+            }
+            else if (_isPropertySearchSupported)
             {
                 tagDict.Add("SUPPORT_PROPERTY_SEARCH", "true");
             }

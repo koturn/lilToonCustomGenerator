@@ -12,7 +12,11 @@ using System.Reflection.Emit;
 #endif  // !USE_EXPRESSION_TREE
 using UnityEditor;
 using UnityEngine;
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
+!!  ifnotempty:SHOULD_EMIT_USING_LILTOON!!
 using lilToon;
+!!  endif!!
+!!endif!!
 
 
 namespace %%NAMESPACE%%
@@ -37,13 +41,11 @@ namespace %%NAMESPACE%%
         /// Cached reference to <c>lilLanguageManager.loc</c>.
         /// </summary>
 !!endif!!
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
         private static readonly Dictionary<string, string> _loc = GetLoc();
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Cached reflection result delegate to get current selected language name.
-        /// </summary>
+!!else!!
+        private static readonly Dictionary<string, string> _loc = LilToonAdapter.LocDict;
 !!endif!!
-        private static Func<string> _getLanguageName;
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Language json instance.
@@ -72,7 +74,11 @@ namespace %%NAMESPACE%%
 !!endif!!
         public static void Load(string guidJson)
         {
-            Load(guidJson, GetLanguageName());
+!!ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
+            Load(guidJson, lilLanguageManager.langSet.languageName);
+!!else!!
+            Load(guidJson, LilToonAdapter.LanguageName);
+!!endif!!
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -113,178 +119,23 @@ namespace %%NAMESPACE%%
             InjectLocalizationDict(translation.LocalizationDict);
         }
 
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
 
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Get <see cref="lilLanguageManager"/>.loc using reflection.
         /// </summary>
         /// <returns>Localization dictionary in <see cref="lilLanguageManager"/> class.</returns>
-!!endif!!
+!!  endif!!
         private static Dictionary<string, string> GetLoc()
         {
-            // lilLanguageManager implemented in lilToon 1.3.0.
-            var tLilToonInspector = typeof(lilToonInspector);
-            var tLilLanguageManager = tLilToonInspector.Assembly.GetType("lilToon.lilLanguageManager");
-            return (Dictionary<string, string>)(tLilLanguageManager ?? tLilToonInspector)
+            return (Dictionary<string, string>)typeof(lilLanguageManager)
                 .GetField(
                     "loc",
                     BindingFlags.NonPublic | BindingFlags.Static)
                 .GetValue(null);
         }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Get current selected language name.
-        /// </summary>
-        /// <returns>Selected language name.</returns>
 !!endif!!
-        private static string GetLanguageName()
-        {
-            return (_getLanguageName ?? (_getLanguageName = CreateGetLanguageNameFunc()))();
-        }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Create delegate to get <c>lilToonInspector.edSet.languageName</c> or <c>lilLanguageManager.langSet.languageName</c>.
-        /// </summary>
-        /// <returns>A delegate that returns current selected language name.</returns>
-!!endif!!
-        private static Func<string> CreateGetLanguageNameFunc()
-        {
-            var tLilToonInspector = typeof(lilToonInspector);
-            var tLilLanguageManager = tLilToonInspector.Assembly.GetType("lilToon.lilLanguageManager");
-            return tLilLanguageManager == null
-                ? CreateGetLanguageNameFuncFromLilToonInspector(tLilToonInspector)
-                : CreateGetLanguageNameFuncFromLilLanguageManager(tLilLanguageManager);
-        }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Create delegate to get <c>lilToonInspector.edSet.languageName</c>.
-        /// </summary>
-        /// <param name="tLilToonInspector"><c>typeof(lilToonInspector)</c></param>
-        /// <returns>A delegate that returns <c>lilToonInspector.edSet.languageName</c>.</returns>
-        /// <exception cref="MissingFieldException">Thrown when neither <c>lilToonInspector.edSet</c>
-        /// nor <c>lilToonInspector.edSet.languageName</c> is found.</exception>
-        /// <remarks>
-        /// This method is intended for lilToon 1.2.11 and lilToon 1.2.12.
-        /// </remarks>
-!!endif!!
-        private static Func<string> CreateGetLanguageNameFuncFromLilToonInspector(Type tLilToonInspector)
-        {
-            var fiEdSet = tLilToonInspector.GetField(
-                "edSet",
-                BindingFlags.Public | BindingFlags.Static);
-            if (fiEdSet == null)
-            {
-                throw new MissingFieldException(tLilToonInspector.FullName, "edSet");
-            }
-
-            var tEdSet = fiEdSet.FieldType;
-            var fiLanguageName = tEdSet.GetField(
-                "languageName",
-                BindingFlags.Public | BindingFlags.Instance);
-            if (fiLanguageName == null)
-            {
-                throw new MissingFieldException(tEdSet.FullName, "languageName");
-            }
-
-#if USE_EXPRESSION_TREE
-            return Expression.Lambda<Func<string>>(
-                Expression.Field(
-                    Expression.Field(
-                        null,
-                        fiEdSet),
-                    fiLanguageName)).Compile();
-#else
-                var method = new DynamicMethod(
-                    "GetLanguageName",
-                    typeof(string),
-                    Type.EmptyTypes,
-                    typeof(JsonLocalizationInjector),
-                    true);
-
-                var il = method.GetILGenerator();
-
-                il.Emit(OpCodes.Ldsfld, fiEdSet);
-                il.Emit(OpCodes.Ldfld, fiLanguageName);
-                il.Emit(OpCodes.Ret);
-
-                return (Func<string>)method.CreateDelegate(typeof(Func<string>));
-#endif  // USE_EXPRESSION_TREE
-        }
-
-!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Create delegate to get <c>lilLanguageManager.langSet.languageName</c>.
-        /// </summary>
-        /// <param name="tLilLanguageManager"><c>typeof(lilLanguageManager)</c></param>
-        /// <returns>A delegate that returns <c>lilLanguageManager.langSet.languageName</c>.</returns>
-        /// <exception cref="MissingMemberException">Thrown when neither <c>lilLanguageManager.langSet</c>
-        /// nor <c>lilLanguageManager.langSet.languageName</c> is not found.</exception>
-        /// <exception cref="MissingMethodException">Thrown when the getter method for <c>lilLanguageManager.langSet</c>
-        /// or <c>lilLanguageManager.langSet.languageName</c> is not found.</exception>
-        /// <remarks>
-        /// This method is intended for lilToon 1.3.0 and later.
-        /// </remarks>
-!!endif!!
-        private static Func<string> CreateGetLanguageNameFuncFromLilLanguageManager(Type tLilLanguageManager)
-        {
-            var langSetProperty = tLilLanguageManager.GetProperty(
-                "langSet",
-                BindingFlags.Public | BindingFlags.Static);
-            if (langSetProperty == null)
-            {
-                throw new MissingMemberException(tLilLanguageManager.FullName, "langSet");
-            }
-
-            var tLanguageSettings = langSetProperty.PropertyType;
-            var piLanguageName = tLanguageSettings.GetProperty(
-                "languageName",
-                BindingFlags.Public | BindingFlags.Instance);
-            if (piLanguageName == null)
-            {
-                throw new MissingMemberException(tLanguageSettings.FullName, "languageName");
-            }
-
-#if USE_EXPRESSION_TREE
-            return Expression.Lambda<Func<string>>(
-                Expression.Property(
-                    Expression.Property(
-                        null,
-                        langSetProperty),
-                    piLanguageName),
-                "GetLanguageName",
-                null).Compile();
-#else
-                var langSetGetter = langSetProperty.GetGetMethod();
-                if (langSetGetter == null)
-                {
-                    throw new MissingMethodException(tLilLanguageManager.FullName, "get_langSet");
-                }
-
-                var miLanguageNameGetter = piLanguageName.GetGetMethod();
-                if (miLanguageNameGetter == null)
-                {
-                    throw new MissingMethodException(tLanguageSettings.FullName, "get_languageName");
-                }
-
-                var method = new DynamicMethod(
-                    "GetLanguageName",
-                    typeof(string),
-                    Type.EmptyTypes,
-                    typeof(JsonLocalizationInjector),
-                    true);
-
-                var il = method.GetILGenerator();
-
-                il.Emit(OpCodes.Call, langSetGetter);
-                il.Emit(OpCodes.Call, miLanguageNameGetter);
-                il.Emit(OpCodes.Ret);
-
-                return (Func<string>)method.CreateDelegate(typeof(Func<string>));
-#endif
-        }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>

@@ -1,14 +1,15 @@
 using System;
-!!ifnotempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
-using System.Collections.Generic;
-!!endif!!
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-!!ifnotempty:SHOULD_EMIT_USING_LILTOON!!
+!!ifempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
+!!  ifempty:REQUIRE_ADAPTER_VERSION!!
+!!    ifnotempty:SHOULD_EMIT_USING_LILTOON!!
 using lilToon;
+!!    endif!!
+!!  endif!!
 !!endif!!
 
 
@@ -27,43 +28,6 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!endif!!
         private const int DefaultBufferSize = 1024;
-!!ifnotempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
-
-!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
-        /// <summary>
-        /// Current version number dictionary.
-        /// </summary>
-!!  endif!!
-        private static readonly Dictionary<string, int> _currentVersionNumberDict = new Dictionary<string, int>()
-        {
-            { "1.2.11", 24 },
-            { "1.2.12", 24 },
-            { "1.3.0", 26 },
-            { "1.3.1", 27 },
-            { "1.3.2", 28 },
-            { "1.3.3", 29 },
-            { "1.3.4", 30 },
-            { "1.3.5", 31 },
-            { "1.3.6", 32 },
-            { "1.3.7", 33 },
-            { "1.4.0", 34 },
-            { "1.4.1", 35 },
-            { "1.5.0", 36 },
-            { "1.5.1", 37 },
-            { "1.6.0", 38 },
-            { "1.6.1", 39 },
-            { "1.7.0", 40 },
-            { "1.7.1", 41 },
-            { "1.7.2", 42 },
-            { "1.7.3", 43 },
-            { "1.8.0", 44 },
-            { "1.8.1", 44 },
-            { "1.8.2", 44 },
-            { "1.8.3", 44 },
-            { "1.8.4", 44 },
-            { "1.8.5", 44 }
-        };
-!!endif!!
 
 
 #if UNITY_2021_2_OR_NEWER
@@ -170,16 +134,16 @@ namespace %%NAMESPACE%%
                 var jsonFilePath = AssetDatabase.GUIDToAssetPath(AssetGuid.LilToonPackageJson);
                 if (jsonFilePath.Length == 0)
                 {
-                    throw new FileNotFoundException("No file corresponding to the GUID was found: 397d2fa9e93fb5d44a9540d5f01437fc");
+                    throw new FileNotFoundException("No file corresponding to the GUID was found: " + AssetGuid.LilToonPackageJson);
                 }
                 var currentVersionName = JsonUtility.FromJson<LilToonVersion>(File.ReadAllText(jsonFilePath)).Version;
-                if (!_currentVersionNumberDict.TryGetValue(currentVersionName, out var currentVersionValue))
-                {
-                    currentVersionValue = 45;
-                }
+                var currentVersionValue = GetCurrentVersionNumber(currentVersionName);
+!!elifnotempty:REQUIRE_ADAPTER_VERSION!!
+                var currentVersionName = LilToonAdapter.CurrentVersionName;
+                var currentVersionValue = LilToonAdapter.CurrentVersionValue;
 !!else!!
-                var currentVersionValue = lilConstants.currentVersionValue;
                 var currentVersionName = lilConstants.currentVersionName;
+                var currentVersionValue = lilConstants.currentVersionValue;
 !!endif!!
 
                 writer.WriteLine("#ifndef LIL_CURRENT_VERSION_INCLUDED");
@@ -401,8 +365,71 @@ namespace %%NAMESPACE%%
             return true;
         }
 !!endif!!
-
 !!ifnotempty:SHOULD_GET_VERSION_FROM_PACKAGE_JSON!!
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Get current lilToon version number from the version name.
+        /// </summary>
+        /// <param name="versionName">lilToon version name.</param>
+        /// <returns>lilToon version value.</returns>
+!!  endif!!
+        private static int GetCurrentVersionNumber(string versionName)
+        {
+            switch (versionName)
+            {
+                case "1.2.11":
+                case "1.2.12":
+                    return 24;
+                case "1.3.0":
+                    return 26;
+                case "1.3.1":
+                    return 27;
+                case "1.3.2":
+                    return 28;
+                case "1.3.3":
+                    return 29;
+                case "1.3.4":
+                    return 30;
+                case "1.3.5":
+                    return 31;
+                case "1.3.6":
+                    return 32;
+                case "1.3.7":
+                    return 33;
+                case "1.4.0":
+                    return 34;
+                case "1.4.1":
+                    return 35;
+                case "1.5.0":
+                    return 36;
+                case "1.5.1":
+                    return 37;
+                case "1.6.0":
+                    return 38;
+                case "1.6.1":
+                    return 39;
+                case "1.7.0":
+                    return 40;
+                case "1.7.1":
+                    return 41;
+                case "1.7.2":
+                    return 42;
+                case "1.7.3":
+                    return 43;
+                case "1.8.0":
+                case "1.8.1":
+                case "1.8.2":
+                case "1.8.3":
+                case "1.8.4":
+                case "1.8.5":
+                    return 44;
+                default:
+                    return 45;
+            }
+        }
+
+
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Version number class.

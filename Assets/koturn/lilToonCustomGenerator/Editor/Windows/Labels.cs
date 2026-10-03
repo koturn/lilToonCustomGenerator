@@ -242,6 +242,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Support property search".
         /// </summary>
+        public static GUIContent SupportLilToon0102XX { get; } = new GUIContent(
+            "Support lilToon 1.2.11 and 1.2.12",
+            "Support for lilToon versions 1.2.11 and 1.2.12.\n"
+                + "Emit some reflection-based code for compatibility.");
+        /// <summary>
+        /// <see cref="GUIContent"/> for description of ToggleLeft of "Support property search".
+        /// </summary>
         public static GUIContent SupportPropertySearch { get; } = new GUIContent(
             "Support property search",
             "Property search was implemented in lilToon 1.4.0.\n"
@@ -250,11 +257,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Get version from package.json...".
         /// </summary>
         public static GUIContent GetVersionFromPackageJson { get; } = new GUIContent(
-            "Get version from package.json of lilToon (Support lilToon 1.2.11 and 1.2.12)",
-            "Retrieve the version string from lilToon’s `package.json` rather than from the `lilConstans` class.\n"
-                + "The `lilConstans` class was introduced in lilToon 1.3.0.\n"
-                + "Therefore, if you need to support lilToon 1.2.11 or lilToon 1.2.12, it is recommended that you retrieve the version from `package.json`.\n"
-                + "We do not support code generation that uses reflection to determine which class to retrieve the version from.");
+            "Get version from package.json of lilToon",
+            "Retrieve the version string from lilToon’s `package.json` rather than from the `lilConstans` class.");
         /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Generate version detection script".
         /// </summary>
