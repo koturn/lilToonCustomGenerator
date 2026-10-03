@@ -93,7 +93,7 @@ namespace %%NAMESPACE%%
         /// Keywords to preserve.
         /// </summary>
 !!  endif!!
-        private readonly List<string> _shaderKeywordList = new List<string>();
+        private readonly List<string> _allowedKeywordList = new List<string>();
 !!endif!!
 !!ifempty:DECLARE_MATERIAL_PROPERTIES!!
 
@@ -125,11 +125,11 @@ namespace %%NAMESPACE%%
 !!  ifnotempty:SHADER_KEYWORD_CASES!!
 
             var material = (Material)materialEditor.target;
-            foreach (var keyword in _shaderKeywordList)
+            foreach (var keyword in _allowedKeywordList)
             {
                 material.EnableKeyword(keyword);
             }
-            _shaderKeywordList.Clear();
+            _allowedKeywordList.Clear();
 !!  endif!!
         }
 
@@ -313,7 +313,7 @@ namespace %%NAMESPACE%%
             {
                 if (IsAllowedKeyword(keyword))
                 {
-                    _shaderKeywordList.Add(keyword);
+                    _allowedKeywordList.Add(keyword);
                 }
             }
 !!  endif!!

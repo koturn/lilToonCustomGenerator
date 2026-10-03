@@ -23,7 +23,7 @@ namespace %%NAMESPACE%%
     public class %%INSPECTOR_NAME%% : lilToonInspector
     {
 !!ifnotempty:SHADER_KEYWORD_CASES!!
-        private readonly List<string> shaderKeywordList = new List<string>();
+        private readonly List<string> allowedKeywordList = new List<string>();
 !!endif!!
 !!ifnotempty:SUPPORT_PROPERTY_SEARCH!!
         private readonly List<MaterialProperty> propertyList = new List<MaterialProperty>();
@@ -53,11 +53,11 @@ namespace %%NAMESPACE%%
 !!  ifnotempty:SHADER_KEYWORD_CASES!!
 
             var material = (Material)materialEditor.target;
-            foreach (var keyword in shaderKeywordList)
+            foreach (var keyword in allowedKeywordList)
             {
                 material.EnableKeyword(keyword);
             }
-            shaderKeywordList.Clear();
+            allowedKeywordList.Clear();
 !!  endif!!
         }
 !!endif!!
@@ -143,9 +143,9 @@ namespace %%NAMESPACE%%
 
             foreach (var keyword in material.shaderKeywords)
             {
-                if (IsAllShaderKeyword(keyword))
+                if (IsAllowedKeyword(keyword))
                 {
-                    shaderKeywordList.Add(keyword);
+                    allowedKeywordList.Add(keyword);
                 }
             }
 !!  endif!!
@@ -305,7 +305,7 @@ namespace %%NAMESPACE%%
 !!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
 
-        private static bool IsAllShaderKeyword(string keyword)
+        private static bool IsAllowedKeyword(string keyword)
         {
             switch (keyword)
             {
