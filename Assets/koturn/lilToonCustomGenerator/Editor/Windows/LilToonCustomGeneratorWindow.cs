@@ -902,7 +902,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             }
                         }
                     }
-                    if (_shouldGenerateVersionDetectionScript || _languageResourceType == LanguageResourceTypes.PortableObject)
+                    if (_shouldGenerateVersionDetectionScript
+                        || (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.PortableObject))
                     {
                         _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
                     }
