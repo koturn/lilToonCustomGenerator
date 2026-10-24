@@ -21,7 +21,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/FurCutout"
     ENDHLSL
 
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest"}
+!!ifnotempty:SHOULD_GENERATE_INSERT!!
     lilSubShaderInsert "lilCustomShaderInsert.lilblock"
+!!endif!!
 !!ifnotempty:SHOULD_GENERATE_INSERT_POST!!
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!

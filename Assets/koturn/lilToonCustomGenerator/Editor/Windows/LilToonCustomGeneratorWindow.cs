@@ -199,7 +199,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _shouldOverrideOnePassOutlineGeometry = false;
         /// <summary>
-        /// True to generate InsertPost tag and <c>Shaders/custom_insert_post.hlsl</c>.
+        /// True to generate lilSubShaderInsert tag and <c>Shaders/custom_insert_post.hlsl</c>.
+        /// </summary>
+        private bool _shouldGenerateInsert = true;
+        /// <summary>
+        /// True to generate lilSubShaderInsertPost tag and <c>Shaders/custom_insert_post.hlsl</c>.
         /// </summary>
         private bool _shouldGenerateInsertPost = false;
         /// <summary>
@@ -791,14 +795,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _shouldOverrideFurGeometry = CustomEditorGUILayout.ToggleLeftAdjusted("Override fur geometry shaders", _shouldOverrideFurGeometry);
                             _shouldOverrideOnePassOutlineGeometry = CustomEditorGUILayout.ToggleLeftAdjusted("Override one pass outline geometry shaders (HDRP only)", _shouldOverrideOnePassOutlineGeometry);
                         }
-                        using (new EditorGUI.DisabledScope(_shouldEmitGeometryShader))
-                        {
-                            CustomEditorGUILayout.ToggleLeftAdjusted("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldEmitGeometryShader);
-                        }
-                    }
-                    else
-                    {
-                        _shouldGenerateInsertPost = CustomEditorGUILayout.ToggleLeftAdjusted("Emit lilSubShaderInsertPost and generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl", _shouldGenerateInsertPost);
                     }
 
                     _shouldEmitGrabPass = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseGrabPass, _shouldEmitGrabPass);
@@ -864,6 +860,32 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _proTVVariableFlagBits.UseUdonVideoTexTexelSize = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoTexTexelSize, _proTVVariableFlagBits.UseUdonVideoTexTexelSize);
                             _proTVVariableFlagBits.UseUdonVideoTexST = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoTexST, _proTVVariableFlagBits.UseUdonVideoTexST);
                         }
+                    }
+
+                    if ((_shouldDeclareVRChatVariables && _vrchatVariableFlagBits.Value != 0)
+                        || (_shouldDeclareAudioLinkVariables && _audioLinkVariableFlagBits.Value != 0)
+                        || (_shouldDeclareProTVVariables && _proTVVariableFlagBits.Value != 0))
+                    {
+                        using (new EditorGUI.DisabledScope(true))
+                        {
+                            CustomEditorGUILayout.ToggleLeftAdjusted(Labels.LilSubShaderInsert, true);
+                        }
+                    }
+                    else
+                    {
+                        _shouldGenerateInsert = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.LilSubShaderInsert, _shouldGenerateInsert);
+                    }
+
+                    if (_shouldEmitGeometryShader)
+                    {
+                        using (new EditorGUI.DisabledScope(true))
+                        {
+                            CustomEditorGUILayout.ToggleLeftAdjusted(Labels.LilSubShaderInsertPost, true);
+                        }
+                    }
+                    else
+                    {
+                        _shouldGenerateInsertPost = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.LilSubShaderInsertPost, _shouldGenerateInsertPost);
                     }
                 }
 
@@ -1627,7 +1649,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 RemoveByDestination(templates, "Editor/LocalizationEntry.cs");
             }
 
-            if (!_shouldEmitGeometryShader && !_shouldGenerateInsertPost)
+            if (!_shouldGenerateInsert
+                && (!_shouldDeclareVRChatVariables || _vrchatVariableFlagBits.Value == 0)
+                && (!_shouldDeclareAudioLinkVariables || _audioLinkVariableFlagBits.Value == 0)
+                && (!_shouldDeclareProTVVariables || _proTVVariableFlagBits.Value == 0))
+            {
+                RemoveByDestination(templates, "Shaders/custom_insert.hlsl");
+                RemoveByDestination(templates, "Shaders/lilCustomShaderInsert.lilblock");
+            }
+
+            if (!_shouldGenerateInsertPost && !_shouldEmitGeometryShader)
             {
                 RemoveByDestination(templates, "Shaders/custom_insert_post.hlsl");
                 RemoveByDestination(templates, "Shaders/lilCustomShaderInsertPost.lilblock");
@@ -2272,7 +2303,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             {
                 tagDict.Add("OVERRIDE_ONEPASS_GEOMETRY", "true");
             }
-            if (_shouldEmitGeometryShader || _shouldGenerateInsertPost)
+
+            if (_shouldGenerateInsert
+                || (_shouldDeclareVRChatVariables && _vrchatVariableFlagBits.Value != 0)
+                || (_shouldDeclareAudioLinkVariables && _audioLinkVariableFlagBits.Value != 0)
+                || (_shouldDeclareProTVVariables && _proTVVariableFlagBits.Value != 0))
+            {
+                tagDict.Add("SHOULD_GENERATE_INSERT", "true");
+            }
+            if (_shouldGenerateInsertPost || _shouldEmitGeometryShader)
             {
                 tagDict.Add("SHOULD_GENERATE_INSERT_POST", "true");
             }

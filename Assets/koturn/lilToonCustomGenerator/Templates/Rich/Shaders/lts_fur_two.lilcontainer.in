@@ -21,7 +21,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/FurTwoPass"
     ENDHLSL
 
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "Transparent"}
+!!ifnotempty:SHOULD_GENERATE_INSERT!!
     lilSubShaderInsert "lilCustomShaderInsert.lilblock"
+!!endif!!
 !!ifnotempty:SHOULD_GENERATE_INSERT_POST!!
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!

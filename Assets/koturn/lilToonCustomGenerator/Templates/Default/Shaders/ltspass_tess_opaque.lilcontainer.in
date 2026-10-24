@@ -13,7 +13,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/ltspass_tess_opaque"
         #include "custom.hlsl"
     ENDHLSL
 
+!!ifnotempty:SHOULD_GENERATE_INSERT!!
     lilSubShaderInsert "lilCustomShaderInsert.lilblock"
+!!endif!!
 !!ifnotempty:SHOULD_GENERATE_INSERT_POST!!
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!

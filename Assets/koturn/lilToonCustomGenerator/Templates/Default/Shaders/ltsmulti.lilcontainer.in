@@ -13,7 +13,9 @@ Shader "*LIL_SHADER_NAME*/lilToonMulti"
     ENDHLSL
 
     lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Geometry"}
+!!ifnotempty:SHOULD_GENERATE_INSERT!!
     lilSubShaderInsert "lilCustomShaderInsert.lilblock"
+!!endif!!
 !!ifnotempty:SHOULD_GENERATE_INSERT_POST!!
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!

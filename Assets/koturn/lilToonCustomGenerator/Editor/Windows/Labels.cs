@@ -240,6 +240,60 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 + "  - z: X offset value\n"
                 + "  - w: Y offset value");
         /// <summary>
+        /// <see cref="GUIContent"/> for description of <c>lilSubShaderInsert</c>.
+        /// </summary>
+        public static GUIContent LilSubShaderInsert { get; } = new GUIContent(
+            "Generate lilCustomShaderInsert.lilblock and custom_insert.hlsl, and emit lilSubShaderInsert.",
+            "Generate lilCustomShaderInsert.lilblock and custom_insert.hlsl, and emit `lilSubShaderInsert` into following files.\n"
+                + "  - lts_fakeshadow.lilcontainer\n"
+                + "  - lts_fur.lilcontainer\n"
+                + "  - lts_fur_cutout.lilcontainer\n"
+                + "  - lts_fur_two.lilcontainer\n"
+                + "  - lts_gem.lilcontainer\n"
+                + "  - lts_ref.lilcontainer\n"
+                + "  - lts_ref_blur.lilcontainer\n"
+                + "  - ltsmulti.lilcontainer\n"
+                + "  - ltsmulti_fur.lilcontainer\n"
+                + "  - ltsmulti_gem.lilcontainer\n"
+                + "  - ltsmulti_o.lilcontainer\n"
+                + "  - ltsmulti_ref.lilcontainer\n"
+                + "  - ltspass_cutout.lilcontainer\n"
+                + "  - ltspass_lite_cutout.lilcontainer\n"
+                + "  - ltspass_lite_opaque.lilcontainer\n"
+                + "  - ltspass_lite_transparent.lilcontainer\n"
+                + "  - ltspass_opaque.lilcontainer\n"
+                + "  - ltspass_tess_cutout.lilcontainer\n"
+                + "  - ltspass_tess_opaque.lilcontainer\n"
+                + "  - ltspass_tess_transparent.lilcontainer\n"
+                + "  - ltspass_transparent.lilcontainer");
+        /// <summary>
+        /// <see cref="GUIContent"/> for description of <c>lilSubShaderInsertPost</c>.
+        /// </summary>
+        public static GUIContent LilSubShaderInsertPost { get; } = new GUIContent(
+            "Generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl, and emit lilSubShaderInsertPost.",
+            "Generate lilCustomShaderInsertPost.lilblock and custom_insert_post.hlsl, and emit `lilSubShaderInsertPost` into following files.\n"
+                + "  - lts_fakeshadow.lilcontainer\n"
+                + "  - lts_fur.lilcontainer\n"
+                + "  - lts_fur_cutout.lilcontainer\n"
+                + "  - lts_fur_two.lilcontainer\n"
+                + "  - lts_gem.lilcontainer\n"
+                + "  - lts_ref.lilcontainer\n"
+                + "  - lts_ref_blur.lilcontainer\n"
+                + "  - ltsmulti.lilcontainer\n"
+                + "  - ltsmulti_fur.lilcontainer\n"
+                + "  - ltsmulti_gem.lilcontainer\n"
+                + "  - ltsmulti_o.lilcontainer\n"
+                + "  - ltsmulti_ref.lilcontainer\n"
+                + "  - ltspass_cutout.lilcontainer\n"
+                + "  - ltspass_lite_cutout.lilcontainer\n"
+                + "  - ltspass_lite_opaque.lilcontainer\n"
+                + "  - ltspass_lite_transparent.lilcontainer\n"
+                + "  - ltspass_opaque.lilcontainer\n"
+                + "  - ltspass_tess_cutout.lilcontainer\n"
+                + "  - ltspass_tess_opaque.lilcontainer\n"
+                + "  - ltspass_tess_transparent.lilcontainer\n"
+                + "  - ltspass_transparent.lilcontainer");
+        /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Support property search".
         /// </summary>
         public static GUIContent SupportLilToon0102XX { get; } = new GUIContent(
