@@ -91,7 +91,9 @@ namespace Koturn.LilToonCustomGenerator.Editor
             "2.3.1",
             "2.3.2",
             "2.3.3",
-            "2.3.4"
+            "2.3.4",
+            "2.4.0",
+            "2.4.1"
         };
         /// <summary>
         /// <para>Maximum minor version number dict of lilToon.</para>
@@ -146,6 +148,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             { (uint)2 << 16 | (uint)0, 0 },
             { (uint)2 << 16 | (uint)1, 10 },
             { (uint)2 << 16 | (uint)2, 1 },
+            { (uint)2 << 16 | (uint)3, 4 }
         };
 
         /// <summary>
