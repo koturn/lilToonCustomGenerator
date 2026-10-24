@@ -2363,9 +2363,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     tagDict.Add("SHOULD_GET_VERSION_FROM_PACKAGE_JSON", "true");
                 }
-#if LILTOON
-                tagDict.Add("LIL_CURRENT_VERSION_VALUE", lilConstants.currentVersionValue.ToString());
-                var match = RegexProvider.VersionNumberRegex.Match(lilConstants.currentVersionName);
+
+                tagDict.Add("LIL_CURRENT_VERSION_VALUE", VersionHelper.CurrentLilToonVersionName);
+                var match = RegexProvider.VersionNumberRegex.Match(VersionHelper.CurrentLilToonVersionName);
                 if (match.Success)
                 {
                     var g = match.Groups;
@@ -2379,12 +2379,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     tagDict.Add("LIL_CURRENT_VERSION_MINOR", "4");
                     tagDict.Add("LIL_CURRENT_VERSION_PATCH", "1");
                 }
-#else
-                tagDict.Add("LIL_CURRENT_VERSION_VALUE", "45");
-                tagDict.Add("LIL_CURRENT_VERSION_MAJOR", "2");
-                tagDict.Add("LIL_CURRENT_VERSION_MINOR", "4");
-                tagDict.Add("LIL_CURRENT_VERSION_PATCH", "1");
-#endif  // LILTOON
             }
             if (_shouldDeclareVRChatVariables)
             {

@@ -1,5 +1,9 @@
 using System;
 using System.Collections.Generic;
+#if LILTOON
+using System.Reflection;
+using lilToon;
+#endif  // LILTOON
 
 
 namespace Koturn.LilToonCustomGenerator.Editor
@@ -10,6 +14,15 @@ namespace Koturn.LilToonCustomGenerator.Editor
     [System.Runtime.InteropServices.Guid("ffd778a6-7d89-8414-aa05-86fb77b5f902")]
     public static class VersionHelper
     {
+        /// <summary>
+        /// Current lilToon version name.
+        /// </summary>
+#if LILTOON
+        public static string CurrentLilToonVersionName { get; } = GetCurrentLilToonVersionName();
+#else
+        public static string CurrentLilToonVersionName => "2.4.1";
+#endif  // LILTOON
+
         /// <summary>
         /// Default minimal unity version array for package.json.
         /// </summary>
@@ -213,5 +226,23 @@ namespace Koturn.LilToonCustomGenerator.Editor
 
             return true;
         }
+
+#if LILTOON
+        /// <summary>
+        /// Get <c>lilToonInspector.currentVersionName</c> or <c>lilConstants.currentVersionName</c> using reflection.
+        /// </summary>
+        /// <returns>Current version name.</returns>
+        private static string GetCurrentLilToonVersionName()
+        {
+            // lilConstants implemented in lilToon 1.3.0.
+            var tLilToonInspector = typeof(lilToonInspector);
+            var tLilConstants = tLilToonInspector.Assembly.GetType("lilToon.lilConstants");
+            return (string)(tLilConstants ?? tLilToonInspector)
+                .GetField(
+                    "currentVersionName",
+                    BindingFlags.Public | BindingFlags.Static)
+                .GetValue(null);
+        }
+#endif  // LILTOON
     }
 }
