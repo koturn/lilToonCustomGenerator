@@ -933,7 +933,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         }
                         using (new EditorGUI.IndentLevelScope(1))
                         {
-                            _preventLanguageLoadingEveryRendering = CustomEditorGUILayout.ToggleLeftAdjusted("Prevent language resouce loading every rendering (`OnGUI()` calling).", _preventLanguageLoadingEveryRendering);
+                            _preventLanguageLoadingEveryRendering = CustomEditorGUILayout.ToggleLeftAdjusted("Prevent language resource loading every rendering (`OnGUI()` calling).", _preventLanguageLoadingEveryRendering);
                         }
                     }
                     if (_shouldGenerateVersionDetectionScript
