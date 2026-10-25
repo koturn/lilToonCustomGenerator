@@ -976,7 +976,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 && !_isPackageVersionEditable
                                 && string.Format("{0}.{1}.{2}", _assemblyVersionNumbers[0], _assemblyVersionNumbers[1], _assemblyVersionNumbers[2]) != _packageVersion)
                             {
-                                // Since the package version has been edited, leave the “Editable” checkbox selected.
+                                // Since the package version has been edited, leave the "Editable" checkbox selected.
                                 _isPackageVersionEditable = true;
                             }
                         }

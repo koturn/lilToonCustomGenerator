@@ -312,7 +312,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         public static GUIContent GetVersionFromPackageJson { get; } = new GUIContent(
             "Get version from package.json of lilToon",
-            "Retrieve the version string from lilToon’s `package.json` rather than from the `lilConstans` class.");
+            "Retrieve the version string from lilToon's `package.json` rather than from the `lilConstans` class.");
         /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Generate version detection script".
         /// </summary>

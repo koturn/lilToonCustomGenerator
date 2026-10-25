@@ -322,7 +322,7 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
-        /// Decodes a PO string in the “...” format and adds it to the builder.
+        /// Decodes a PO string in the "..." format and adds it to the builder.
         /// </summary>
         /// <param name="sb"></param>
         /// <param name="quotedText"></param>
