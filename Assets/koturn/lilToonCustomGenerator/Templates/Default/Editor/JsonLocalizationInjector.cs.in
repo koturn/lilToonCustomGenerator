@@ -1,15 +1,7 @@
-// #define USE_EXPRESSION_TREE
-
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if USE_EXPRESSION_TREE
-using System.Linq.Expressions;
-#endif  // USE_EXPRESSION_TREE
 using System.Reflection;
-#if !USE_EXPRESSION_TREE
-using System.Reflection.Emit;
-#endif  // !USE_EXPRESSION_TREE
 using UnityEditor;
 using UnityEngine;
 !!ifempty:REQUIRE_ADAPTER_GET_LOC!!
