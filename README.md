@@ -43,6 +43,15 @@ It is also possible to create custom shader files for lilToon that utilize geome
 
 - Unity 2019.4 and later
 
+## Initial Setup
+
+Pull submodule with following command.
+
+```
+git submodule update --init --recursive
+git update-index --assume-unchanged Packages/manifest.json Packages/packages-lock.json
+```
+
 ## LICENSE
 
 This software is released under the MIT License, see [LICENSE](LICENSE "LICENSE").

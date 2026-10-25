@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "com.koturn.exporttools": {
+      "version": "file:../ThirdParty/UnityExportTools/Assets/koturn/ExportTools",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    }
+  }
+}

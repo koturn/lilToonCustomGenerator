@@ -1,0 +1,3 @@
+[submodule "ThirdParty/UnityExportTools"]
+	path = ThirdParty/UnityExportTools
+	url = https://github.com/koturn/UnityExportTools.git
