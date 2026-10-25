@@ -479,7 +479,6 @@ namespace %%NAMESPACE%%
 #if UNITY_2022_1_OR_NEWER
                 if (material.parent != null)
                 {
-                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(material));
                     continue;
                 }
 #endif  // UNITY_2022_1_OR_NEWER
@@ -583,7 +582,6 @@ namespace %%NAMESPACE%%
 #if UNITY_2022_1_OR_NEWER
                 if (material.parent != null)
                 {
-                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(material));
                     continue;
                 }
 #endif  // UNITY_2022_1_OR_NEWER
