@@ -88,7 +88,7 @@ namespace %%NAMESPACE%%
             {
                 var fallbackFileAssetPath = dirAssetPath + "/" + FallbackLocaleCode + ".po";
 
-                if (!_cacheDict.TryGetValue(localeCode, out var fallbackCache))
+                if (!_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
                 {
                     fallbackCache = new LocalizationCache(Path.GetFullPath(fallbackFileAssetPath));
                 }
@@ -100,6 +100,7 @@ namespace %%NAMESPACE%%
                 if (fallbackCache != null && File.Exists(fallbackFileAssetPath))
                 {
                     LoadPortableObject(fallbackFileAssetPath, fallbackCache.LocalizationDict);
+                    _cacheDict[FallbackLocaleCode] = fallbackCache;
                 }
             }
 
