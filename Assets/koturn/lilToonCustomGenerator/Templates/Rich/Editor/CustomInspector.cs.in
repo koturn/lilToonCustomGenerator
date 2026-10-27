@@ -124,10 +124,17 @@ namespace %%NAMESPACE%%
             base.OnGUI(materialEditor, props);
 !!  ifnotempty:SHADER_KEYWORD_CASES!!
 
-            var material = (Material)materialEditor.target;
-            foreach (var keyword in _allowedKeywordList)
+            foreach (var target in materialEditor.targets)
             {
-                material.EnableKeyword(keyword);
+                var material = target as Material;
+                if (material == null)
+                {
+                    continue;
+                }
+                foreach (var keyword in _allowedKeywordList)
+                {
+                    material.EnableKeyword(keyword);
+                }
             }
             _allowedKeywordList.Clear();
 !!  endif!!
