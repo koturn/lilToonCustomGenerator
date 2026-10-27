@@ -4,8 +4,16 @@
   "displayName": "lilToonCustomGenerator",
   "description": "lilToon custom shader generator.",
   "unity": "2019.4",
-  "licensesUrl": "https://github.com/koturn/lilToonCustomGenerator/blob/master/LICENSE",
   "license": "MIT",
-  "keywords": ["lilToon", "Shader", "Material"],
-  "url" : "https://github.com/koturn/lilToonCustomGenerator/releases/download/1.2.0/jp.koturn.liltooncustomgenerator-1.2.0.zip?"
+  "licensesUrl": "https://github.com/koturn/lilToonCustomGenerator/blob/master/LICENSE",
+  "keywords": [
+    "lilToon",
+    "Shader",
+    "Material"
+  ],
+  "author": {
+    "name": "koturn",
+    "url": "https://github.com/koturn"
+  },
+  "url": "https://github.com/koturn/lilToonCustomGenerator/releases/download/1.2.0/jp.koturn.liltooncustomgenerator-1.2.0.zip?"
 }
