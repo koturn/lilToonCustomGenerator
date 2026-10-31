@@ -936,18 +936,26 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _preventLanguageLoadingEveryRendering = CustomEditorGUILayout.ToggleLeftAdjusted("Prevent language resource loading every rendering (`OnGUI()` calling).", _preventLanguageLoadingEveryRendering);
                         }
                     }
-                    if (_shouldGenerateVersionDetectionScript
-                        || (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.PortableObject))
+
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
-                    }
-                    else
-                    {
-                        using (new EditorGUI.DisabledScope(true))
+                        if (_shouldGenerateVersionDetectionScript
+                            || (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.PortableObject))
                         {
-                            CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", false);
+                            _allowUnsafeCode = CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", _allowUnsafeCode);
                         }
+                        else
+                        {
+                            using (new EditorGUI.DisabledScope(true))
+                            {
+                                CustomEditorGUILayout.ToggleLeftAdjusted("Allow unsafe code", false);
+                            }
+                        }
+                        GUILayout.FlexibleSpace();
+                        CustomEditorGUILayout.WebButton("About unsafe code", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/unsafe-code");
+                        GUILayout.Space(4.0f);
                     }
+
                     _shouldEmitVersionDefines = CustomEditorGUILayout.ToggleLeftAdjusted("Emit Version Defines", _shouldEmitVersionDefines);
                     if (_shouldEmitVersionDefines)
                     {
