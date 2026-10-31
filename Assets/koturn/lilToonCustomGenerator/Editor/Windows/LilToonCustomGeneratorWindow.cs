@@ -831,7 +831,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         _shouldDeclareAudioLinkVariables = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.AudioLinkVariables, _shouldDeclareAudioLinkVariables);
                         GUILayout.FlexibleSpace();
-                        CustomEditorGUILayout.WebButton("Documentation", "https://github.com/llealloo/audiolink/tree/master/Docs");
+                        CustomEditorGUILayout.WebButton("Documentation", "https://github.com/llealloo/audiolink/blob/master/Docs/README.md");
                         GUILayout.Space(4.0f);
                     }
                     if (_shouldDeclareAudioLinkVariables)
