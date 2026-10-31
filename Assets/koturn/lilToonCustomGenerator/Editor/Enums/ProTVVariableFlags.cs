@@ -26,8 +26,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Enums
         /// </summary>
         UseUdonVideoTexST = 0x04,
         /// <summary>
+        /// Means declaring the uniform variable <c>_Udon_VideoData</c>.
+        /// </summary>
+        UseUdonVideoData = 0x08,
+        /// <summary>
         /// Means declaring all AudioLink variables.
         /// </summary>
-        All = 0x07
+        All = 0x0f
     }
 }

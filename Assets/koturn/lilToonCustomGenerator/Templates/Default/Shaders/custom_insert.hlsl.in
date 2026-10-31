@@ -83,6 +83,10 @@ float4 _AudioTexture_TexelSize;
 !!endif!!
 !!ifnotempty:SHOULD_DECLARE_UDON_VIDEO_TEX!!
 // ProTV texture: https://protv.dev/avatars
+// This shader variable is a 2D texture of varying dimension.
+// It will be assigned the RenderTexture component utilized by the TV for the Blit operation.
+// You can check if the texture is 'active' by examining the dimensions of it.
+// If it is width <= 16, then the texture is considered disabled or unavailable and the shader can fallback to something else.
 TEXTURE2D(_Udon_VideoTex);
 !!endif!!
 !!ifnotempty:SHOULD_DECLARE_UDON_VIDEO_TEX_TEXEL_SIZE!!
@@ -90,4 +94,51 @@ float4 _Udon_VideoTex_TexelSize;
 !!endif!!
 !!ifnotempty:SHOULD_DECLARE_UDON_VIDEO_TEX_ST!!
 float4 _Udon_VideoTex_ST;
+!!endif!!
+!!ifnotempty:SHOULD_DECLARE_UDON_VIDEO_DATA!!
+// This shader variable is a float4x4 matrix that contains the important internal metadata of the TV.
+// The structure is as follows:
+//
+// [ FLAGS   (_11 int  ) , STATE        (_12 int  ) , ERROR_STATE    (_13 int  ) , READY (_14 bool) ]
+// [ VOLUME  (_21 float) , SEEK_PERCENT (_22 float) , PLAYBACK_SPEED (_23 float) ,       (_24     ) ]
+// [         (_31      ) ,              (_32      ) ,                (_33      ) ,       (_34     ) ]
+// [ 3D_MODE (_41 int  ) ,              (_42      ) ,                (_43      ) ,       (_44     ) ]
+//
+// The flags field (_11) is a bit-packed composition of the following options
+// (and their respective value checks, the int() cast is required in the shader)
+//   LOCKED  (int(_11) >> 0 & 1)
+//   MUTE    (int(_11) >> 1 & 1)
+//   LIVE    (int(_11) >> 2 & 1)
+//   LOADING (int(_11) >> 3 & 1)
+//   FORCE2D (int(_11) >> 4 & 1)
+//
+// To examine if a TV is feeding information to the shader variables, you can examine the _14 field of the matrix.
+// This is a boolean (0 or 1) value which the TV specifies if it has passed initialization (meaning it can play media).
+// If the value is 0/false, the shader should assume that the TV is unavailable and can fallback to something else.
+//
+// The int values are enums used by the TV which are as follows:
+//
+// - STATE: int(_12)
+//   - 0 = No media currently loaded
+//   - 1 = Media is stopped
+//   - 2 = Media is playing
+//   - 3 = Media is paused
+// - ERROR_STATE: int(_13)
+//   - 0 = no error
+//   - 1 = url failed and is retrying
+//   - 2 = url is blocked
+//   - 3 = url failed to load
+// - 3D_MODE: int(_41)
+//   - 0 = No 3d mode active
+//   - 1 = Side by Side (SBS)
+//   - 2 = Side by Side but the eyes should be swapped
+//   - 3 = Over Under
+//   - 4 = Over Under but the eyes should be swapped
+//   - -1 through -4 = Any of the respective above values, but treated as if each eye is rendered at full resolution.
+//     This means that instead of assuming the source resolution is the full texture width * height
+//     (which stretches the texture horizontally from the source media to fit the expected size),
+//     it will assume the source resolution is width/2 * height for SBS (or width * height/2 for OverUnder modes)
+//     (meaning the original texture is pixel exact per eye).
+//     This is aka SBS-Full (or OverUnder-Full).
+float4x4 _Udon_VideoData;
 !!endif!!

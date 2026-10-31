@@ -240,6 +240,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 + "  - z: X offset value\n"
                 + "  - w: Y offset value");
         /// <summary>
+        /// <see cref="GUIContent"/> for description of <c>_Udon_VideoData</c>.
+        /// </summary>
+        public static GUIContent UseUdonVideoData { get; } = new GUIContent(
+            "_Udon_VideoData",
+            "float4x4 _Udon_VideoData");
+
+        /// <summary>
         /// <see cref="GUIContent"/> for description of <c>lilSubShaderInsert</c>.
         /// </summary>
         public static GUIContent LilSubShaderInsert { get; } = new GUIContent(

@@ -51,6 +51,17 @@ namespace Koturn.LilToonCustomGenerator.Editor
             get => (Value & ProTVVariableFlags.UseUdonVideoTexST) != 0;
             set => Value = value ? (Value | ProTVVariableFlags.UseUdonVideoTexST) : (Value & ~ProTVVariableFlags.UseUdonVideoTexST);
         }
+        /// <summary>
+        /// True to declare the uniform variable <c>_Udon_VideoData</c>.
+        /// </summary>
+        public bool UseUdonVideoData
+        {
+#if SUPPORT_READONLY_INSTANCE_MEMBER
+            readonly
+#endif  // SUPPORT_READONLY_INSTANCE_MEMBER
+            get => (Value & ProTVVariableFlags.UseUdonVideoData) != 0;
+            set => Value = value ? (Value | ProTVVariableFlags.UseUdonVideoData) : (Value & ~ProTVVariableFlags.UseUdonVideoData);
+        }
 
         /// <summary>
         /// Set initial value.

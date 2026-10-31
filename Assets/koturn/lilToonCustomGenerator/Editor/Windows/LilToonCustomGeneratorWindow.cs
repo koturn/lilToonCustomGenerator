@@ -294,6 +294,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         ///   <item><c>_Udon_VideoTex</c></item>
         ///   <item><c>_Udon_VideoTex_TexelSize</c></item>
         ///   <item><c>_Udon_VideoTex_ST</c></item>
+        ///   <item><c>_Udon_VideoData</c></item>
         /// </list>
         /// </para>
         /// </summary>
@@ -859,6 +860,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _proTVVariableFlagBits.UseUdonVideoTex = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoTex, _proTVVariableFlagBits.UseUdonVideoTex);
                             _proTVVariableFlagBits.UseUdonVideoTexTexelSize = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoTexTexelSize, _proTVVariableFlagBits.UseUdonVideoTexTexelSize);
                             _proTVVariableFlagBits.UseUdonVideoTexST = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoTexST, _proTVVariableFlagBits.UseUdonVideoTexST);
+                            _proTVVariableFlagBits.UseUdonVideoData = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.UseUdonVideoData, _proTVVariableFlagBits.UseUdonVideoData);
                         }
                     }
 
@@ -2507,6 +2509,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 if (_proTVVariableFlagBits.UseUdonVideoTexST)
                 {
                     tagDict.Add("SHOULD_DECLARE_UDON_VIDEO_TEX_ST", "true");
+                }
+                if (_proTVVariableFlagBits.UseUdonVideoData)
+                {
+                    tagDict.Add("SHOULD_DECLARE_UDON_VIDEO_DATA", "true");
                 }
             }
 
