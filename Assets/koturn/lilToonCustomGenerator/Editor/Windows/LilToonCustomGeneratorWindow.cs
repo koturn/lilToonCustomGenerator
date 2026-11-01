@@ -139,6 +139,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </summary>
         private bool _isPropertySearchSupported = true;
         /// <summary>
+        /// True to draw menu button.
+        /// </summary>
+        private bool _shouldDrawMenuButton = true;
+        /// <summary>
         /// True to generate <c>Editor/Startup.cs</c>.
         /// </summary>
         private bool _shouldGenerateVersionDetectionScript;
@@ -921,6 +925,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         _isPropertySearchSupported = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.SupportPropertySearch, _isPropertySearchSupported);
                     }
+                    _shouldDrawMenuButton = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.DrawMenuButton, _shouldDrawMenuButton);
                     _shouldGenerateVersionDetectionScript = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.GenerateVersionDetectionScript, _shouldGenerateVersionDetectionScript);
                     if (_shouldGenerateVersionDetectionScript)
                     {
@@ -2373,6 +2378,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             else if (_isPropertySearchSupported)
             {
                 tagDict.Add("SUPPORT_PROPERTY_SEARCH", "true");
+                tagDict["REQUIRE_PROPERTY_LIST"] = "true";
+            }
+            if (_shouldDrawMenuButton)
+            {
+                tagDict.Add("SHOULD_DRAW_MENU_BUTTON", "true");
+                tagDict["REQUIRE_PROPERTY_LIST"] = "true";
             }
             if (_preventLanguageLoadingEveryRendering)
             {

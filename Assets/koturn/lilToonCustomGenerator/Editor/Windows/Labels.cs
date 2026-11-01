@@ -315,6 +315,17 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "Property search was implemented in lilToon 1.4.0.\n"
                 + "Use methods in lilEditorGUI class instead of ShaderProperty().");
         /// <summary>
+        /// <see cref="GUIContent"/> for description of ToggleLeft of "Draw menu button".
+        /// </summary>
+        public static GUIContent DrawMenuButton { get; } = new GUIContent(
+            "Draw menu button",
+            "Draw a menu button to perform the following operations on properties.\n"
+                + "  - Copy\n"
+                + "  - Paste\n"
+                + "  - Paste (with texture)\n"
+                + "  - Reset\n"
+                + "  - Open manual");
+        /// <summary>
         /// <see cref="GUIContent"/> for description of ToggleLeft of "Get version from package.json...".
         /// </summary>
         public static GUIContent GetVersionFromPackageJson { get; } = new GUIContent(
