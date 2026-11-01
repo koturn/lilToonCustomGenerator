@@ -73,12 +73,8 @@ namespace %%NAMESPACE%%
                 {
                     continue;
                 }
-                foreach (var keyword in _allowedKeywordList)
-                {
-                    material.EnableKeyword(keyword);
-                }
+                RestoreAllowedKeywords(material);
             }
-            allowedKeywordList.Clear();
 !!  endif!!
         }
 !!endif!!
@@ -147,6 +143,9 @@ namespace %%NAMESPACE%%
 
             if (!ShouldDrawBlock(propertyList))
             {
+!!  ifnotempty:SHADER_KEYWORD_CASES!!
+                SaveAllowedKeywords(material);
+!!  endif!!
                 return;
             }
 !!endif!!
@@ -175,16 +174,10 @@ namespace %%NAMESPACE%%
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
             }
-!!  ifnotempty:SHADER_KEYWORD_CASES!!
+!!ifnotempty:SHADER_KEYWORD_CASES!!
 
-            foreach (var keyword in material.shaderKeywords)
-            {
-                if (IsAllowedKeyword(keyword))
-                {
-                    allowedKeywordList.Add(keyword);
-                }
-            }
-!!  endif!!
+            SaveAllowedKeywords(material);
+!!endif!!
         }
 
         protected override void ReplaceToCustomShaders()
@@ -319,6 +312,28 @@ namespace %%NAMESPACE%%
 !!  endif!!
                 material.shader = shader;
                 material.renderQueue = renderQueue;
+            }
+        }
+!!endif!!
+!!ifnotempty:SHADER_KEYWORD_CASES!!
+
+        private void SaveAllowedKeywords(Material material)
+        {
+            allowedKeywordList.Clear();
+            foreach (var keyword in material.shaderKeywords)
+            {
+                if (IsAllowedKeyword(keyword))
+                {
+                    allowedKeywordList.Add(keyword);
+                }
+            }
+        }
+
+        private void RestoreAllowedKeywords(Material material)
+        {
+            foreach (var keyword in allowedKeywordList)
+            {
+                material.EnableKeyword(keyword);
             }
         }
 !!endif!!

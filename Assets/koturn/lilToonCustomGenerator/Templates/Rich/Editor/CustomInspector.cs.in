@@ -131,12 +131,8 @@ namespace %%NAMESPACE%%
                 {
                     continue;
                 }
-                foreach (var keyword in _allowedKeywordList)
-                {
-                    material.EnableKeyword(keyword);
-                }
+                RestoreAllowedKeywords(material);
             }
-            _allowedKeywordList.Clear();
 !!  endif!!
         }
 
@@ -283,6 +279,9 @@ namespace %%NAMESPACE%%
 
             if (!ShouldDrawBlock(_propertyList))
             {
+!!  ifnotempty:SHADER_KEYWORD_CASES!!
+                SaveAllowedKeywords(material);
+!!  endif!!
                 return;
             }
 !!endif!!
@@ -291,6 +290,9 @@ namespace %%NAMESPACE%%
             isShowCustomProperties = Foldout(titleLoc, titleLoc, isShowCustomProperties);
             if (!isShowCustomProperties)
             {
+!!ifnotempty:SHADER_KEYWORD_CASES!!
+                SaveAllowedKeywords(material);
+!!endif!!
                 return;
             }
 
@@ -314,16 +316,10 @@ namespace %%NAMESPACE%%
 !!endif!!
                 }
             }
-!!  ifnotempty:SHADER_KEYWORD_CASES!!
+!!ifnotempty:SHADER_KEYWORD_CASES!!
 
-            foreach (var keyword in material.shaderKeywords)
-            {
-                if (IsAllowedKeyword(keyword))
-                {
-                    _allowedKeywordList.Add(keyword);
-                }
-            }
-!!  endif!!
+            SaveAllowedKeywords(material);
+!!endif!!
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -395,6 +391,42 @@ namespace %%NAMESPACE%%
             ltsmfur     = Shader.Find("Hidden/" + ShaderName + "/MultiFur");
             ltsmgem     = Shader.Find("Hidden/" + ShaderName + "/MultiGem");
         }
+!!ifnotempty:SHADER_KEYWORD_CASES!!
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Save allowed keywords from specified material to <see cref="_allowedKeywordList"/>.
+        /// </summary>
+        /// <param name="material">The material from which the keyword to be obtained.</param>
+!!  endif!!
+        private void SaveAllowedKeywords(Material material)
+        {
+            var allowedKeywordList = _allowedKeywordList;
+
+            allowedKeywordList.Clear();
+            foreach (var keyword in material.shaderKeywords)
+            {
+                if (IsAllowedKeyword(keyword))
+                {
+                    allowedKeywordList.Add(keyword);
+                }
+            }
+        }
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Restore allowed keywords from <see cref="_allowedKeywordList"/> to specified material.
+        /// </summary>
+        /// <param name="material">The material to which the keyword is restored.</param>
+!!  endif!!
+        private void RestoreAllowedKeywords(Material material)
+        {
+            foreach (var keyword in _allowedKeywordList)
+            {
+                material.EnableKeyword(keyword);
+            }
+        }
+!!endif!!
 !!ifnotempty:SHOULD_GENERATE_CONVERSION_MENU!!
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
