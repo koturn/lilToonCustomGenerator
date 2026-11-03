@@ -804,7 +804,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         _shouldDeclareVRChatVariables = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.VRChatVariables, _shouldDeclareVRChatVariables);
                         GUILayout.FlexibleSpace();
-                        CustomEditorGUILayout.WebButton("Documentation", "https://creators.vrchat.com/worlds/udon/vrc-graphics/vrchat-shader-globals/");
+                        CustomEditorGUILayout.WebButton("About VRChat shader globals", "https://creators.vrchat.com/worlds/udon/vrc-graphics/vrchat-shader-globals/");
                         GUILayout.Space(4.0f);
                     }
                     if (_shouldDeclareVRChatVariables)
@@ -832,7 +832,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         _shouldDeclareAudioLinkVariables = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.AudioLinkVariables, _shouldDeclareAudioLinkVariables);
                         GUILayout.FlexibleSpace();
-                        CustomEditorGUILayout.WebButton("Documentation", "https://github.com/llealloo/audiolink/blob/master/Docs/README.md");
+                        CustomEditorGUILayout.WebButton("About Audio Link shader globals", "https://github.com/llealloo/audiolink/blob/master/Docs/README.md");
                         GUILayout.Space(4.0f);
                     }
                     if (_shouldDeclareAudioLinkVariables)
@@ -849,7 +849,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     {
                         _shouldDeclareProTVVariables = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.ProTVVariables, _shouldDeclareProTVVariables);
                         GUILayout.FlexibleSpace();
-                        CustomEditorGUILayout.WebButton("Documentation", "https://protv.dev/avatars");
+                        CustomEditorGUILayout.WebButton("About ProTV shader globals", "https://protv.dev/avatars");
                         GUILayout.Space(4.0f);
                     }
                     if (_shouldDeclareProTVVariables)
