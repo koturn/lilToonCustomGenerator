@@ -18,7 +18,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Current lilToon version name.
         /// </summary>
 #if LILTOON
-        public static string CurrentLilToonVersionName { get; } = GetCurrentLilToonVersionName();
+        public static string CurrentLilToonVersionName => _currentLilToonVersionName ?? (_currentLilToonVersionName = GetCurrentLilToonVersionName());
 #else
         public static string CurrentLilToonVersionName => "2.4.1";
 #endif  // LILTOON
@@ -165,6 +165,11 @@ namespace Koturn.LilToonCustomGenerator.Editor
         };
 
         /// <summary>
+        /// Backing field of <see cref="CurrentLilToonVersionName"/>.
+        /// </summary>
+        private static string _currentLilToonVersionName;
+
+        /// <summary>
         /// Compare two version array.
         /// </summary>
         /// <param name="versions1">First version array.</param>
@@ -232,6 +237,9 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Get <c>lilToonInspector.currentVersionName</c> or <c>lilConstants.currentVersionName</c> using reflection.
         /// </summary>
         /// <returns>Current version name.</returns>
+        /// <remarks>
+        /// This method must not be called before `OnEnable`.
+        /// </remarks>
         private static string GetCurrentLilToonVersionName()
         {
             // lilConstants implemented in lilToon 1.3.0.

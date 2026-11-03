@@ -47,7 +47,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// Labels for version number field.
         /// </summary>
-        private static readonly GUIContent[] _versionNumberLabels = new[]
+        private static readonly GUIContent[] _versionNumberLabels =
         {
             new GUIContent("Major"),
             new GUIContent("Minor"),
@@ -117,7 +117,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to edit <see cref="_namespace"/>.
         /// </summary>
-        private bool _isNamespaceEditable = false;
+        private bool _isNamespaceEditable;
         /// <summary>
         /// New line type.
         /// </summary>
@@ -137,7 +137,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to generate <c>Editor/Startup.cs</c>.
         /// </summary>
-        private bool _shouldGenerateVersionDetectionScript = false;
+        private bool _shouldGenerateVersionDetectionScript;
         /// <summary>
         /// True to allow unsafe code.
         /// </summary>
@@ -157,7 +157,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to get version from package.json of lilToon.
         /// </summary>
-        private bool _shouldGetVersionFromPackageJson = false;
+        private bool _shouldGetVersionFromPackageJson;
         /// <summary>
         /// True to generate <c>Editor/lang_custom.tsv</c>.
         /// </summary>
@@ -181,23 +181,23 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to emit cache clear menu.
         /// </summary>
-        private bool _shouldGenerateCacheClearMenu = false;
+        private bool _shouldGenerateCacheClearMenu;
         /// <summary>
         /// True to emit geometry shader template to <c>Shaders/custom_insert_post.hlsl</c>.
         /// </summary>
-        private bool _shouldEmitGeometryShader = false;
+        private bool _shouldEmitGeometryShader;
         /// <summary>
         /// True to emit <c>GrabPass</c> to non-gem and non-refraction shaders.
         /// </summary>
-        private bool _shouldEmitGrabPass = false;
+        private bool _shouldEmitGrabPass;
         /// <summary>
         /// True to override geometry shader of fur shaders.
         /// </summary>
-        private bool _shouldOverrideFurGeometry = false;
+        private bool _shouldOverrideFurGeometry;
         /// <summary>
         /// True to override geometry shader of one pass outline shaders.
         /// </summary>
-        private bool _shouldOverrideOnePassOutlineGeometry = false;
+        private bool _shouldOverrideOnePassOutlineGeometry;
         /// <summary>
         /// True to generate lilSubShaderInsert tag and <c>Shaders/custom_insert_post.hlsl</c>.
         /// </summary>
@@ -205,7 +205,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// True to generate lilSubShaderInsertPost tag and <c>Shaders/custom_insert_post.hlsl</c>.
         /// </summary>
-        private bool _shouldGenerateInsertPost = false;
+        private bool _shouldGenerateInsertPost;
         /// <summary>
         /// <para>True to declare following variables.</para>
         /// <para>
@@ -333,31 +333,31 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// Text for <see cref="System.Reflection.AssemblyTrademarkAttribute"/>.
         /// </summary>
-        private string _assemblyTrademark;
+        private string _assemblyTrademark = string.Empty;
         /// <summary>
         /// Text for <see cref="System.Reflection.AssemblyCultureAttribute"/>.
         /// </summary>
-        private string _assemblyCulture;
+        private string _assemblyCulture = string.Empty;
         /// <summary>
         /// Version number array for <see cref="System.Reflection.AssemblyVersionAttribute"/>.
         /// </summary>
-        private int[] _assemblyVersionNumbers;
+        private int[] _assemblyVersionNumbers = { 1, 0, 0, 0 };
         /// <summary>
         /// <see cref="string"/> representation of <see cref="_assemblyVersionNumbers"/>.
         /// </summary>
-        private string _assemblyVersionString;
+        private string _assemblyVersionString = "1.0.0.0";
         /// <summary>
         /// Semantic version format of <see cref="_assemblyVersionNumbers"/>.
         /// </summary>
-        private string _assemblyVersionSemVer;
+        private string _assemblyVersionSemVer = "1.0.0";
         /// <summary>
         /// Version number array for <see cref="System.Reflection.AssemblyFileVersionAttribute"/>.
         /// </summary>
-        private int[] _assemblyFileVersionNumbers;
+        private int[] _assemblyFileVersionNumbers = { 1, 0, 0, 0 };
         /// <summary>
         /// Version string for <see cref="System.Reflection.AssemblyInformationalVersionAttribute"/>.
         /// </summary>
-        private string _assemblyInformationalVersion;
+        private string _assemblyInformationalVersion = "1.0.0.0";
         /// <summary>
         /// True to edit value for <see cref="System.Reflection.AssemblyTitleAttribute"/>.
         /// </summary>
@@ -393,63 +393,63 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// <summary>
         /// Value of "version" in package.json.
         /// </summary>
-        private string _packageVersion;
+        private string _packageVersion = "1.0.0";
         /// <summary>
         /// Value of "displayName" in package.json.
         /// </summary>
-        private string _packageDisplayName;
+        private string _packageDisplayName = "lilToon Custom";
         /// <summary>
         /// Value of "description" in package.json.
         /// </summary>
-        private string _packageDescription;
+        private string _packageDescription = "Customized lilToon shaders.";
         /// <summary>
         /// Value of "unity" in package.json.
         /// </summary>
-        private int[] _packageUnityVersion;
+        private int[] _packageUnityVersion = (int[])VersionHelper.DefaultMinimalUnityVersion.Clone();
         /// <summary>
         /// Value of "unityRelease" in package.json.
         /// </summary>
-        private string _packageUnityReleaseVersion;
+        private string _packageUnityReleaseVersion = string.Empty;
         /// <summary>
         /// Value of "changelogUrl" in package.json.
         /// </summary>
-        private string _packageChangeLogUrl;
+        private string _packageChangeLogUrl = string.Empty;
         /// <summary>
         /// Value of "documentationUrl" in package.json.
         /// </summary>
-        private string _packageDocumentationUrl;
+        private string _packageDocumentationUrl = string.Empty;
         /// <summary>
         /// Value of "license" in package.json.
         /// </summary>
-        private string _packageLicense;
+        private string _packageLicense = string.Empty;
         /// <summary>
         /// Value of "licensesUrl" in package.json.
         /// </summary>
-        private string _packageLicensesUrl;
+        private string _packageLicensesUrl = string.Empty;
         /// <summary>
         /// Values of "author.name" in package.json.
         /// </summary>
-        private string _packageAuthorName;
+        private string _packageAuthorName = Environment.UserName;
         /// <summary>
         /// Values of "author.email" in package.json.
         /// </summary>
-        private string _packageAuthorEmail;
+        private string _packageAuthorEmail = string.Empty;
         /// <summary>
         /// Values of "author.url" in package.json.
         /// </summary>
-        private string _packageAuthorUrl;
+        private string _packageAuthorUrl = string.Empty;
         /// <summary>
         /// Minimal lilToon version.
         /// </summary>
-        private int[] _packageMinimalLilToonVersion;
+        private int[] _packageMinimalLilToonVersion = { 1, 4, 0 };
         /// <summary>
         /// VPM package URL.
         /// </summary>
-        private string _packageVpmUrl;
+        private string _packageVpmUrl = string.Empty;
         /// <summary>
         /// Minimal lilToon version for VPM.
         /// </summary>
-        private int[] _packageVpmMinimalLilToonVersion;
+        private int[] _packageVpmMinimalLilToonVersion = { 1, 4, 0 };
         /// <summary>
         /// True to emit <c>legacyFolders</c> to the package.json.
         /// </summary>
@@ -485,19 +485,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
 
         /// <summary>
-        /// <para>Called when this window is created.</para>
-        /// <para>Initialize <see cref="_serializedObject"/> and <see cref="_propertyReorderableListContainer"/>.</para>
+        /// Initialize non <see cref="ScriptableObject"/> and serializable members.
         /// </summary>
-        private void Awake()
+        [Obsolete("Should not be instanciated directly")]
+        private LilToonCustomGeneratorWindow()
         {
-            _jsonRoot = DeserializeJson(AssetDatabase.GUIDToAssetPath("407d2dc27f05f774d9ca8d53fdef2047"));
-            _templateNames = _jsonRoot.ConfigList.Select(config => config.Name).ToArray();
-
-            _propertyReorderableListContainer = CreateInstance<PropertyReorderableListContainer>();
-            _v2fMemberReorderableListContainer = CreateInstance<V2FMemberReorderableListContainer>();
-            _asmMetadataReorderableList = CreateInstance<AsmMetadataReorderableListContainer>();
-            _packageKeywordReorderableListContaner = CreateInstance<TextReorderableListContainer>();
-
             var userName = Environment.UserName;
             var m = RegexProvider.IdentifierRegex.Match(userName);
             if (m.Success)
@@ -516,27 +508,23 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             _assemblyCompany = userName;
             _assemblyProduct = _namespace;
             _assemblyCopyright = $"Copyright (C) {DateTime.Now.Year} {userName} All Rights Reserverd.";
-            _assemblyTrademark = "";
-            _assemblyCulture = "";
-            _assemblyVersionNumbers = new[] { 1, 0, 0, 0 };
-            _assemblyVersionString = "1.0.0.0";
-            _assemblyVersionSemVer = "1.0.0";
-            _assemblyFileVersionNumbers = new[] { 1, 0, 0, 0 };
-            _assemblyInformationalVersion = "1.0.0.0";
 
             _packageName = NameHelper.ConvertShaderNameToPackageName(_shaderName);
-            _packageVersion = "1.0.0";
-            _packageDisplayName = _shaderTitle;
-            _packageDescription = "Customized lilToon shaders.";
-            _packageUnityVersion = new int[VersionHelper.DefaultMinimalUnityVersion.Length];
-            Buffer.BlockCopy(VersionHelper.DefaultMinimalUnityVersion, 0, _packageUnityVersion, 0, sizeof(int) * _packageUnityVersion.Length);
-            _packageUnityReleaseVersion = "";
-            _packageChangeLogUrl = "";
-            _packageDocumentationUrl = "";
-            _packageLicense = "";
-            _packageLicensesUrl = "";
-            _packageMinimalLilToonVersion = new[] { 1, 4, 0 };
-            _packageVpmMinimalLilToonVersion = new[] { 1, 4, 0 };
+        }
+
+        /// <summary>
+        /// <para>Called when this window is created.</para>
+        /// <para>Initialize <see cref="_serializedObject"/> and <see cref="_propertyReorderableListContainer"/>.</para>
+        /// </summary>
+        private void Awake()
+        {
+            _jsonRoot = DeserializeJson(AssetDatabase.GUIDToAssetPath("407d2dc27f05f774d9ca8d53fdef2047"));
+            _templateNames = _jsonRoot.ConfigList.Select(config => config.Name).ToArray();
+
+            _propertyReorderableListContainer = CreateInstance<PropertyReorderableListContainer>();
+            _v2fMemberReorderableListContainer = CreateInstance<V2FMemberReorderableListContainer>();
+            _asmMetadataReorderableList = CreateInstance<AsmMetadataReorderableListContainer>();
+            _packageKeywordReorderableListContaner = CreateInstance<TextReorderableListContainer>();
 
             var packageKeywordList = _packageKeywordReorderableListContaner.List;
             if (packageKeywordList.Count == 0)
@@ -546,11 +534,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 packageKeywordList.Add("Material");
                 packageKeywordList.Add("Custom shader");
             }
-
-            _packageAuthorName = Environment.UserName;
-            _packageAuthorEmail = "";
-            _packageAuthorUrl = "";
-            _packageVpmUrl = "";
         }
 
         /// <summary>
