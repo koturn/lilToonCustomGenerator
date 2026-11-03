@@ -963,7 +963,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             if (ccScope.changed
                                 && _shouldGenerateAssemblyInfo
                                 && !_isPackageVersionEditable
-                                && string.Format("{0}.{1}.{2}", _assemblyVersionNumbers[0], _assemblyVersionNumbers[1], _assemblyVersionNumbers[2]) != _packageVersion)
+                                && $"{_assemblyVersionNumbers[0]}.{_assemblyVersionNumbers[1]}.{_assemblyVersionNumbers[2]}" != _packageVersion)
                             {
                                 // Since the package version has been edited, leave the "Editable" checkbox selected.
                                 _isPackageVersionEditable = true;
@@ -1011,7 +1011,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                         assemblyVersionNumbers[i] = Math.Max(0, assemblyVersionNumbers[i]);
                                     }
                                     _assemblyVersionString = string.Join(".", assemblyVersionNumbers);
-                                    _assemblyVersionSemVer = string.Format("{0}.{1}.{2}", assemblyVersionNumbers[0], assemblyVersionNumbers[1], assemblyVersionNumbers[2]);
+                                    _assemblyVersionSemVer = $"{assemblyVersionNumbers[0]}.{assemblyVersionNumbers[1]}.{assemblyVersionNumbers[2]}";
                                 }
                             }
 
