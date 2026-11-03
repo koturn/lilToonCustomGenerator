@@ -1,3 +1,7 @@
+#if UNITY_2021_2_OR_NEWER && !NETSTANDARD2_1_OR_GREATER
+#    define NETSTANDARD2_1_OR_GREATER
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -670,27 +674,47 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             var invalidNameCollection = _propertyReorderableListContainer.GetInvalidPropertyNames();
                             if (invalidNameCollection.Count > 0)
                             {
+#if NETSTANDARD2_1_OR_GREATER
+                                _propertyReorderableListErrorMessages.Add("Following property names are invalid.\n" + string.Join('\n', invalidNameCollection));
+#else
                                 _propertyReorderableListErrorMessages.Add("Following property names are invalid.\n" + string.Join("\n", invalidNameCollection));
+#endif  // NETSTANDARD2_1_OR_GREATER
                             }
                             var usedNameCollection = _propertyReorderableListContainer.GetNamesUsedInLilToon();
                             if (usedNameCollection.Count > 0)
                             {
+#if NETSTANDARD2_1_OR_GREATER
+                                _propertyReorderableListErrorMessages.Add("Following property names are used in lilToon.\n" + string.Join('\n', usedNameCollection));
+#else
                                 _propertyReorderableListErrorMessages.Add("Following property names are used in lilToon.\n" + string.Join("\n", usedNameCollection));
+#endif  // NETSTANDARD2_1_OR_GREATER
                             }
                             var dupNameCollection = _propertyReorderableListContainer.GetDuplicatePropertyNames();
                             if (dupNameCollection.Count > 0)
                             {
+#if NETSTANDARD2_1_OR_GREATER
+                                _propertyReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join('\n', dupNameCollection));
+#else
                                 _propertyReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join("\n", dupNameCollection));
+#endif  // NETSTANDARD2_1_OR_GREATER
                             }
                             var missingDrawerArgPropCollection = _propertyReorderableListContainer.GetMissingDrawerArgumentPropertyNames();
                             if (missingDrawerArgPropCollection.Count > 0)
                             {
+#if NETSTANDARD2_1_OR_GREATER
+                                _propertyReorderableListErrorMessages.Add("Argument missing for the drawer of the property.\n" + string.Join('\n', missingDrawerArgPropCollection));
+#else
                                 _propertyReorderableListErrorMessages.Add("Argument missing for the drawer of the property.\n" + string.Join("\n", missingDrawerArgPropCollection));
+#endif  // NETSTANDARD2_1_OR_GREATER
                             }
                             var invalidDrawerArgPropCollection = _propertyReorderableListContainer.GetInvalidDrawerArgumentPropertyNames();
                             if (invalidDrawerArgPropCollection.Count > 0)
                             {
+#if NETSTANDARD2_1_OR_GREATER
+                                _propertyReorderableListErrorMessages.Add("Invalid argument for the drawer of the property.\n" + string.Join('\n', invalidDrawerArgPropCollection));
+#else
                                 _propertyReorderableListErrorMessages.Add("Invalid argument for the drawer of the property.\n" + string.Join("\n", invalidDrawerArgPropCollection));
+#endif  // NETSTANDARD2_1_OR_GREATER
                             }
                         }
                     }
@@ -714,17 +738,29 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             var invalidNameCollection = _v2fMemberReorderableListContainer.GetInvalidMemberNames();
                             if (invalidNameCollection.Count > 0)
                             {
+#if NETSTANDARD2_1_OR_GREATER
+                                _v2fMemberReorderableListErrorMessages.Add("Following member names are invalid.\n" + string.Join('\n', invalidNameCollection));
+#else
                                 _v2fMemberReorderableListErrorMessages.Add("Following member names are invalid.\n" + string.Join("\n", invalidNameCollection));
+#endif  // NETSTANDARD2_1_OR_GREATER
                             }
                             var usedNameCollection = _v2fMemberReorderableListContainer.GetNamesUsedInLilToon();
                             if (usedNameCollection.Count > 0)
                             {
+#if NETSTANDARD2_1_OR_GREATER
+                                _v2fMemberReorderableListErrorMessages.Add("Following member names are used in lilToon.\n" + string.Join('\n', usedNameCollection));
+#else
                                 _v2fMemberReorderableListErrorMessages.Add("Following member names are used in lilToon.\n" + string.Join("\n", usedNameCollection));
+#endif  // NETSTANDARD2_1_OR_GREATER
                             }
                             var dupNameCollection = _v2fMemberReorderableListContainer.GetDuplicateMemberNames();
                             if (dupNameCollection.Count > 0)
                             {
+#if NETSTANDARD2_1_OR_GREATER
+                                _v2fMemberReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join('\n', dupNameCollection));
+#else
                                 _v2fMemberReorderableListErrorMessages.Add("Duplicate property names are detected.\n" + string.Join("\n", dupNameCollection));
+#endif  // NETSTANDARD2_1_OR_GREATER
                             }
                         }
                     }
@@ -1010,7 +1046,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     {
                                         assemblyVersionNumbers[i] = Math.Max(0, assemblyVersionNumbers[i]);
                                     }
+#if NETSTANDARD2_1_OR_GREATER
+                                    _assemblyVersionString = string.Join('\n', assemblyVersionNumbers);
+#else
                                     _assemblyVersionString = string.Join(".", assemblyVersionNumbers);
+#endif  // NETSTANDARD2_1_OR_GREATER
                                     _assemblyVersionSemVer = $"{assemblyVersionNumbers[0]}.{assemblyVersionNumbers[1]}.{assemblyVersionNumbers[2]}";
                                 }
                             }
@@ -1195,11 +1235,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 using (new EditorGUILayout.HorizontalScope())
                                 {
                                     EditorGUILayout.HelpBox(
-#if UNITY_2021_2_OR_NEWER
+#if NETSTANDARD2_1_OR_GREATER
                                         $"Unity {string.Join('.', _packageUnityVersion)} has not been released.",
 #else
                                         $"Unity {string.Join(".", _packageUnityVersion)} has not been released.",
-#endif  // UNITY_2021_2_OR_NEWER
+#endif  // NETSTANDARD2_1_OR_GREATER
                                         MessageType.Warning);
                                     if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                     {
@@ -1273,11 +1313,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
-#if UNITY_2021_2_OR_NEWER
+#if NETSTANDARD2_1_OR_GREATER
                                             $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.",
 #else
                                             $"lilToon {string.Join(".", _packageMinimalLilToonVersion)} has not been released.",
-#endif  // UNITY_2021_2_OR_NEWER
+#endif  // NETSTANDARD2_1_OR_GREATER
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
@@ -1294,11 +1334,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                     using (new EditorGUILayout.HorizontalScope())
                                     {
                                         EditorGUILayout.HelpBox(
-#if UNITY_2021_2_OR_NEWER
+#if NETSTANDARD2_1_OR_GREATER
                                             $"lilToon {string.Join('.', _packageMinimalLilToonVersion)} has not been released.",
 #else
                                             $"lilToon {string.Join(".", _packageMinimalLilToonVersion)} has not been released.",
-#endif  // UNITY_2021_2_OR_NEWER
+#endif  // NETSTANDARD2_1_OR_GREATER
                                             MessageType.Warning);
                                         if (CustomEditorGUILayout.ButtonAdjusted("Auto fix"))
                                         {
@@ -1826,7 +1866,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("ASSEMBLY_TRADEMARK", EscapeString(_assemblyTrademark));
                 tagDict.Add("ASSEMBLY_CULTURE", EscapeString(_assemblyCulture));
                 tagDict.Add("ASSEMBLY_VERSION", _assemblyVersionString);
+#if NETSTANDARD2_1_OR_GREATER
+                tagDict.Add("ASSEMBLY_FILE_VERSION", string.Join('.', _assemblyFileVersionNumbers));
+#else
                 tagDict.Add("ASSEMBLY_FILE_VERSION", string.Join(".", _assemblyFileVersionNumbers));
+#endif  // NETSTANDARD2_1_OR_GREATER
                 tagDict.Add("ASSEMBLY_INFORMATIONAL_VERSION", EscapeString(_assemblyInformationalVersion));
             }
             if (_shouldEmitDocComments)
@@ -2200,21 +2244,21 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 tagDict.Add("PACKAGE_VERSION", EscapeString(_packageVersion));
                 tagDict.Add("PACKAGE_DISPLAY_NAME", EscapeString(_packageDisplayName));
                 tagDict.Add("PACKAGE_DESCRIPTION", EscapeString(_packageDescription));
-#if UNITY_2021_2_OR_NEWER
+#if NETSTANDARD2_1_OR_GREATER
                 tagDict.Add("PACKAGE_UNITY_VERSION", string.Join('.', _packageUnityVersion));
 #else
                 tagDict.Add("PACKAGE_UNITY_VERSION", string.Join(".", _packageUnityVersion));
-#endif  // UNITY_2021_2_OR_NEWER
+#endif  // NETSTANDARD2_1_OR_GREATER
                 tagDict.Add("PACKAGE_UNITY_RELEASE_VERSION", EscapeString(_packageUnityReleaseVersion));
                 tagDict.Add("PACKAGE_CHANGELOG_URL", EscapeString(_packageChangeLogUrl));
                 tagDict.Add("PACKAGE_DOCUMENTATION_URL", EscapeString(_packageDocumentationUrl));
                 tagDict.Add("PACKAGE_LICENSE", EscapeString(_packageLicense));
                 tagDict.Add("PACKAGE_LICENSES_URL", EscapeString(_packageLicensesUrl));
-#if UNITY_2021_2_OR_NEWER
+#if NETSTANDARD2_1_OR_GREATER
                 tagDict.Add("PACKAGE_MINIMAL_LILTOON_VERSION", string.Join('.', _packageMinimalLilToonVersion));
 #else
                 tagDict.Add("PACKAGE_MINIMAL_LILTOON_VERSION", string.Join(".", _packageMinimalLilToonVersion));
-#endif  // UNITY_2021_2_OR_NEWER
+#endif  // NETSTANDARD2_1_OR_GREATER
 
                 sb.Clear();
                 index = 0;
@@ -2260,11 +2304,11 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 if (_shouldEmitVpmEntries)
                 {
                     tagDict.Add("PACKAGE_VPM_URL", _packageVpmUrl);
-#if UNITY_2021_2_OR_NEWER
+#if NETSTANDARD2_1_OR_GREATER
                     tagDict.Add("PACKAGE_VPM_MINIMAL_LILTOON_VERSION", ">=" + string.Join('.', _packageVpmMinimalLilToonVersion));
 #else
                     tagDict.Add("PACKAGE_VPM_MINIMAL_LILTOON_VERSION", ">=" + string.Join(".", _packageVpmMinimalLilToonVersion));
-#endif  // UNITY_2021_2_OR_NEWER
+#endif  // NETSTANDARD2_1_OR_GREATER
                 }
             }
 

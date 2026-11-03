@@ -1,3 +1,7 @@
+#if UNITY_2021_2_OR_NEWER && !NETSTANDARD2_1_OR_GREATER
+#    define NETSTANDARD2_1_OR_GREATER
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -1187,7 +1191,11 @@ namespace Koturn.LilToonCustomGenerator.Editor
             {
                 return null;
             }
+#if NETSTANDARD2_1_OR_GREATER
+            var keywordText = string.Join(' ', keywords);
+#else
             var keywordText = string.Join(" ", keywords);
+#endif  // NETSTANDARD2_1_OR_GREATER
 
             var flags = _shaderVariantTargetFlags;
             if (flags == ShaderVariantTargetFlags.All)
