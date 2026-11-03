@@ -622,11 +622,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     _namespace = CustomEditorGUILayout.ToggleTextField(Labels.InspectorNamespace, _namespace, ref _isNamespaceEditable);
                     if (!_isNamespaceEditable)
                     {
-#if UNITY_2021_2_OR_NEWER
-                        _namespace = _defaultTextCacheDict.GetValueOrDefault(nameof(_namespace), "");
-#else
-                        _namespace = _defaultTextCacheDict.TryGetValue(nameof(_namespace), out var ns) ? ns : "";
-#endif  // UNITY_2021_2_OR_NEWER
+                        _namespace = _defaultTextCacheDict.TryGetValue(nameof(_namespace), out var ns) ? ns : string.Empty;
                     }
 
                     if (!RegexProvider.NamespaceRegex.IsMatch(_namespace))
@@ -991,11 +987,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _assemblyDescription = CustomEditorGUILayout.ToggleTextField("Description", _assemblyDescription, ref _isAssemblyDescriptionEditable);
                             if (!_isAssemblyDescriptionEditable)
                             {
-#if UNITY_2021_2_OR_NEWER
-                                _assemblyDescription = _defaultTextCacheDict.GetValueOrDefault(nameof(_assemblyDescription), "");
-#else
-                                _assemblyDescription = _defaultTextCacheDict.TryGetValue(nameof(_assemblyDescription), out var assemblyDescription) ? assemblyDescription : "";
-#endif  // UNITY_2021_2_OR_NEWER
+                                _assemblyDescription = _defaultTextCacheDict.TryGetValue(nameof(_assemblyDescription), out var assemblyDescription) ? assemblyDescription : string.Empty;
                             }
 
                             _assemblyCompany = EditorGUILayout.TextField("Company", _assemblyCompany);
@@ -1067,11 +1059,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             _packageName = CustomEditorGUILayout.ToggleTextField("Name", _packageName, ref _isPackageNameEditable);
                             if (!_isPackageNameEditable)
                             {
-#if UNITY_2021_2_OR_NEWER
-                                _packageName = _defaultTextCacheDict.GetValueOrDefault(nameof(_packageName), "");
-#else
-                                _packageName = _defaultTextCacheDict.TryGetValue(nameof(_packageName), out var packageName) ? packageName : "";
-#endif  // UNITY_2021_2_OR_NEWER
+                                _packageName = _defaultTextCacheDict.TryGetValue(nameof(_packageName), out var packageName) ? packageName : string.Empty;
                             }
                             if (string.IsNullOrEmpty(_packageName))
                             {
@@ -2016,7 +2004,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     sb.AppendFormat(
                         "{0}{1}{2} (\"{3}\", {4}) = {5}",
                         drawer,
-                        drawer.Length > 0 ? " " : "",
+                        drawer.Length > 0 ? " " : string.Empty,
                         shaderProp.Name,
                         langTags[index],
                         shaderProp.PropertyTypeText,
@@ -2032,7 +2020,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     sb.AppendFormat(
                         "{0}{1}{2} (\"{3}\", {4}) = {5}",
                         drawer,
-                        drawer.Length > 0 ? " " : "",
+                        drawer.Length > 0 ? " " : string.Empty,
                         shaderProp.Name,
                         shaderProp.Description,
                         shaderProp.PropertyTypeText,

@@ -71,7 +71,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// </summary>
         public static readonly string[] _interpolationModifierTexts =
         {
-            "",  // Default
+            string.Empty,  // Default
             "centroid",
             "nointerpolation",
             "noperspective",

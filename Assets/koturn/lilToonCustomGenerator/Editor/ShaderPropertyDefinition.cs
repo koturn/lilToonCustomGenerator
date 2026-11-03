@@ -990,7 +990,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
                 var drawerType = _drawerType;
                 if (drawerType == DrawerType.None)
                 {
-                    return "";
+                    return string.Empty;
                 }
 
                 var sb = new StringBuilder();
@@ -1073,7 +1073,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         /// Backing field of <see cref="DrawerArgument"/>.
         /// </summary>
         [SerializeField]
-        private string _drawerArgument = "";
+        private string _drawerArgument = string.Empty;
         /// <summary>
         /// Backing field of <see cref="ShaderVariantType"/>.
         /// </summary>

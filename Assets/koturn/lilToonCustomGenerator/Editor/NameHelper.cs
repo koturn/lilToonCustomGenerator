@@ -41,7 +41,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             var sb = new StringBuilder();
             foreach (var part in shaderName.Replace('/', '.').Split('.'))
             {
-                var part2 = RegexProvider.NonIdentifierCharRegex.Replace(part, "");
+                var part2 = RegexProvider.NonIdentifierCharRegex.Replace(part, string.Empty);
                 if (part2.Length == 0)
                 {
                     continue;
@@ -95,7 +95,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
             }
 
             packageName += shaderName;
-            return RegexProvider.NonPackageNameCharRegex.Replace(packageName, "");
+            return RegexProvider.NonPackageNameCharRegex.Replace(packageName, string.Empty);
         }
 
         /// <summary>

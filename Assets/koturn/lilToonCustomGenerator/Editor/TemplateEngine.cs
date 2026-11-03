@@ -106,7 +106,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         {
             var replaceDef = TagDictionary;
             var fs = reader.BaseStream as FileStream;
-            var msgPrefix = fs == null ? "" : fs.Name + ":";
+            var msgPrefix = fs == null ? string.Empty : fs.Name + ":";
 
             // Whether the parent block itself is to be output
             var emitStack = new Stack<bool>();
