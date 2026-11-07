@@ -28,6 +28,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/FurTwoPass"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultFurTwoPass"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultFur"
+!!endif!!
     lilSubShaderURP "DefaultFurTwoPass"
     lilSubShaderHDRP "DefaultFurTwoPass"
 

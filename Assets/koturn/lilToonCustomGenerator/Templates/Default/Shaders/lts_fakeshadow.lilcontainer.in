@@ -18,6 +18,9 @@ Shader "*LIL_SHADER_NAME*/[Optional] FakeShadow"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultFakeShadow"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultFakeShadow"
+!!endif!!
     lilSubShaderURP "DefaultFakeShadow"
     lilSubShaderHDRP "DefaultFakeShadow"
 

@@ -20,6 +20,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/ltspass_lite_opaque"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultLite"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultLite"
+!!endif!!
     lilSubShaderURP "DefaultLite"
     lilSubShaderHDRP "DefaultLite"
 

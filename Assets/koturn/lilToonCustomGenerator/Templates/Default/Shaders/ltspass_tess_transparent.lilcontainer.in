@@ -20,6 +20,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/ltspass_tess_transparent"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultTessellationTwoSide"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultTessellation"
+!!endif!!
     lilSubShaderURP "DefaultTessellation"
     lilSubShaderHDRP "DefaultTessellation"
 

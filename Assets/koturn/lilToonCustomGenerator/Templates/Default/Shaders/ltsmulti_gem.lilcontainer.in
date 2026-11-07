@@ -20,6 +20,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/MultiGem"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultMultiGem"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultMultiGem"
+!!endif!!
     lilSubShaderURP "DefaultMultiGem"
     lilSubShaderHDRP "DefaultMultiGem"
 

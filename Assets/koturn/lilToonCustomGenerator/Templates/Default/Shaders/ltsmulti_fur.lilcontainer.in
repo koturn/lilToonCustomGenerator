@@ -20,6 +20,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/MultiFur"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultMultiFur"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultMultiFur"
+!!endif!!
     lilSubShaderURP "DefaultMultiFur"
     lilSubShaderHDRP "DefaultMultiFur"
 

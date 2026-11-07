@@ -245,7 +245,13 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         public static GUIContent UseUdonVideoData { get; } = new GUIContent(
             "_Udon_VideoData",
             "float4x4 _Udon_VideoData");
-
+        /// <summary>
+        /// <see cref="GUIContent"/> for description of "Support LWRP".
+        /// </summary>
+        public static GUIContent SupportLwrp { get; } = new GUIContent(
+            "Support LWRP",
+            "Support for the Lightweight Render Pipeline (LWRP).\n"
+                + "The Universal Render Pipeline (URP) replaces the Lightweight Render Pipeline (LWRP) in Unity 2019.3 or later.");
         /// <summary>
         /// <see cref="GUIContent"/> for description of <c>lilSubShaderInsert</c>.
         /// </summary>

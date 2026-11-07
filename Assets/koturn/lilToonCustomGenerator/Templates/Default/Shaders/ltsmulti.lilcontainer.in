@@ -20,6 +20,9 @@ Shader "*LIL_SHADER_NAME*/lilToonMulti"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultMulti"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultMulti"
+!!endif!!
     lilSubShaderURP "DefaultMulti"
     lilSubShaderHDRP "DefaultMulti"
 

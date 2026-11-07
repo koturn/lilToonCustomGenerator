@@ -28,6 +28,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/FurCutout"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultFur"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultFur"
+!!endif!!
     lilSubShaderURP "DefaultFur"
     lilSubShaderHDRP "DefaultFur"
 

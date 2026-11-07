@@ -28,6 +28,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/Gem"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultGem"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultGem"
+!!endif!!
     lilSubShaderURP "DefaultGem"
     lilSubShaderHDRP "DefaultGem"
 

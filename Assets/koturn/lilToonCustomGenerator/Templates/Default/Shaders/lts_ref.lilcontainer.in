@@ -28,6 +28,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/Refraction"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultRefraction"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultRefraction"
+!!endif!!
     lilSubShaderURP "DefaultRefraction"
     lilSubShaderHDRP "DefaultRefraction"
 

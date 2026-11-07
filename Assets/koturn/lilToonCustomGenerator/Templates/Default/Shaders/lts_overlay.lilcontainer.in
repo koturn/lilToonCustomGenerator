@@ -10,6 +10,9 @@ Shader "*LIL_SHADER_NAME*/[Optional] Overlay"
     lilPassShaderName "Hidden/*LIL_SHADER_NAME*/ltspass_transparent"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "AlphaTest+10"}
     lilSubShaderBRP "DefaultUsePassOverlay"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultUsePassOverlay"
+!!endif!!
     lilSubShaderURP "DefaultUsePassOverlay"
     lilSubShaderHDRP "DefaultUsePassOverlay"
 

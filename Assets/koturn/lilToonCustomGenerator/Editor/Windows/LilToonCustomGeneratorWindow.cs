@@ -311,6 +311,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// </remarks>
         private bool _shouldDeclareProTVVariables = false;
         /// <summary>
+        /// True to support LWRP.
+        /// </summary>
+        private bool _isLwrpSupported = false;
+        /// <summary>
         /// Each ProTV variable flags.
         /// </summary>
         private ProTVVariableFlagBits _proTVVariableFlagBits = new ProTVVariableFlagBits(ProTVVariableFlags.All);
@@ -907,6 +911,14 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     else
                     {
                         _shouldGenerateInsertPost = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.LilSubShaderInsertPost, _shouldGenerateInsertPost);
+                    }
+
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        _isLwrpSupported = CustomEditorGUILayout.ToggleLeftAdjusted(Labels.SupportLwrp, _isLwrpSupported);
+                        GUILayout.FlexibleSpace();
+                        CustomEditorGUILayout.WebButton("About LWRP", "https://docs.unity3d.com/Packages/com.unity.render-pipelines.lightweight@5.7/manual/index.html");
+                        GUILayout.Space(4.0f);
                     }
                 }
 
@@ -2344,6 +2356,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             if (_shouldGenerateInsertPost || _shouldEmitGeometryShader)
             {
                 tagDict.Add("SHOULD_GENERATE_INSERT_POST", "true");
+            }
+            if (_isLwrpSupported)
+            {
+                tagDict.Add("SUPPORT_LWRP", "true");
             }
             if (_shouldEmitGrabPass)
             {

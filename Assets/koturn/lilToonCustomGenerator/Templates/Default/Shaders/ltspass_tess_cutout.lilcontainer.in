@@ -20,6 +20,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/ltspass_tess_cutout"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultTessellation"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultTessellation"
+!!endif!!
     lilSubShaderURP "DefaultTessellation"
     lilSubShaderHDRP "DefaultTessellation"
 

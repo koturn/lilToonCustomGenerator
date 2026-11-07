@@ -20,6 +20,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/ltspass_cutout"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "Default"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "Default"
+!!endif!!
     lilSubShaderURP "Default"
     lilSubShaderHDRP "Default"
 

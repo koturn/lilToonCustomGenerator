@@ -10,6 +10,9 @@ Shader "*LIL_SHADER_NAME*/[Optional] OutlineOnly/Opaque"
     lilPassShaderName "Hidden/*LIL_SHADER_NAME*/ltspass_opaque"
     lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Geometry"}
     lilSubShaderBRP "DefaultUsePassOutlineOnly"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultUsePassOutlineOnly"
+!!endif!!
     lilSubShaderURP "DefaultUsePassOutlineOnly"
     lilSubShaderHDRP "DefaultUsePassOutlineOnly"
 

@@ -20,6 +20,9 @@ Shader "Hidden/*LIL_SHADER_NAME*/MultiOutline"
     lilSubShaderInsertPost "lilCustomShaderInsertPost.lilblock"
 !!endif!!
     lilSubShaderBRP "DefaultMultiOutline"
+!!ifnotempty:SUPPORT_LWRP!!
+    lilSubShaderLWRP "DefaultMultiOutline"
+!!endif!!
     lilSubShaderURP "DefaultMultiOutline"
     lilSubShaderHDRP "DefaultMultiOutline"
 
