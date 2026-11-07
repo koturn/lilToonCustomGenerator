@@ -131,9 +131,9 @@ namespace %%NAMESPACE%%
         {
 !!  ifnotempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
 !!    ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
-            _shouldLoadLanguage = lts == null || lts.name != ShaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
+            _shouldLoadLanguage = lts?.name != ShaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
 !!    else!!
-            _shouldLoadLanguage = lts == null || lts.name != ShaderName + "/lilToon" || prevLanguageName != LilToonAdapter.LanguageName;
+            _shouldLoadLanguage = lts?.name != ShaderName + "/lilToon" || prevLanguageName != LilToonAdapter.LanguageName;
 !!    endif!!
 
 !!  endif!!
