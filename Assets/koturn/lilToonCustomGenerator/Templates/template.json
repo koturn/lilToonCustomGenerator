@@ -20,6 +20,10 @@
           "destination": "Editor/%%INSPECTOR_NAME%%.cs"
         },
         {
+          "guid": "84ed14887cddbb348a86ad801159160f",
+          "destination": "Editor/EmbeddedLocalizationInjector.cs"
+        },
+        {
           "guid": "15da2c86c200ef94ca7b5a9d3f24d958",
           "destination": "Editor/FieldAccessor.cs"
         },
