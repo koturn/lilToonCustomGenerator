@@ -101,6 +101,8 @@ namespace %%NAMESPACE%%
             LocalizationInjector.Load("%%GUID_PORTABLE_OBJECT_DIR%%");
 !!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
             JsonLocalizationInjector.Load("%%GUID_LANG_CUSTOM_JSON%%");
+!!  elifnotempty:LANGUAGE_DICTIONARY_KEY_VALUES!!
+            EmbeddedLocalizationInjector.Load();
 !!  else!!
             //LoadCustomLanguage("");
 !!  endif!!
@@ -113,6 +115,8 @@ namespace %%NAMESPACE%%
                 LocalizationInjector.Load("%%GUID_PORTABLE_OBJECT_DIR%%");
 !!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
                 JsonLocalizationInjector.Load("%%GUID_LANG_CUSTOM_JSON%%");
+!!  elifnotempty:LANGUAGE_DICTIONARY_KEY_VALUES!!
+                EmbeddedLocalizationInjector.Load();
 !!  else!!
                 //LoadCustomLanguage("");
 !!  endif!!

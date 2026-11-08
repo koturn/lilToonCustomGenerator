@@ -42,7 +42,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         {
             "TSV",
             "Portable Object (.po)",
-            "Json"
+            "Json",
+            "C# source code (string dictionaries)"
         };
         /// <summary>
         /// Invalid characters for shader name.
@@ -1687,6 +1688,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 RemoveByDestination(templates, "Editor/LocalizationEntry.cs");
             }
 
+            if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.CSharp)
+            {
+                // Do nothing.
+            }
+            else
+            {
+                RemoveByDestination(templates, "Editor/EmbeddedLocalizationInjector.cs");
+            }
+
             if (!_shouldGenerateInsert
                 && (!_shouldDeclareVRChatVariables || _vrchatVariableFlagBits.Value == 0)
                 && (!_shouldDeclareAudioLinkVariables || _audioLinkVariableFlagBits.Value == 0)
@@ -2015,6 +2025,16 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             index++;
                         }
                         tagDict.Add("DECLARE_JSON_LANG_SERIALIZATION_CLASS_MEMBERS", sb.ToString());
+                        break;
+                    case LanguageResourceTypes.CSharp:
+                        index = 0;
+                        foreach (var shaderProp in shaderPropDefList)
+                        {
+                            var escapedTag = EscapeString(langTags[index]);
+                            sb.AppendFormat("{{ \"{0}\", \"{1}\" }},", escapedTag, shaderProp.Description.Length == 0 ? escapedTag : EscapeString(shaderProp.Description));
+                            index++;
+                        }
+                        tagDict.Add("LANGUAGE_DICTIONARY_KEY_VALUES", sb.ToString());
                         break;
                     default:
                         break;
@@ -2385,7 +2405,9 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     tagDict.Add("REQUIRE_ADAPTER_VERSION", "true");
                 }
                 if (_shouldGenerateLanguageFile
-                    && (_languageResourceType == LanguageResourceTypes.PortableObject || _languageResourceType == LanguageResourceTypes.Json))
+                    && (_languageResourceType == LanguageResourceTypes.PortableObject
+                        || _languageResourceType == LanguageResourceTypes.Json
+                        || _languageResourceType == LanguageResourceTypes.CSharp))
                 {
                     tagDict.Add("REQUIRE_ADAPTER_GET_LOC", "true");
                 }
