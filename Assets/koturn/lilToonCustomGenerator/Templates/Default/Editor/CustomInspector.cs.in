@@ -120,6 +120,11 @@ namespace %%NAMESPACE%%
 !!  else!!
                 //LoadCustomLanguage("");
 !!  endif!!
+!!  ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
+                prevLanguageName = lilLanguageManager.langSet.languageName;
+!!  else!!
+                prevLanguageName = LilToonAdapter.LanguageName;
+!!  endif!!
             }
 !!endif!!
 !!ifempty:REQUIRE_PROPERTY_LIST!!
