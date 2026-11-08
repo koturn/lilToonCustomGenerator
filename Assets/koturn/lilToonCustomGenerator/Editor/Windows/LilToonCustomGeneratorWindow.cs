@@ -1807,12 +1807,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 
             if (filePathSet.Count > 0)
             {
-                var filePaths = new string[filePathSet.Count];
+                var filePaths = new string[Math.Min(20, filePathSet.Count)];
                 var index = 0;
                 var dstDirFullPath = Path.GetFullPath(dstDirAssetPath);
                 if (isInProject)
                 {
-                    foreach (var filePath in filePathSet)
+                    foreach (var filePath in filePathSet.Take(filePaths.Length))
                     {
                         filePaths[index] = AssetPathHelper.AbsPathToAssetPath(filePath);
                         index++;
@@ -1820,7 +1820,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
                 else
                 {
-                    foreach (var filePath in filePathSet)
+                    foreach (var filePath in filePathSet.Take(filePaths.Length))
                     {
                         filePaths[index] = filePath.Substring(dstDirFullPath.Length + 1);
                         index++;
@@ -1832,7 +1832,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                     "Caution",
                     "The files listed below were not intended to be included in the output. Do you want to delete them?"
                         + "\n  - "
-                        + string.Join("\n  - ", filePaths),
+                        + string.Join("\n  - ", filePaths)
+                        + (filePathSet.Count > filePaths.Length ? "\n  - ... (" + (filePathSet.Count - filePaths.Length) + " more)" : ""),
                     "Yes",
                     "No"))
                 {
