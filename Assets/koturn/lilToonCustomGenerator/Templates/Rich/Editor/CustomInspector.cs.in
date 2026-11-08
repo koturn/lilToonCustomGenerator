@@ -6,6 +6,8 @@ using System;
 using System;
 !!elifnotempty:GUID_LANG_CUSTOM_JSON!!
 using System;
+!!elifnotempty:LANGUAGE_DICTIONARY_KEY_VALUES!!
+using System;
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System.IO;
@@ -199,6 +201,15 @@ namespace %%NAMESPACE%%
             {
                 Debug.LogException(ex);
             }
+!!  elifnotempty:LANGUAGE_DICTIONARY_KEY_VALUES!!
+            try
+            {
+                EmbeddedLocalizationInjector.Load();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
 !!  else!!
             // LoadCustomLanguage("");
 !!  endif!!
@@ -243,6 +254,23 @@ namespace %%NAMESPACE%%
                 try
                 {
                     JsonLocalizationInjector.Load(AssetGuid.LangCustomJson);
+!!    ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
+                    prevLanguageName = lilLanguageManager.langSet.languageName;
+!!    else!!
+                    prevLanguageName = LilToonAdapter.LanguageName;
+!!    endif!!
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+            }
+!!  elifnotempty:LANGUAGE_DICTIONARY_KEY_VALUES!!
+            if (_shouldLoadLanguage)
+            {
+                try
+                {
+                    EmbeddedLocalizationInjector.Load();
 !!    ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
                     prevLanguageName = lilLanguageManager.langSet.languageName;
 !!    else!!
