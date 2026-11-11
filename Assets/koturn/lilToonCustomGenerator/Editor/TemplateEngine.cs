@@ -16,9 +16,18 @@ namespace Koturn.LilToonCustomGenerator.Editor
     public sealed class TemplateEngine
     {
         /// <summary>
+        /// Default encofing (UTF-8 without BOM).
+        /// </summary>
+        public static readonly Encoding DefaultEncoding = new UTF8Encoding(false);
+
+        /// <summary>
         /// New line code.
         /// </summary>
         public string NewLine { get; set; }
+        /// <summary>
+        /// Encoding.
+        /// </summary>
+        public Encoding Encoding { get; set; }
         /// <summary>
         /// Replace definition.
         /// </summary>
@@ -26,40 +35,62 @@ namespace Koturn.LilToonCustomGenerator.Editor
 
 
         /// <summary>
-        /// Create instance with empty tag dictionary and environment new line string.
+        /// Create instance with empty tag dictionary, environment new line string and UTF-8 encoding.
         /// </summary>
         public TemplateEngine()
-            : this(null, Environment.NewLine)
+            : this(null, Environment.NewLine, DefaultEncoding)
         {
         }
 
         /// <summary>
-        /// Create instance with empty tag dictionary and specified new line string.
+        /// Create instance with empty tag dictionary, specified new line string and UTF-8 encoding.
         /// </summary>
         /// <param name="newLine">New line string.</param>
         public TemplateEngine(string newLine)
-            : this(null, newLine)
+            : this(null, newLine, DefaultEncoding)
         {
         }
 
         /// <summary>
-        /// Create instance with specified tag dictionary and environment new line string.
+        /// Create instance with empty tag dictionary, specified new line string and specified encoding.
+        /// </summary>
+        /// <param name="newLine">New line string.</param>
+        /// <param name="encoding">Encoding.</param>
+        public TemplateEngine(string newLine, Encoding encoding)
+            : this(null, newLine, encoding)
+        {
+        }
+
+        /// <summary>
+        /// Create instance with specified tag dictionary, environment new line string and UTF-8 encoding.
         /// </summary>
         /// <param name="tagDictionary">Tag dictionary.</param>
         public TemplateEngine(Dictionary<string, string> tagDictionary)
-            : this(tagDictionary, Environment.NewLine)
+            : this(tagDictionary, Environment.NewLine, DefaultEncoding)
         {
         }
 
         /// <summary>
-        /// Create instance with specified tag dictionary and new line string.
+        /// Create instance with specified tag dictionary, new line string and UTF-8 encoding.
         /// </summary>
         /// <param name="tagDictionary"></param>
         /// <param name="newLine">New line string.</param>
         public TemplateEngine(Dictionary<string, string> tagDictionary, string newLine)
+            : this(tagDictionary, newLine, DefaultEncoding)
+        {
+        }
+
+        /// <summary>
+        /// Create instance with specified tag dictionary, new line string and specified encoding.
+        /// </summary>
+        /// <param name="tagDictionary"></param>
+        /// <param name="newLine">New line string.</param>
+        /// <param name="encoding">Encoding.</param>
+        public TemplateEngine(Dictionary<string, string> tagDictionary, string newLine, Encoding encoding)
         {
             TagDictionary = tagDictionary ?? new Dictionary<string, string>();
             NewLine = newLine;
+            Encoding = encoding ?? DefaultEncoding;
         }
 
 
@@ -87,7 +118,7 @@ namespace Koturn.LilToonCustomGenerator.Editor
         public void ExpandTemplate(FileStream templateStream, FileStream targetStream)
         {
             using (var reader = new StreamReader(templateStream))
-            using (var writer = new StreamWriter(targetStream)
+            using (var writer = new StreamWriter(targetStream, Encoding)
             {
                 NewLine = NewLine
             })
