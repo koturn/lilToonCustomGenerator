@@ -19,8 +19,12 @@ namespace Koturn.LilToonCustomGenerator.Editor.Enums
         /// </summary>
         Json = 2,
         /// <summary>
+        /// .resx file.
+        /// </summary>
+        ResX = 3,
+        /// <summary>
         /// C# source code.
         /// </summary>
-        CSharp = 3
+        CSharp = 4
     }
 }

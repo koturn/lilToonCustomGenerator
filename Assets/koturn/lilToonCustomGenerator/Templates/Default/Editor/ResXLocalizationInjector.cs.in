@@ -1,0 +1,292 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Xml.Linq;
+using UnityEditor;
+using UnityEngine;
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
+!!  ifnotempty:SHOULD_EMIT_USING_LILTOON!!
+using lilToon;
+!!  endif!!
+!!endif!!
+
+
+namespace %%NAMESPACE%%
+{
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// .resx language file loader for <see cref="lilLanguageManager"/>.
+    /// </summary>
+!!endif!!
+    internal static class ResXLocalizationInjector
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Fallback language name.
+        /// </summary>
+!!endif!!
+        private const string FallbackLocaleCode = "en-US";
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Cached reference to <c>lilLanguageManager.loc</c>.
+        /// </summary>
+!!endif!!
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
+        private static readonly Dictionary<string, string> _loc = GetLoc();
+!!else!!
+        private static readonly Dictionary<string, string> _loc = LilToonAdapter.LocDict;
+!!endif!!
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Cached reference to <c>lilLanguageManager.loc</c>.
+        /// </summary>
+!!endif!!
+        private static readonly Dictionary<string, ResXLocalizationCache> _cacheDict = new Dictionary<string, ResXLocalizationCache>();
+
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Load .resx language file and inject its result to the language directory in <see cref="lilLanguageManager"/>.
+        /// </summary>
+        /// <param name="guidResXDir">GUID of portable object directory.</param>
+!!endif!!
+        public static void Load(string guidResXDir)
+        {
+!!ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
+            Load(guidResXDir, lilLanguageManager.langSet.languageName);
+!!else!!
+            Load(guidResXDir, LilToonAdapter.LanguageName);
+!!endif!!
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Load .resx language file and inject its result to the language directory in <see cref="lilLanguageManager"/>.
+        /// </summary>
+        /// <param name="guidResXDir">GUID of portable object directory.</param>
+        /// <param name="langName">Target language name.</param>
+!!endif!!
+        public static void Load(string guidResXDir, string langName)
+        {
+            var dirAssetPath = AssetDatabase.GUIDToAssetPath(guidResXDir);
+            var localeCode = ToLocaleCode(langName);
+
+            //
+            // Update fallback cache if needed.
+            //
+            if (localeCode != FallbackLocaleCode)
+            {
+                var fallbackFileAssetPath = dirAssetPath + "/Resources." + FallbackLocaleCode + ".resx";
+
+                if (!_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
+                {
+                    fallbackCache = new ResXLocalizationCache(Path.GetFullPath(fallbackFileAssetPath));
+                }
+                else if (fallbackCache.LastWriteTime == new FileInfo(fallbackFileAssetPath).LastWriteTime)
+                {
+                    fallbackCache = null;
+                }
+
+                if (fallbackCache != null && File.Exists(fallbackFileAssetPath))
+                {
+                    LoadResX(fallbackFileAssetPath, fallbackCache.LocalizationDict);
+                    _cacheDict[FallbackLocaleCode] = fallbackCache;
+                }
+            }
+
+            var fileAssetPath = dirAssetPath + "/Resources." + localeCode + ".resx";
+
+            //
+            // Search cache.
+            //
+            if (_cacheDict.TryGetValue(localeCode, out var cache)
+                && cache.LastWriteTime == new FileInfo(fileAssetPath).LastWriteTime
+                && cache.FilePath == Path.GetFullPath(fileAssetPath))
+            {
+                InjectLocalizationDict(cache.LocalizationDict);
+                return;
+            }
+
+            //
+            // Create cache and inject it.
+            //
+            if (File.Exists(fileAssetPath))
+            {
+                var newCache = new ResXLocalizationCache(Path.GetFullPath(fileAssetPath));
+                LoadResX(fileAssetPath, newCache.LocalizationDict);
+                InjectLocalizationDict(newCache.LocalizationDict);
+                _cacheDict[localeCode] = newCache;
+            }
+            else if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
+            {
+                InjectLocalizationDict(fallbackCache.LocalizationDict);
+            }
+        }
+
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Get <see cref="lilLanguageManager"/>.loc using reflection.
+        /// </summary>
+        /// <returns>Localization dictionary in <see cref="lilLanguageManager"/> class.</returns>
+!!  endif!!
+        private static Dictionary<string, string> GetLoc()
+        {
+            return (Dictionary<string, string>)typeof(lilLanguageManager)
+                .GetField(
+                    "loc",
+                    BindingFlags.NonPublic | BindingFlags.Static)
+                .GetValue(null);
+        }
+!!endif!!
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Convert language name to locale code.
+        /// </summary>
+        /// <param name="langName">Target language name.</param>
+        /// <returns>Locale code.</returns>
+!!endif!!
+        private static string ToLocaleCode(string langName)
+        {
+            switch (langName)
+            {
+                case "English":
+                case "en-US":
+                case "en_US":
+                    return "en-US";
+                case "Japanese":
+                case "ja-JP":
+                case "ja_JP":
+                    return "ja-JP";
+                case "Korean":
+                case "ko-KR":
+                case "ko_KR":
+                    return "ko-KR";
+                case "Chinese Simplified":
+                case "zh-Hans":
+                case "zh_Hans":
+                    return "zh-Hans";
+                case "Chinese Traditional":
+                case "zh-Hant":
+                case "zh_Hant":
+                    return "zh-Hant";
+                default:
+                    return FallbackLocaleCode;
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Load portable object to the specified dictionary.
+        /// </summary>
+        /// <param name="fileAssetPath">.resx language asset file path.</param>
+        /// <param name="localizationDict">Localization dictionary to load.</param>
+        /// <exception cref="FileNotFoundException">Thrown when <paramref name="fileAssetPath"/> is not found.</exception>
+!!endif!!
+        private static void LoadResX(string fileAssetPath, Dictionary<string, string> localizationDict)
+        {
+            if (!File.Exists(fileAssetPath))
+            {
+                throw new FileNotFoundException(".resx language file not found", fileAssetPath);
+            }
+
+            var xdoc = XDocument.Load(fileAssetPath);
+
+            localizationDict.Clear();
+            foreach (var element in xdoc.Root.Elements("data"))
+            {
+                localizationDict[element.Attribute("name").Value] = element.Element("value").Value;
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Inject localization dictionary to <see cref="_loc"/>.
+        /// </summary>
+        /// <param name="localizationDict">Localization dictionary.</param>
+!!endif!!
+        private static void InjectLocalizationDict(Dictionary<string, string> localizationDict)
+        {
+            var loc = _loc;
+            if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
+            {
+                var fallbackLocalizationDict = fallbackCache.LocalizationDict;
+                foreach (var kv in localizationDict)
+                {
+                    string val;
+                    if (kv.Key != kv.Value)
+                    {
+                        val = kv.Value;
+                    }
+                    else if (!fallbackLocalizationDict.TryGetValue(kv.Key, out val))
+                    {
+                        val = kv.Key;
+                    }
+                    loc[kv.Key] = val;
+                }
+            }
+            else
+            {
+                foreach (var kv in localizationDict)
+                {
+                    loc[kv.Key] = kv.Value;
+                }
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Pair of localization dictionary and the last modified time.
+        /// </summary>
+!!endif!!
+        private sealed class ResXLocalizationCache
+        {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// <see cref="LocalizationAsset"/> instance.
+            /// </summary>
+!!endif!!
+            public Dictionary<string, string> LocalizationDict { get; } = new Dictionary<string, string>();
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// File path.
+            /// </summary>
+!!endif!!
+            public string FilePath { get; set; }
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Last write time of <see cref="FilePath"/>.
+            /// </summary>
+!!endif!!
+            public DateTime LastWriteTime { get; set; }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Initialize <see cref="FilePath"/> and <see cref="LastWriteTime"/>.
+            /// </summary>
+            /// <param name="filePath">File path.</param>
+!!endif!!
+            public ResXLocalizationCache(string filePath)
+                : this(filePath, new FileInfo(filePath).LastWriteTime)
+            {
+            }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Initialize <see cref="FilePath"/> and <see cref="LastWriteTime"/>.
+            /// </summary>
+            /// <param name="filePath">File path.</param>
+            /// <param name="lastWriteTime">Last write time of <paramref name="filePath"/>.</param>
+!!endif!!
+            public ResXLocalizationCache(string filePath, DateTime lastWriteTime)
+            {
+                FilePath = filePath;
+                LastWriteTime = lastWriteTime;
+            }
+        }
+    }
+}

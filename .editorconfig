@@ -13,3 +13,10 @@ max_line_length = off
 [*.json]
 indent_size = 2
 tab_width = 2
+
+[*.resx.in]
+end_of_line = crlf
+charset = utf-8-bom
+indent_size = 2
+tab_width = 2
+trim_trailing_whitespace = false

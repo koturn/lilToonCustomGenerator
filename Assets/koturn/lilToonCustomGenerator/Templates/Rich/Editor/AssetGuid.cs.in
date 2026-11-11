@@ -31,6 +31,14 @@ namespace %%NAMESPACE%%
 !!  endif!!
         public const string LangCustomJson = "%%GUID_LANG_CUSTOM_JSON%%";
 !!endif!!
+!!ifnotempty:GUID_RESX_DIR!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// GUID of "%%BASE_DIRECTORY%%Editor/lang/".
+        /// </summary>
+!!  endif!!
+        public const string ResXDir = "%%GUID_RESX_DIR%%";
+!!endif!!
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// GUID of "%%BASE_DIRECTORY%%Shaders/".

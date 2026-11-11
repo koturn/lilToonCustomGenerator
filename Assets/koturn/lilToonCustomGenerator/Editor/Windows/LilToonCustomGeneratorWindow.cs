@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Security;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -43,6 +44,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "TSV",
             "Portable Object (.po)",
             "Json",
+            "XML resource file (.resx)",
             "C# source code (string dictionaries)"
         };
         /// <summary>
@@ -1669,6 +1671,51 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 RemoveByDestination(templates, "Editor/lang/zh-Hant.po");
             }
 
+            if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.ResX)
+            {
+                var oldNewLine = templateEngine.NewLine;
+                var oldEncoding = templateEngine.Encoding;
+                templateEngine.NewLine = "\r\n";
+                templateEngine.Encoding = new UTF8Encoding(true);
+
+                string resXDirPath = null;
+                foreach (var locale in new[] { "en-US", "ja-JP", "ko-KR", "zh-Hans", "zh-Hant" })
+                {
+                    var resxIndex = IndexOfDestination(templates, $"Editor/lang/Resources.{locale}.resx");
+                    if (resxIndex != -1)
+                    {
+                        var tfcResXFile = templates[resxIndex];
+                        var dstFilePath = dstDirAssetPath + "/" + templateEngine.Replace(tfcResXFile.Destination);
+
+                        if (resXDirPath == null)
+                        {
+                            resXDirPath = Path.GetDirectoryName(dstFilePath);
+                            Directory.CreateDirectory(resXDirPath);
+                            tagDict.Add("GUID_RESX_DIR", AssetHelper.ReadOrGenerateGuid(resXDirPath, isInProject));
+                        }
+
+                        var templatePath = AssetDatabase.GUIDToAssetPath(tfcResXFile.Guid);
+                        Debug.LogFormat("  {0} -> {1}", templatePath, dstFilePath);
+
+                        templateEngine.ExpandTemplate(templatePath, dstFilePath);
+                        filePathSet.Remove(Path.GetFullPath(dstFilePath));
+                    }
+                    templates.RemoveAt(resxIndex);
+                }
+
+                templateEngine.Encoding = oldEncoding;
+                templateEngine.NewLine = oldNewLine;
+            }
+            else
+            {
+                RemoveByDestination(templates, "Editor/ResXLocalizationInjector.cs");
+                RemoveByDestination(templates, "Editor/lang/Resources.en-US.resx");
+                RemoveByDestination(templates, "Editor/lang/Resources.ja-JP.resx");
+                RemoveByDestination(templates, "Editor/lang/Resources.ko-KR.resx");
+                RemoveByDestination(templates, "Editor/lang/Resources.zh-Hans.resx");
+                RemoveByDestination(templates, "Editor/lang/Resources.zh-Hant.resx");
+            }
+
             if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.Json)
             {
                 var langCustomJsonIndex = IndexOfDestination(templates, "Editor/lang_custom.json");
@@ -2026,6 +2073,22 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             index++;
                         }
                         tagDict.Add("DECLARE_JSON_LANG_SERIALIZATION_CLASS_MEMBERS", sb.ToString());
+                        break;
+
+                    case LanguageResourceTypes.ResX:
+                        index = 0;
+                        foreach (var shaderProp in shaderPropDefList)
+                        {
+                            if (sb.Length > 0)
+                            {
+                                sb.AppendLine();
+                            }
+                            sb.AppendFormat("<data name=\"{0}\" xml:space=\"preserve\">", SecurityElement.Escape(langTags[index])).AppendLine()
+                                .AppendFormat("  <value>{0}</value>", SecurityElement.Escape(shaderProp.Description.Length == 0 ? langTags[index] : shaderProp.Description)).AppendLine()
+                                .AppendLine("</data>");
+                            index++;
+                        }
+                        tagDict.Add("RESX_LANGUAGE_FILE_CONTENT", sb.ToString());
                         break;
                     case LanguageResourceTypes.CSharp:
                         index = 0;

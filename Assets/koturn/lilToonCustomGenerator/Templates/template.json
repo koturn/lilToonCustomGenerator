@@ -48,6 +48,10 @@
           "destination": "Editor/LocalizationInjector.cs"
         },
         {
+          "guid": "2437b5cd306cb6941929370d8b9776bf",
+          "destination": "Editor/ResXLocalizationInjector.cs"
+        },
+        {
           "guid": "c6fdfa3b426b06e40b8f746df1864f5d",
           "destination": "Editor/Startup.cs"
         },
@@ -78,6 +82,26 @@
         {
           "guid": "495a468e968713048b201e4a900ed41f",
           "destination": "Editor/lang/zh-Hant.po"
+        },
+        {
+          "guid": "9d712d3afe64fac44b39673e26db422d",
+          "destination": "Editor/lang/Resources.en-US.resx"
+        },
+        {
+          "guid": "9d712d3afe64fac44b39673e26db422d",
+          "destination": "Editor/lang/Resources.ja-JP.resx"
+        },
+        {
+          "guid": "9d712d3afe64fac44b39673e26db422d",
+          "destination": "Editor/lang/Resources.ko-KR.resx"
+        },
+        {
+          "guid": "9d712d3afe64fac44b39673e26db422d",
+          "destination": "Editor/lang/Resources.zh-Hans.resx"
+        },
+        {
+          "guid": "9d712d3afe64fac44b39673e26db422d",
+          "destination": "Editor/lang/Resources.zh-Hant.resx"
         },
         {
           "guid": "06f1d51b437cf034f93e59db08a3ca3b",
