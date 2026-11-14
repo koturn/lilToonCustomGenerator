@@ -572,9 +572,11 @@ namespace %%NAMESPACE%%
                             prop.textureScaleAndOffset = sourceProp.textureScaleAndOffset;
                         }
                         break;
+#if UNITY_2021_1_OR_NEWER
                     case MaterialProperty.PropType.Int:
                         prop.intValue = sourceProp.intValue;
                         break;
+#endif  // UNITY_2021_1_OR_NEWER
                 }
             }
         }
@@ -612,9 +614,11 @@ namespace %%NAMESPACE%%
                         prop.textureValue = null;
                         prop.textureScaleAndOffset = new Vector4(1.0f, 1.0f, 0.0f, 0.0f);
                         break;
+#if UNITY_2021_1_OR_NEWER
                     case MaterialProperty.PropType.Int:
                         prop.intValue = shader.GetPropertyDefaultIntValue(propID);
                         break;
+#endif  // UNITY_2021_1_OR_NEWER
                 }
             }
         }
