@@ -72,12 +72,10 @@ namespace %%NAMESPACE%%
 
             foreach (var target in materialEditor.targets)
             {
-                var material = target as Material;
-                if (material == null)
+                if (target is Material material)
                 {
-                    continue;
+                    RestoreAllowedKeywords(material);
                 }
-                RestoreAllowedKeywords(material);
             }
 !!  endif!!
         }
