@@ -14,9 +14,6 @@ using System;
 !!ifnotempty:SHOULD_GENERATE_REFRESH_MENU!!
 using System.IO;
 !!else!!
-#if !UNITY_2018_3_OR_NEWER
-using System;
-#endif  // !UNITY_2018_3_OR_NEWER
 !!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
 using System.Collections.Generic;
@@ -547,12 +544,9 @@ namespace %%NAMESPACE%%
         private static void ConvertMaterialToCustomShaderMenu()
 #pragma warning restore IDE0052 // Remove unread private members
         {
-#if UNITY_2020_3_OR_NEWER
-#elif UNITY_2018_3_OR_NEWER
+#if !UNITY_2020_3_OR_NEWER
             var materialTagvalTupleList = new List<(Material material, string tag)>();
-#else
-            var materialTagvalTupleList = new List<Tuple<Material, string>>();
-#endif  // UNITY_2020_3_OR_NEWER
+#endif  // !UNITY_2020_3_OR_NEWER
             foreach (var material in Selection.GetFiltered<Material>(SelectionMode.Assets))
             {
 #if UNITY_2022_1_OR_NEWER
@@ -586,28 +580,19 @@ namespace %%NAMESPACE%%
 #if UNITY_2020_3_OR_NEWER
                     AssetDatabase.SaveAssetIfDirty(material);
                     material.SetOverrideTag(TagVRCFallback, tagval);
-#elif UNITY_2018_3_OR_NEWER
-                    materialTagvalTupleList.Add((material, tagval));
 #else
-                    materialTagvalTupleList.Add(Tuple.Create(material, tagval));
+                    materialTagvalTupleList.Add((material, tagval));
 #endif  // UNITY_2020_3_OR_NEWER
                 }
             }
 
-#if UNITY_2020_3_OR_NEWER
-#elif UNITY_2018_3_OR_NEWER
+#if !UNITY_2020_3_OR_NEWER
             AssetDatabase.SaveAssets();
             foreach (var (material, tagval) in materialTagvalTupleList)
             {
                 material.SetOverrideTag(TagVRCFallback, tagval);
             }
-#else
-            AssetDatabase.SaveAssets();
-            foreach (var tuple in materialTagvalTupleList)
-            {
-                tuple.Item1.SetOverrideTag(TagVRCFallback, tuple.Item2);
-            }
-#endif  // UNITY_2020_3_OR_NEWER
+#endif  // !UNITY_2020_3_OR_NEWER
         }
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -650,12 +635,9 @@ namespace %%NAMESPACE%%
         private static void ConvertMaterialToOriginalShaderMenu()
 #pragma warning restore IDE0051 // Remove unused private members
         {
-#if UNITY_2020_3_OR_NEWER
-#elif UNITY_2018_3_OR_NEWER
+#if !UNITY_2020_3_OR_NEWER
             var materialTagvalTupleList = new List<(Material material, string tag)>();
-#else
-            var materialTagvalTupleList = new List<Tuple<Material, string>>();
-#endif  // UNITY_2020_3_OR_NEWER
+#endif  // !UNITY_2020_3_OR_NEWER
             foreach (var material in Selection.GetFiltered<Material>(SelectionMode.Assets))
             {
 #if UNITY_2022_1_OR_NEWER
@@ -689,28 +671,19 @@ namespace %%NAMESPACE%%
 #if UNITY_2020_3_OR_NEWER
                     AssetDatabase.SaveAssetIfDirty(material);
                     material.SetOverrideTag(TagVRCFallback, tagval);
-#elif UNITY_2018_3_OR_NEWER
-                    materialTagvalTupleList.Add((material, tagval));
 #else
-                    materialTagvalTupleList.Add(Tuple.Create(material, tagval));
+                    materialTagvalTupleList.Add((material, tagval));
 #endif  // UNITY_2020_3_OR_NEWER
                 }
             }
 
-#if UNITY_2020_3_OR_NEWER
-#elif UNITY_2018_3_OR_NEWER
+#if !UNITY_2020_3_OR_NEWER
             AssetDatabase.SaveAssets();
             foreach (var (material, tagval) in materialTagvalTupleList)
             {
                 material.SetOverrideTag(TagVRCFallback, tagval);
             }
-#else
-            AssetDatabase.SaveAssets();
-            foreach (var tuple in materialTagvalTupleList)
-            {
-                tuple.Item1.SetOverrideTag(TagVRCFallback, tuple.Item2);
-            }
-#endif  // UNITY_2020_3_OR_NEWER
+#endif  // !UNITY_2020_3_OR_NEWER
         }
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -888,9 +861,7 @@ namespace %%NAMESPACE%%
             menu.AddItem(new GUIContent(GetLoc("sCopy")), false, userData => CopyProperties((List<MaterialProperty>)userData), propertyList);
             menu.AddItem(new GUIContent(GetLoc("sPaste")), false, userData => PasteProperties((List<MaterialProperty>)userData, false), propertyList);
             menu.AddItem(new GUIContent(GetLoc("sPasteWithTexture")), false, userData => PasteProperties((List<MaterialProperty>)userData, true), propertyList);
-#if UNITY_2019_3_OR_NEWER
             menu.AddItem(new GUIContent(GetLoc("sReset")), false, userData => ResetProperties((List<MaterialProperty>)userData), propertyList);
-#endif  // UNITY_2019_3_OR_NEWER
             if (!string.IsNullOrEmpty(helpUrl))
             {
                 menu.AddItem(new GUIContent(GetLoc("sOpenManual")), false, userData => OpenHelpPage((string)userData), helpUrl);
@@ -962,7 +933,6 @@ namespace %%NAMESPACE%%
             }
         }
 
-#if UNITY_2019_3_OR_NEWER
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// Reset sepecifield properties to its default values.
@@ -1009,7 +979,6 @@ namespace %%NAMESPACE%%
                 }
             }
         }
-#endif  // UNITY_2019_3_OR_NEWER
 
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
