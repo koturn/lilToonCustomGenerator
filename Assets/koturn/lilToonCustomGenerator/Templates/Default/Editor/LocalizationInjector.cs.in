@@ -71,58 +71,82 @@ namespace %%NAMESPACE%%
         public static void Load(string guidPoDir, string langName)
         {
             var dirAssetPath = AssetDatabase.GUIDToAssetPath(guidPoDir);
-            var localeCode = ToLocaleCode(langName);
 
             //
-            // Update fallback cache if needed.
+            // Try to get fallback cache.
             //
-            if (localeCode != FallbackLocaleCode)
+            var shouldUpdate = false;
+            var fallbackFileAssetPath = dirAssetPath + "/" + FallbackLocaleCode + ".po";
+            var fiFallback = new FileInfo(fallbackFileAssetPath);
+            if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
             {
-                var fallbackFileAssetPath = dirAssetPath + "/" + FallbackLocaleCode + ".po";
-
-                if (!_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
+                if (fiFallback.Exists &&
+                    (fallbackCache.LastWriteTime != fiFallback.LastWriteTime || fallbackCache.FilePath != fiFallback.FullName))
                 {
-                    fallbackCache = new LocalizationCache(Path.GetFullPath(fallbackFileAssetPath));
-                }
-                else if (fallbackCache.LastWriteTime == new FileInfo(fallbackFileAssetPath).LastWriteTime)
-                {
-                    fallbackCache = null;
-                }
-
-                if (fallbackCache != null && File.Exists(fallbackFileAssetPath))
-                {
-                    LoadPortableObject(fallbackFileAssetPath, fallbackCache.LocalizationDict);
-                    _cacheDict[FallbackLocaleCode] = fallbackCache;
+                    shouldUpdate = true;
                 }
             }
-
-            var fileAssetPath = dirAssetPath + "/" + localeCode + ".po";
-
-            //
-            // Search cache.
-            //
-            if (_cacheDict.TryGetValue(localeCode, out var cache)
-                && cache.LastWriteTime == new FileInfo(fileAssetPath).LastWriteTime
-                && cache.FilePath == Path.GetFullPath(fileAssetPath))
+            else
             {
-                InjectLocalizationDict(cache.LocalizationDict);
+                fallbackCache = new LocalizationCache(fiFallback.FullName, fiFallback.LastWriteTime);
+                shouldUpdate = true;
+            }
+
+            //
+            // Load Portable Object file for fallback.
+            //
+            if (shouldUpdate && fiFallback.Exists)
+            {
+                LoadPortableObject(fallbackFileAssetPath, fallbackCache.LocalizationDict);
+                _cacheDict[FallbackLocaleCode] = fallbackCache;
+            }
+
+            //
+            // If the target language is fallback, inject fallback dictionary and finish.
+            //
+            var localeCode = ToLocaleCode(langName);
+            if (localeCode == FallbackLocaleCode)
+            {
+                InjectLocalizationDict(fallbackCache.LocalizationDict);
                 return;
             }
 
             //
-            // Create cache and inject it.
+            // Try to get cache.
             //
-            if (File.Exists(fileAssetPath))
+            var fileAssetPath = dirAssetPath + "/" + localeCode + ".po";
+            var fi = new FileInfo(fileAssetPath);
+            if (_cacheDict.TryGetValue(localeCode, out var cache))
             {
-                var newCache = new LocalizationCache(Path.GetFullPath(fileAssetPath));
-                LoadPortableObject(fileAssetPath, newCache.LocalizationDict);
-                InjectLocalizationDict(newCache.LocalizationDict);
-                _cacheDict[localeCode] = newCache;
+                if (fi.Exists
+                    && (cache.LastWriteTime != fi.LastWriteTime || cache.FilePath != fi.FullName))
+                {
+                    shouldUpdate = true;
+                }
             }
-            else if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
+            else
             {
-                InjectLocalizationDict(fallbackCache.LocalizationDict);
+                cache = new LocalizationCache(fi.FullName, fi.LastWriteTime);
+                shouldUpdate = true;
             }
+
+            //
+            // Load Portable Object file.
+            //
+            if (shouldUpdate)
+            {
+                if (fi.Exists)
+                {
+                    LoadPortableObject(fileAssetPath, cache.LocalizationDict);
+                    _cacheDict[localeCode] = cache;
+                }
+                //
+                // Insert fallback dictionary to the target dictionary if necessary.
+                //
+                InsertDictionary(fallbackCache.LocalizationDict, cache.LocalizationDict);
+            }
+
+            InjectLocalizationDict(cache.LocalizationDict);
         }
 
 !!ifempty:REQUIRE_ADAPTER_GET_LOC!!
@@ -206,6 +230,21 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary without overwriting existing keys.
+        /// </summary>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
+!!endif!!
+        private static void InsertDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
+        {
+            foreach (var kv in source)
+            {
+                target.TryAdd(kv.Key, kv.Value);
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
         /// Inject localization dictionary to <see cref="_loc"/>.
         /// </summary>
         /// <param name="localizationDict">Localization dictionary.</param>
@@ -213,29 +252,9 @@ namespace %%NAMESPACE%%
         private static void InjectLocalizationDict(Dictionary<string, string> localizationDict)
         {
             var loc = _loc;
-            if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
+            foreach (var kv in localizationDict)
             {
-                var fallbackLocalizationDict = fallbackCache.LocalizationDict;
-                foreach (var kv in localizationDict)
-                {
-                    string val;
-                    if (kv.Key != kv.Value)
-                    {
-                        val = kv.Value;
-                    }
-                    else if (!fallbackLocalizationDict.TryGetValue(kv.Key, out val))
-                    {
-                        val = kv.Key;
-                    }
-                    loc[kv.Key] = val;
-                }
-            }
-            else
-            {
-                foreach (var kv in localizationDict)
-                {
-                    loc[kv.Key] = kv.Value;
-                }
+                loc[kv.Key] = kv.Value;
             }
         }
 
