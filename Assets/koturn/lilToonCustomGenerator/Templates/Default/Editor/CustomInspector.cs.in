@@ -523,9 +523,7 @@ namespace %%NAMESPACE%%
             menu.AddItem(new GUIContent(GetLoc("sCopy")), false, userData => CopyProperties((List<MaterialProperty>)userData), propertyList);
             menu.AddItem(new GUIContent(GetLoc("sPaste")), false, userData => PasteProperties((List<MaterialProperty>)userData, false), propertyList);
             menu.AddItem(new GUIContent(GetLoc("sPasteWithTexture")), false, userData => PasteProperties((List<MaterialProperty>)userData, true), propertyList);
-#if UNITY_2019_3_OR_NEWER
             menu.AddItem(new GUIContent(GetLoc("sReset")), false, userData => ResetProperties((List<MaterialProperty>)userData), propertyList);
-#endif  // UNITY_2019_3_OR_NEWER
             if (!string.IsNullOrEmpty(helpUrl))
             {
                 menu.AddItem(new GUIContent(GetLoc("sOpenManual")), false, userData => OpenHelpPage((string)userData), helpUrl);
@@ -579,7 +577,6 @@ namespace %%NAMESPACE%%
             }
         }
 
-#if UNITY_2019_3_OR_NEWER
         private static void ResetProperties(List<MaterialProperty> propertyList)
         {
             foreach (var prop in propertyList)
@@ -620,7 +617,6 @@ namespace %%NAMESPACE%%
                 }
             }
         }
-#endif  // UNITY_2019_3_OR_NEWER
 
         private static void OpenHelpPage(string url)
         {
