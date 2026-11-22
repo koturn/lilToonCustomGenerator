@@ -202,17 +202,14 @@ namespace %%NAMESPACE%%
 #if NET7_0_OR_GREATER
             ArgumentNullException.ThrowIfNull(reader);
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 0);
+            Reader = reader;
 #else
-            if (reader == null)
-            {
-                throw new ArgumentNullException(nameof(reader));
-            }
+            Reader = reader ?? throw new ArgumentNullException(nameof(reader));
             if (bufferSize <= 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
             }
 #endif  // NET7_0_OR_GREATER
-            Reader = reader;
             _leaveOpen = leaveOpen;
 #if NET5_0_OR_GREATER
             _buffer = GC.AllocateUninitializedArray<char>(bufferSize);
