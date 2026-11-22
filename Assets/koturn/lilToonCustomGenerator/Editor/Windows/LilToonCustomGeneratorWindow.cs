@@ -1532,6 +1532,23 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             var templateEngine = CreateTemplateEngine();
             var tagDict = templateEngine.TagDictionary;
 
+            var isInProject = dstDirAssetPath.StartsWith("Assets") || dstDirAssetPath.StartsWith("Packages");
+            if (isInProject)
+            {
+                // Check lilToon.Editor.asmdef.
+                if (AssetDatabase.GUIDToAssetPath("e7f0f8dffe955d640bbc76d1d4f4986e").Length == 0
+                    && !EditorUtility.DisplayDialog(
+                        "Caution",
+                        "Since lilToon has not been imported into your project, the generated C# script will fail to compile.\n"
+                            + "Are you sure want to continue?",
+                        "Yes",
+                        "No"))
+                {
+                    return;
+                }
+                tagDict.Add("BASE_DIRECTORY", dstDirAssetPath + "/");
+            }
+
             var filePathSet = new HashSet<string>();
             var nonEmptyDirNameList = new List<string>(2);
             foreach (var targetDirName in new[] { "Editor", "Shaders" })
@@ -1572,12 +1589,6 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     return;
                 }
-            }
-
-            var isInProject = dstDirAssetPath.StartsWith("Assets") || dstDirAssetPath.StartsWith("Packages");
-            if (isInProject)
-            {
-                tagDict.Add("BASE_DIRECTORY", dstDirAssetPath + "/");
             }
 
             // Generate `Shaders` directory and obtain its GUID.
