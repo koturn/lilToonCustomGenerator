@@ -2045,7 +2045,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                                 .AppendLine();
                             index++;
                         }
-                        tagDict.Add("LANGUAGE_FILE_CONTENT", sb.ToString());
+                        tagDict.Add("TSV_LANGUAGE_FILE_CONTENT", sb.ToString());
                         break;
                     case LanguageResourceTypes.CSV:
                         index = 0;
