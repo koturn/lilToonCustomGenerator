@@ -656,7 +656,7 @@ namespace %%NAMESPACE%%
             public static extern int Close(IntPtr pDb);
 
             [DllImport(LibraryName, EntryPoint = "sqlite3_exec", ExactSpelling = true, CallingConvention = CallConv)]
-            public static extern int Execute(IntPtr pDb, string sql, IntPtr pCallback = default(IntPtr), IntPtr pCallbackArg = default(IntPtr), IntPtr pErrMsg = default(IntPtr));
+            public static extern int Execute(IntPtr pDb, string sql, IntPtr pCallback = default, IntPtr pCallbackArg = default, IntPtr pErrMsg = default);
         }
 !!endif!!
     }
