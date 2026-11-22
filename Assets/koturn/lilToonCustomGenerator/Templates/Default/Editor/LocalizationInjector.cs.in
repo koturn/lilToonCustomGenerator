@@ -71,58 +71,34 @@ namespace %%NAMESPACE%%
         public static void Load(string guidPoDir, string langName)
         {
             var dirAssetPath = AssetDatabase.GUIDToAssetPath(guidPoDir);
+
+            // Load fallback.
+            var shouldUpdate = TryLoadCache(
+                dirAssetPath + "/" + FallbackLocaleCode + ".po",
+                FallbackLocaleCode,
+                out var fallbackCache);
+
+            // If the target language is fallback, inject fallback dictionary and finish.
             var localeCode = ToLocaleCode(langName);
-
-            //
-            // Update fallback cache if needed.
-            //
-            if (localeCode != FallbackLocaleCode)
+            if (localeCode == FallbackLocaleCode)
             {
-                var fallbackFileAssetPath = dirAssetPath + "/" + FallbackLocaleCode + ".po";
-
-                if (!_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
-                {
-                    fallbackCache = new LocalizationCache(Path.GetFullPath(fallbackFileAssetPath));
-                }
-                else if (fallbackCache.LastWriteTime == new FileInfo(fallbackFileAssetPath).LastWriteTime)
-                {
-                    fallbackCache = null;
-                }
-
-                if (fallbackCache != null && File.Exists(fallbackFileAssetPath))
-                {
-                    LoadPortableObject(fallbackFileAssetPath, fallbackCache.LocalizationDict);
-                    _cacheDict[FallbackLocaleCode] = fallbackCache;
-                }
-            }
-
-            var fileAssetPath = dirAssetPath + "/" + localeCode + ".po";
-
-            //
-            // Search cache.
-            //
-            if (_cacheDict.TryGetValue(localeCode, out var cache)
-                && cache.LastWriteTime == new FileInfo(fileAssetPath).LastWriteTime
-                && cache.FilePath == Path.GetFullPath(fileAssetPath))
-            {
-                InjectLocalizationDict(cache.LocalizationDict);
+                SetDictionary(fallbackCache.LocalizationDict, _loc);
                 return;
             }
 
-            //
-            // Create cache and inject it.
-            //
-            if (File.Exists(fileAssetPath))
+            // Load target language.
+            shouldUpdate |= TryLoadCache(
+                dirAssetPath + "/" + localeCode + ".po",
+                localeCode,
+                out var cache);
+
+            // Insert fallback dictionary to the target dictionary if necessary.
+            if (shouldUpdate)
             {
-                var newCache = new LocalizationCache(Path.GetFullPath(fileAssetPath));
-                LoadPortableObject(fileAssetPath, newCache.LocalizationDict);
-                InjectLocalizationDict(newCache.LocalizationDict);
-                _cacheDict[localeCode] = newCache;
+                AddDictionary(fallbackCache.LocalizationDict, cache.LocalizationDict);
             }
-            else if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
-            {
-                InjectLocalizationDict(fallbackCache.LocalizationDict);
-            }
+
+            SetDictionary(cache.LocalizationDict, _loc);
         }
 
 !!ifempty:REQUIRE_ADAPTER_GET_LOC!!
@@ -181,6 +157,44 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
+        /// Try to load the cache.
+        /// If the cache has not been created or the file has been updated, load the file and create the cache.
+        /// </summary>
+        /// <param name="fileAssetPath">Target Portable Object asset path.</param>
+        /// <param name="localeCode">Locale code.</param>
+        /// <param name="cache">Obtained cache data.</param>
+        /// <returns>True if new data loaded, false otherwise.</returns>
+!!endif!!
+        private static bool TryLoadCache(string fileAssetPath, string localeCode, out LocalizationCache cache)
+        {
+            var fi = new FileInfo(fileAssetPath);
+
+            if (_cacheDict.TryGetValue(localeCode, out cache))
+            {
+                if (!fi.Exists ||
+                    (cache.LastWriteTime == fi.LastWriteTime && cache.FilePath == fi.FullName))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                cache = new LocalizationCache();
+            }
+
+            if (fi.Exists)
+            {
+                LoadPortableObject(fileAssetPath, cache.LocalizationDict);
+                cache.FilePath = fi.FullName;
+                cache.LastWriteTime = fi.LastWriteTime;
+                _cacheDict[localeCode] = cache;
+            }
+
+            return true;
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
         /// Load portable object to the specified dictionary.
         /// </summary>
         /// <param name="fileAssetPath">Portable Object asset file path.</param>
@@ -206,36 +220,31 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
-        /// Inject localization dictionary to <see cref="_loc"/>.
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary without overwriting existing keys.
         /// </summary>
-        /// <param name="localizationDict">Localization dictionary.</param>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
 !!endif!!
-        private static void InjectLocalizationDict(Dictionary<string, string> localizationDict)
+        private static void AddDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
         {
-            var loc = _loc;
-            if (_cacheDict.TryGetValue(FallbackLocaleCode, out var fallbackCache))
+            foreach (var kv in source)
             {
-                var fallbackLocalizationDict = fallbackCache.LocalizationDict;
-                foreach (var kv in localizationDict)
-                {
-                    string val;
-                    if (kv.Key != kv.Value)
-                    {
-                        val = kv.Value;
-                    }
-                    else if (!fallbackLocalizationDict.TryGetValue(kv.Key, out val))
-                    {
-                        val = kv.Key;
-                    }
-                    loc[kv.Key] = val;
-                }
+                target.TryAdd(kv.Key, kv.Value);
             }
-            else
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary with overwriting existing keys.
+        /// </summary>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
+!!endif!!
+        private static void SetDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
+        {
+            foreach (var kv in source)
             {
-                foreach (var kv in localizationDict)
-                {
-                    loc[kv.Key] = kv.Value;
-                }
+                target[kv.Key] = kv.Value;
             }
         }
 
@@ -465,9 +474,10 @@ namespace %%NAMESPACE%%
 !!endif!!
         }
 
+
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
-        /// Pair of localization dictionary and the last modified time.
+        /// Cache information of the localization dictionary.
         /// </summary>
 !!endif!!
         private sealed class LocalizationCache
@@ -493,12 +503,11 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
-            /// Initialize <see cref="FilePath"/> and <see cref="LastWriteTime"/>.
+            /// Initialize with empty file information.
             /// </summary>
-            /// <param name="filePath">File path.</param>
 !!endif!!
-            public LocalizationCache(string filePath)
-                : this(filePath, new FileInfo(filePath).LastWriteTime)
+            public LocalizationCache()
+                : this(null, default)
             {
             }
 

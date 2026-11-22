@@ -14,6 +14,12 @@ namespace %%NAMESPACE%%
     {
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
+        /// All <see cref="LocalizationEntry"/> array.
+        /// </summary>
+!!endif!!
+        public LocalizationEntry[] Entries => _entries ?? (_entries = new[] { en_US, ja_JP, ko_KR, zh_Hans, zh_Hant });
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
         /// Get <see cref="LocalizationEntry"/> instance.
         /// </summary>
 !!endif!!
@@ -74,6 +80,12 @@ namespace %%NAMESPACE%%
 !!endif!!
         [SerializeField]
         private LocalizationEntry zh_Hant;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// BAcking field of <see cref="Entries"/>.
+        /// </summary>
+!!endif!!
+        private LocalizationEntry[] _entries;
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>

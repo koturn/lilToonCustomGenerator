@@ -38,49 +38,7 @@ namespace %%NAMESPACE%%
         /// Dictionary of localization dictionaries for each locale code.
         /// </summary>
 !!endif!!
-        private static readonly Dictionary<string, Dictionary<string, string>> _lozalizationDictDict = new Dictionary<string, Dictionary<string, string>>()
-        {
-            {
-                "en-US", new Dictionary<string, string>()
-                {
-                    { "sCustomShaderTitle", "lilToon Custom" },
-                    { "sCustomPropertyCategory", "lilToon Custom" },
-                    %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
-                }
-            },
-            {
-                "ja-JP", new Dictionary<string, string>()
-                {
-                    { "sCustomShaderTitle", "lilToon Custom" },
-                    { "sCustomPropertyCategory", "lilToon Custom" },
-                    %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
-                }
-            },
-            {
-                "ka-KR", new Dictionary<string, string>()
-                {
-                    { "sCustomShaderTitle", "lilToon Custom" },
-                    { "sCustomPropertyCategory", "lilToon Custom" },
-                    %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
-                }
-            },
-            {
-                "zh-Hans", new Dictionary<string, string>()
-                {
-                    { "sCustomShaderTitle", "lilToon Custom" },
-                    { "sCustomPropertyCategory", "lilToon Custom" },
-                    %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
-                }
-            },
-            {
-                "zh-Hant", new Dictionary<string, string>()
-                {
-                    { "sCustomShaderTitle", "lilToon Custom" },
-                    { "sCustomPropertyCategory", "lilToon Custom" },
-                    %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
-                }
-            },
-        };
+        private static readonly Dictionary<string, Dictionary<string, string>> _lozalizationDictDict = BuildLocalizationDictDict();
 
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -108,7 +66,7 @@ namespace %%NAMESPACE%%
             if (_lozalizationDictDict.TryGetValue(ToLocaleCode(langName), out var localizationDict)
                 || _lozalizationDictDict.TryGetValue(FallbackLocaleCode, out localizationDict))
             {
-                InjectLocalizationDict(localizationDict);
+                SetDictionary(localizationDict, _loc);
             }
         }
 
@@ -168,36 +126,104 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
-        /// Inject localization dictionary to <see cref="_loc"/>.
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary without overwriting existing keys.
         /// </summary>
-        /// <param name="localizationDict">Localization dictionary.</param>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
 !!endif!!
-        private static void InjectLocalizationDict(Dictionary<string, string> localizationDict)
+        private static void AddDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
         {
-            var loc = _loc;
-            if (_lozalizationDictDict.TryGetValue(FallbackLocaleCode, out var fallbackLocalizationDict))
+            foreach (var kv in source)
             {
-                foreach (var kv in localizationDict)
-                {
-                    string val;
-                    if (!string.IsNullOrEmpty(kv.Value))
-                    {
-                        val = kv.Value;
-                    }
-                    else if (!fallbackLocalizationDict.TryGetValue(kv.Key, out val) || string.IsNullOrEmpty(val))
-                    {
-                        val = kv.Key;
-                    }
-                    loc[kv.Key] = val;
-                }
+                target.TryAdd(kv.Key, kv.Value);
             }
-            else
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary with overwriting existing keys.
+        /// </summary>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
+!!endif!!
+        private static void SetDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
+        {
+            foreach (var kv in source)
             {
-                foreach (var kv in localizationDict)
-                {
-                    loc[kv.Key] = kv.Value;
-                }
+                target[kv.Key] = kv.Value;
             }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Build dictionary of localization dictionaries.
+        /// </summary>
+        /// <returns>Dictionary of localization dictionaries.</returns>
+        /// <remarks>
+        /// Edit this method when adding a translation.
+        /// </remarks>
+!!endif!!
+        private static Dictionary<string, Dictionary<string, string>> BuildLocalizationDictDict()
+        {
+            var localizationDictDict = new Dictionary<string, Dictionary<string, string>>()
+            {
+                {
+                    "en-US", new Dictionary<string, string>()
+                    {
+                        { "sCustomShaderTitle", "lilToon Custom" },
+                        { "sCustomPropertyCategory", "lilToon Custom" },
+                        %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
+                    }
+                },
+                {
+                    "ja-JP", new Dictionary<string, string>()
+                    {
+                        { "sCustomShaderTitle", "lilToon Custom" },
+                        { "sCustomPropertyCategory", "lilToon Custom" },
+                        %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
+                    }
+                },
+                {
+                    "ko-KR", new Dictionary<string, string>()
+                    {
+                        { "sCustomShaderTitle", "lilToon Custom" },
+                        { "sCustomPropertyCategory", "lilToon Custom" },
+                        %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
+                    }
+                },
+                {
+                    "zh-Hans", new Dictionary<string, string>()
+                    {
+                        { "sCustomShaderTitle", "lilToon Custom" },
+                        { "sCustomPropertyCategory", "lilToon Custom" },
+                        %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
+                    }
+                },
+                {
+                    "zh-Hant", new Dictionary<string, string>()
+                    {
+                        { "sCustomShaderTitle", "lilToon Custom" },
+                        { "sCustomPropertyCategory", "lilToon Custom" },
+                        %%LANGUAGE_DICTIONARY_KEY_VALUES:keepindent%%
+                    }
+                },
+            };
+
+            if (!localizationDictDict.TryGetValue(FallbackLocaleCode, out var fallbackLocalizationDict))
+            {
+                return localizationDictDict;
+            }
+
+            foreach (var localeCode in new[] { "ja-JP", "ko-KR", "zs-Hans", "zs-Hant" })
+            {
+                if (!localizationDictDict.TryGetValue(localeCode, out var localizationDict))
+                {
+                    continue;
+                }
+                AddDictionary(fallbackLocalizationDict, localizationDict);
+            }
+
+            return localizationDictDict;
         }
     }
 }

@@ -15,11 +15,11 @@ namespace %%NAMESPACE%%
 {
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
     /// <summary>
-    /// <para>Additional Portable Object file loader for <see cref="lilLanguageManager"/>.</para>
+    /// <para>Additional language json file loader for <see cref="lilLanguageManager"/>.</para>
     /// <para>You must add language key as a members of <see cref="LocalizationEntry"/> when you add new translation.</para>
     /// </summary>
 !!endif!!
-    internal static partial class JsonLocalizationInjector
+    internal static class JsonLocalizationInjector
     {
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
@@ -93,22 +93,32 @@ namespace %%NAMESPACE%%
                 || _lastLoadedJsonPath != jsonAssetPath
                 || _langJsonRoot == null)
             {
-                _langJsonRoot = JsonUtility.FromJson<LangJsonRoot>(File.ReadAllText(jsonAssetPath));
+                var langJsonRoot = JsonUtility.FromJson<LangJsonRoot>(File.ReadAllText(jsonAssetPath));
+                AddFallbackEntries(langJsonRoot);
+                _langJsonRoot = langJsonRoot;
                 _lastLoadedJsonPath = jsonAssetPath;
                 _lastWriteTime = lastWriteTime;
             }
 
-            var translation = _langJsonRoot[ToLocaleCode(langName)];
+            var fallbakTranslation = _langJsonRoot[FallbackLocaleCode];
+            var localeCode = ToLocaleCode(langName);
+            if (localeCode == FallbackLocaleCode)
+            {
+                SetDictionary(fallbakTranslation.LocalizationDict, _loc);
+                return;
+            }
+
+            var translation = _langJsonRoot[localeCode];
             if (translation == null)
             {
-                translation = _langJsonRoot[FallbackLocaleCode];
-                if (translation == null)
+                if (fallbakTranslation == null)
                 {
                     return;
                 }
+                translation = fallbakTranslation;
             }
 
-            InjectLocalizationDict(translation.LocalizationDict);
+            SetDictionary(translation.LocalizationDict, _loc);
         }
 
 !!ifempty:REQUIRE_ADAPTER_GET_LOC!!
@@ -167,37 +177,54 @@ namespace %%NAMESPACE%%
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
-        /// Inject localization dictionary to <see cref="_loc"/>.
+        /// Add fallback entries to non-fallback localization dictionaries.
         /// </summary>
-        /// <param name="localizationDict">Localization dictionary.</param>
+        /// <param name="localizationDictDict">Dictionary of lozalization dictionaries.</param>
 !!endif!!
-        private static void InjectLocalizationDict(Dictionary<string, string> localizationDict)
+        private static void AddFallbackEntries(LangJsonRoot langJsonRoot)
         {
-            var loc = _loc;
-            var fallbackTranslationMap = _langJsonRoot[FallbackLocaleCode];
-            if (fallbackTranslationMap != null)
+            var fallback = langJsonRoot[FallbackLocaleCode];
+            if (fallback == null)
             {
-                var fallbackLocalizationDict = fallbackTranslationMap.LocalizationDict;
-                foreach (var kv in localizationDict)
+                return;
+            }
+
+            foreach (var entry in langJsonRoot.Entries)
+            {
+                if (entry != null && entry != fallback)
                 {
-                    string val;
-                    if (!string.IsNullOrEmpty(kv.Value))
-                    {
-                        val = kv.Value;
-                    }
-                    else if (!fallbackLocalizationDict.TryGetValue(kv.Key, out val) || string.IsNullOrEmpty(val))
-                    {
-                        val = kv.Key;
-                    }
-                    loc[kv.Key] = val;
+                    AddDictionary(fallback.LocalizationDict, entry.LocalizationDict);
                 }
             }
-            else
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary without overwriting existing keys.
+        /// </summary>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
+!!endif!!
+        private static void AddDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
+        {
+            foreach (var kv in source)
             {
-                foreach (var kv in localizationDict)
-                {
-                    loc[kv.Key] = kv.Value;
-                }
+                target.TryAdd(kv.Key, kv.Value);
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary with overwriting existing keys.
+        /// </summary>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
+!!endif!!
+        private static void SetDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
+        {
+            foreach (var kv in source)
+            {
+                target[kv.Key] = kv.Value;
             }
         }
     }

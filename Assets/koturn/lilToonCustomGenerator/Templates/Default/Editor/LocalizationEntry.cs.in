@@ -78,7 +78,11 @@ namespace %%NAMESPACE%%
             var dict = new Dictionary<string, string>(_accessors.Length);
             foreach (var accessor in _accessors)
             {
-                dict[accessor.Name] = accessor.GetValue(this);
+                var val = accessor.GetValue(this);
+                if (!string.IsNullOrEmpty(val))
+                {
+                    dict[accessor.Name] = val;
+                }
             }
             return dict;
         }
