@@ -1,0 +1,299 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using UnityEditor;
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
+!!  ifnotempty:SHOULD_EMIT_USING_LILTOON!!
+using lilToon;
+!!  endif!!
+!!endif!!
+
+
+namespace %%NAMESPACE%%
+{
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// <para>Additional CSV file loader for <see cref="lilLanguageManager"/>.</para>
+    /// <para>You must add language key as a members of <see cref="LocalizationEntry"/> when you add new translation.</para>
+    /// </summary>
+!!endif!!
+    internal static partial class CsvLocalizationInjector
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Fallback locale code.
+        /// </summary>
+!!endif!!
+        private const string FallbackLocaleCode = "en-US";
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Cached reference to <c>lilLanguageManager.loc</c>.
+        /// </summary>
+!!endif!!
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
+        private static readonly Dictionary<string, string> _loc = GetLoc();
+!!else!!
+        private static readonly Dictionary<string, string> _loc = LilToonAdapter.LocDict;
+!!endif!!
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Dictionary of the localization dictionaries.
+        /// </summary>
+!!endif!!
+        private static Dictionary<string, Dictionary<string, string>> _localizationDictDict;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Last loaded CSV file path.
+        /// </summary>
+!!endif!!
+        private static string _lastLoadedCsvPath;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Last write time of the <see cref="_lastLoadedCsvPath"/>.
+        /// </summary>
+!!endif!!
+        private static DateTime _lastWriteTime;
+
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Load language CSV file and inject its result to the language directory in <see cref="lilLanguageManager"/>.
+        /// </summary>
+        /// <param name="guidCsv">GUID of language CSV file.</param>
+!!endif!!
+        public static void Load(string guidCsv)
+        {
+            Load(guidCsv, lilLanguageManager.langSet.languageName);
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Load language CSV file and inject its result to the language directory in <see cref="lilLanguageManager"/>.
+        /// </summary>
+        /// <param name="guidCsv">GUID of language CSV file.</param>
+        /// <param name="langName">Target language name.</param>
+!!endif!!
+        public static void Load(string guidCsv, string langName)
+        {
+            var csvAssetPath = AssetDatabase.GUIDToAssetPath(guidCsv);
+            if (csvAssetPath.Length == 0)
+            {
+                throw new FileNotFoundException("File not found; which is corresponding to GUID: " + guidCsv);
+            }
+
+            var lastWriteTime = new FileInfo(csvAssetPath).LastWriteTime;
+            if (_lastWriteTime != lastWriteTime
+                || _lastLoadedCsvPath != csvAssetPath
+                || _localizationDictDict == null)
+            {
+                var localizationDictDict = LoadLanguageCsvFile(csvAssetPath);
+                AddFallbackEntries(localizationDictDict);
+                _localizationDictDict = localizationDictDict;
+                _lastLoadedCsvPath = csvAssetPath;
+                _lastWriteTime = lastWriteTime;
+            }
+
+            _localizationDictDict.TryGetValue(FallbackLocaleCode, out var fallbackLocalizationDict);
+            var localeCode = ToLocaleCode(langName);
+            if (localeCode == FallbackLocaleCode)
+            {
+                if (fallbackLocalizationDict != null)
+                {
+                    SetDictionary(fallbackLocalizationDict, _loc);
+                }
+                return;
+            }
+
+            if (!_localizationDictDict.TryGetValue(localeCode, out var localizationDict))
+            {
+                localizationDict = fallbackLocalizationDict;
+            }
+
+            if (localizationDict == null)
+            {
+                return;
+            }
+
+            SetDictionary(localizationDict, _loc);
+        }
+
+!!ifempty:REQUIRE_ADAPTER_GET_LOC!!
+
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Get <see cref="lilLanguageManager"/>.loc using reflection.
+        /// </summary>
+        /// <returns>Localization dictionary in <see cref="lilLanguageManager"/> class.</returns>
+!!  endif!!
+        private static Dictionary<string, string> GetLoc()
+        {
+            return (Dictionary<string, string>)typeof(lilLanguageManager)
+                .GetField(
+                    "loc",
+                    BindingFlags.NonPublic | BindingFlags.Static)
+                .GetValue(null);
+        }
+!!endif!!
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Convert language name to locale code.
+        /// </summary>
+        /// <param name="langName">Target language name.</param>
+        /// <returns>Locale code.</returns>
+!!endif!!
+        private static string ToLocaleCode(string langName)
+        {
+            switch (langName)
+            {
+                case "English":
+                case "en-US":
+                case "en_US":
+                    return "en-US";
+                case "Japanese":
+                case "ja-JP":
+                case "ja_JP":
+                    return "ja-JP";
+                case "Korean":
+                case "ko-KR":
+                case "ko_KR":
+                    return "ko-KR";
+                case "Chinese Simplified":
+                case "zh-Hans":
+                case "zh_Hans":
+                    return "zh-Hans";
+                case "Chinese Traditional":
+                case "zh-Hant":
+                case "zh_Hant":
+                    return "zh-Hant";
+                default:
+                    return FallbackLocaleCode;
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Load CSV lanuguage file.
+        /// </summary>
+        /// <param name="csvAssetPath">CSV language file to load.</param>
+        /// <returns>Dictionary of localization dictionaries.</returns>
+!!endif!!
+        private static Dictionary<string, Dictionary<string, string>> LoadLanguageCsvFile(string csvAssetPath)
+        {
+            using (var csvReader = new CsvReader(csvAssetPath))
+            {
+                var localizationDictDict = new Dictionary<string, Dictionary<string, string>>();
+
+                var headerColumnList = csvReader.ReadRow();
+                if (headerColumnList == null)
+                {
+                    return localizationDictDict;
+                }
+
+                int index = 0;
+                int keyIndex = -1;
+                var targetDicts = new Dictionary<string, string>[headerColumnList.Count];
+                foreach (var column in headerColumnList)
+                {
+                    if (column == "Language")
+                    {
+                        keyIndex = index;
+                    }
+                    else
+                    {
+                        var localeCode = ToLocaleCode(column);
+                        if (localizationDictDict.TryGetValue(localeCode, out var targetDict))
+                        {
+                            targetDicts[index] = targetDict;
+                        }
+                        else
+                        {
+                            targetDict = new Dictionary<string, string>();
+                            localizationDictDict[localeCode] = targetDict;
+                            targetDicts[index] = targetDict;
+                        }
+                    }
+                    index++;
+                }
+
+                if (keyIndex == -1)
+                {
+                    return localizationDictDict;
+                }
+
+                var columnList = new List<string>(6);
+                while (csvReader.ReadRow(columnList))
+                {
+                    if (keyIndex >= columnList.Count)
+                    {
+                        continue;
+                    }
+                    var key = columnList[keyIndex];
+                    for (int i = 0; i < columnList.Count; i++)
+                    {
+                        if (i != keyIndex && !string.IsNullOrEmpty(columnList[i]))
+                        {
+                            targetDicts[i][key] = columnList[i];
+                        }
+                    }
+                }
+
+                return localizationDictDict;
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Add fallback entries to non-fallback localization dictionaries.
+        /// </summary>
+        /// <param name="localizationDictDict">Dictionary of lozalization dictionaries.</param>
+!!endif!!
+        private static void AddFallbackEntries(Dictionary<string, Dictionary<string, string>> localizationDictDict)
+        {
+            if (!localizationDictDict.TryGetValue(FallbackLocaleCode, out var fallbackLocalizationDict))
+            {
+                return;
+            }
+
+            foreach (var kv in localizationDictDict)
+            {
+                if (kv.Key != FallbackLocaleCode)
+                {
+                    AddDictionary(fallbackLocalizationDict, kv.Value);
+                }
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary without overwriting existing keys.
+        /// </summary>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
+!!endif!!
+        private static void AddDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
+        {
+            foreach (var kv in source)
+            {
+                target.TryAdd(kv.Key, kv.Value);
+            }
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Merge <paramref name="source"/> dictionary into <paramref name="target"/> dictionary with overwriting existing keys.
+        /// </summary>
+        /// <param name="source">Source dictionary.</param>
+        /// <param name="target">Target dictionary.</param>
+!!endif!!
+        private static void SetDictionary(Dictionary<string, string> source, Dictionary<string, string> target)
+        {
+            foreach (var kv in source)
+            {
+                target[kv.Key] = kv.Value;
+            }
+        }
+    }
+}

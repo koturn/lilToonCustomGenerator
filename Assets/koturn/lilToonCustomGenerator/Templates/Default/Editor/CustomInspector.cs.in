@@ -95,6 +95,8 @@ namespace %%NAMESPACE%%
 !!ifempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
 !!  ifnotempty:GUID_LANG_CUSTOM_TSV!!
             LoadCustomLanguage("%%GUID_LANG_CUSTOM_TSV%%");
+!!  elifnotempty:GUID_LANG_CUSTOM_CSV!!
+            CsvLocalizationInjector.Load("%%GUID_LANG_CUSTOM_CSV%%");
 !!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
             LocalizationInjector.Load("%%GUID_PORTABLE_OBJECT_DIR%%");
 !!  elifnotempty:GUID_LANG_CUSTOM_JSON!!
@@ -111,6 +113,8 @@ namespace %%NAMESPACE%%
             {
 !!  ifnotempty:GUID_LANG_CUSTOM_TSV!!
                 LoadCustomLanguage("%%GUID_LANG_CUSTOM_TSV%%");
+!!  elifnotempty:GUID_LANG_CUSTOM_CSV!!
+                CsvLocalizationInjector.Load("%%GUID_LANG_CUSTOM_CSV%%");
 !!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
                 LocalizationInjector.Load("%%GUID_PORTABLE_OBJECT_DIR%%");
 !!  elifnotempty:GUID_LANG_CUSTOM_JSON!!

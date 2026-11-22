@@ -42,6 +42,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         private static readonly string[] _languageResourceTypeNames =
         {
             "TSV",
+            "CSV",
             "Portable Object (.po)",
             "Json",
             "XML resource file (.resx)",
@@ -51,6 +52,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// Invalid characters for shader name.
         /// </summary>
         private static readonly char[] _invalidShaderNameChars = { '\n', '\r', '"' };
+        /// <summary>
+        /// Special characters for CSV file.
+        /// </summary>
+        private static readonly char[] _csvSpecialChars = { '\n', '\r', '"', ',' };
         /// <summary>
         /// Labels for version number field.
         /// </summary>
@@ -1630,10 +1635,8 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 RemoveByDestination(templates, "Editor/LilToonAdapter.cs");
             }
 
-            // Try to find `Editor/lang_custom.tsv`.
-            var langCustomTsvIndex = IndexOfDestination(templates, "Editor/lang_custom.tsv");
-
             // Generate `Editor/lang_custom.tsv` and obtain its GUID.
+            var langCustomTsvIndex = IndexOfDestination(templates, "Editor/lang_custom.tsv");
             if (langCustomTsvIndex != -1)
             {
                 if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.TSV)
@@ -1645,6 +1648,24 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 else
                 {
                     templates.RemoveAt(langCustomTsvIndex);
+                }
+            }
+
+            // Generate `Editor/lang_custom.csv` and obtain its GUID.
+            var langCustomCsvIndex = IndexOfDestination(templates, "Editor/lang_custom.csv");
+            if (langCustomCsvIndex != -1)
+            {
+                if (_shouldGenerateLanguageFile && _languageResourceType == LanguageResourceTypes.CSV)
+                {
+                    tagDict.Add(
+                        "GUID_LANG_CUSTOM_CSV",
+                        ExpandTemplateAt(templateEngine, templates, langCustomCsvIndex, filePathSet, dstDirAssetPath, isInProject));
+                }
+                else
+                {
+                    templates.RemoveAt(langCustomCsvIndex);
+                    RemoveByDestination(templates, "Editor/CsvLocalizationInjector.cs");
+                    RemoveByDestination(templates, "Editor/CsvReader.cs");
                 }
             }
 
@@ -2025,6 +2046,17 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                             index++;
                         }
                         tagDict.Add("LANGUAGE_FILE_CONTENT", sb.ToString());
+                        break;
+                    case LanguageResourceTypes.CSV:
+                        index = 0;
+                        foreach (var shaderProp in shaderPropDefList)
+                        {
+                            var QuotedTag = QuoteCsvColumnIfNeeded(langTags[index]);
+                            sb.AppendFormat("{0},{1},{1},{1},{1},{1}", QuotedTag, shaderProp.Description.Length == 0 ? QuotedTag : QuoteCsvColumnIfNeeded(shaderProp.Description))
+                                .AppendLine();
+                            index++;
+                        }
+                        tagDict.Add("CSV_LANGUAGE_FILE_CONTENT", sb.ToString());
                         break;
                     case LanguageResourceTypes.PortableObject:
                         index = 0;
@@ -2761,6 +2793,41 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 }
             }
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Quote and escape CSV column if needed.
+        /// </summary>
+        /// <param name="s">Target string.</param>
+        /// <returns>Quoted string or original string.</returns>
+        private static string QuoteCsvColumnIfNeeded(string s)
+        {
+            if (s == null || s.IndexOfAny(_csvSpecialChars) == -1)
+            {
+                return s;
+            }
+
+            var sb = new StringBuilder(s.Length * 2 + 2);
+            sb.Append('"');
+
+            int index = 0;
+            int position = -1;
+            while (index < s.Length && (position = s.IndexOf('"', index)) != -1)
+            {
+                var count = position - index;
+                if (count > 0)
+                {
+                    sb.Append(s, index, count);
+                }
+                sb.Append("\"\"");
+                index = position + 1;
+            }
+            if (index < s.Length)
+            {
+                sb.Append(s, index, s.Length - index);
+            }
+
+            return sb.Append('"').ToString();
         }
 
         /// <summary>

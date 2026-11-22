@@ -2,6 +2,8 @@
 using System;
 !!elifnotempty:GUID_LANG_CUSTOM_TSV!!
 using System;
+!!elifnotempty:GUID_LANG_CUSTOM_CSV!!
+using System;
 !!elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
 using System;
 !!elifnotempty:GUID_LANG_CUSTOM_JSON!!
@@ -180,6 +182,15 @@ namespace %%NAMESPACE%%
             {
                 Debug.LogException(ex);
             }
+!!  elifnotempty:GUID_LANG_CUSTOM_CSV!!
+            try
+            {
+                CsvLocalizationInjector.Load(AssetGuid.LangCustomCsv);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+            }
 !!  elifnotempty:GUID_PORTABLE_OBJECT_DIR!!
             try
             {
@@ -226,6 +237,23 @@ namespace %%NAMESPACE%%
                 try
                 {
                     LoadCustomLanguage(AssetGuid.LangCustomTsv);
+!!    ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
+                    prevLanguageName = lilLanguageManager.langSet.languageName;
+!!    else!!
+                    prevLanguageName = LilToonAdapter.LanguageName;
+!!    endif!!
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+            }
+!!  elifnotempty:GUID_LANG_CUSTOM_CSV!!
+            if (_shouldLoadLanguage)
+            {
+                try
+                {
+                    CsvLocalizationInjector.Load(AssetGuid.LangCustomCsv);
 !!    ifempty:REQUIRE_ADAPTER_LANGUAGE_NAME!!
                     prevLanguageName = lilLanguageManager.langSet.languageName;
 !!    else!!

@@ -11,20 +11,24 @@ namespace Koturn.LilToonCustomGenerator.Editor.Enums
         /// </summary>
         TSV = 0,
         /// <summary>
+        /// CSV file.
+        /// </summary>
+        CSV = 1,
+        /// <summary>
         /// Portable Object file.
         /// </summary>
-        PortableObject = 1,
+        PortableObject = 2,
         /// <summary>
         /// Json file.
         /// </summary>
-        Json = 2,
+        Json = 3,
         /// <summary>
         /// .resx file.
         /// </summary>
-        ResX = 3,
+        ResX = 4,
         /// <summary>
         /// C# source code.
         /// </summary>
-        CSharp = 4
+        CSharp = 5
     }
 }

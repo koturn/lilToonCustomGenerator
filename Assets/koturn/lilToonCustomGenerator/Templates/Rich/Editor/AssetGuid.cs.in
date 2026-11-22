@@ -15,6 +15,14 @@ namespace %%NAMESPACE%%
 !!  endif!!
         public const string LangCustomTsv = "%%GUID_LANG_CUSTOM_TSV%%";
 !!endif!!
+!!ifnotempty:GUID_LANG_CUSTOM_CSV!!
+!!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// GUID of "%%BASE_DIRECTORY%%Editor/lang_custom.csv".
+        /// </summary>
+!!  endif!!
+        public const string LangCustomCsv = "%%GUID_LANG_CUSTOM_CSV%%";
+!!endif!!
 !!ifnotempty:GUID_PORTABLE_OBJECT_DIR!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>

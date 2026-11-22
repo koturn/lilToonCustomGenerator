@@ -20,6 +20,14 @@
           "destination": "Editor/%%INSPECTOR_NAME%%.cs"
         },
         {
+          "guid": "436d08259d853f342bfa94021f2b45e8",
+          "destination": "Editor/CsvLocalizationInjector.cs"
+        },
+        {
+          "guid": "57592f580de7ecd43a67c427eeba6b81",
+          "destination": "Editor/CsvReader.cs"
+        },
+        {
           "guid": "84ed14887cddbb348a86ad801159160f",
           "destination": "Editor/EmbeddedLocalizationInjector.cs"
         },
@@ -54,6 +62,10 @@
         {
           "guid": "c6fdfa3b426b06e40b8f746df1864f5d",
           "destination": "Editor/Startup.cs"
+        },
+        {
+          "guid": "315ecab7447b18f4db01d2c47ef2c7cc",
+          "destination": "Editor/lang_custom.csv"
         },
         {
           "guid": "7e35e07a48cf2f74a8c15177398fb657",

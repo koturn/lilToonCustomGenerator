@@ -1,0 +1,535 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+
+
+namespace %%NAMESPACE%%
+{
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+    /// <summary>
+    /// Simple CSV reader that reads one record at a time.
+    /// </summary>
+!!endif!!
+    public sealed class CsvReader : IDisposable
+    {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Default buffer size.
+        /// </summary>
+!!endif!!
+        public const int DefaultBufferSize = 4096;
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Parser state.
+        /// </summary>
+!!endif!!
+        private enum ParseState
+        {
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Start of the column.
+            /// </summary>
+!!endif!!
+            ColumnStart,
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Reading unquoted column.
+            /// </summary>
+!!endif!!
+            UnquotedColumn,
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Reading quoted column.
+            /// </summary>
+!!endif!!
+            QuotedColumn,
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+            /// <summary>
+            /// Reading after quote is closed.
+            /// </summary>
+!!endif!!
+            QuoteClosed
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Indicate this instance is already disposed or not.
+        /// </summary>
+!!endif!!
+        public bool IsDisposed { get; private set; }
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// <see cref="TextReader"/> for CSV data.
+        /// </summary>
+!!endif!!
+        public readonly TextReader Reader;
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// True to leave open <see cref="Reader"/>, false otherwise.
+        /// </summary>
+!!endif!!
+        private readonly bool _leaveOpen;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Read buffer.
+        /// </summary>
+!!endif!!
+        private readonly char[] _buffer;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// The position in the buffer where reading has been completed.
+        /// </summary>
+!!endif!!
+        private int _position;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Number of characters read into the buffer
+        /// </summary>
+!!endif!!
+        private int _length;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// True when EOF detected.
+        /// </summary>
+!!endif!!
+        private bool _isEofDetected;
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// True to skip LF character after CR when reading a record.
+        /// </summary>
+!!endif!!
+        private bool _shouldSkipLf;
+
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Creates a new instance of <see cref="CsvReader"/> that reads from the specified CSV file.
+        /// </summary>
+        /// <param name="filePath">The path to the CSV file.</param>
+!!endif!!
+        public CsvReader(string filePath)
+            : this(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, DefaultBufferSize * 2, FileOptions.SequentialScan), DefaultBufferSize, false)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Creates a new instance of <see cref="CsvReader"/> that reads from the specified CSV file.
+        /// </summary>
+        /// <param name="filePath">The path to the CSV file.</param>
+        /// <param name="bufferSize">The size of the buffer for <see cref="FileStream"/>, <see cref="StreamReader"/> and <see cref="CsvReader"/>.</param>
+!!endif!!
+        public CsvReader(string filePath, int bufferSize)
+            : this(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize * 2, FileOptions.SequentialScan), bufferSize, false)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Creates a new instance of <see cref="CsvReader"/> that reads from the specified <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="bufferSize">The size of the buffer for <see cref="StreamReader"/> and <see cref="CsvReader"/>.</param>
+!!endif!!
+        public CsvReader(Stream stream)
+            : this(new StreamReader(stream, Encoding.UTF8, true, DefaultBufferSize, false), DefaultBufferSize, false)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Creates a new instance of <see cref="CsvReader"/> that reads from the specified <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="bufferSize">The size of the buffer for <see cref="StreamReader"/> and <see cref="CsvReader"/>.</param>
+!!endif!!
+        public CsvReader(Stream stream, int bufferSize)
+            : this(new StreamReader(stream, Encoding.UTF8, true, bufferSize, false), bufferSize, false)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Creates a new instance of <see cref="CsvReader"/> that reads from the specified <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="bufferSize">The size of the buffer for <see cref="StreamReader"/> and <see cref="CsvReader"/>.</param>
+        /// <param name="leaveOpen">true to leave the <paramref name="stream"/> open after the StreamReader object is disposed; otherwise, false.</param>
+!!endif!!
+        public CsvReader(Stream stream, int bufferSize, bool leaveOpen)
+            : this(new StreamReader(stream, Encoding.UTF8, true, bufferSize, leaveOpen), bufferSize, false)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Creates a new instance of <see cref="CsvReader"/> that reads from the specified <see cref="TextReader"/>.
+        /// </summary>
+        /// <param name="reader">The text reader to read.</param>
+!!endif!!
+        public CsvReader(TextReader reader)
+            : this(reader, DefaultBufferSize, false)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Creates a new instance of <see cref="CsvReader"/> that reads from the specified <see cref="TextReader"/>.
+        /// </summary>
+        /// <param name="reader">The text reader to read.</param>
+        /// <param name="bufferSize">The size of the buffer for <see cref="CsvReader"/>.</param>
+!!endif!!
+        public CsvReader(TextReader reader, int bufferSize)
+            : this(reader, bufferSize, false)
+        {
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Creates a new instance of <see cref="CsvReader"/> that reads from the specified <see cref="TextReader"/>.
+        /// </summary>
+        /// <param name="reader">The text reader to read.</param>
+        /// <param name="bufferSize">The size of the buffer for <see cref="CsvReader"/>.</param>
+        /// <param name="leaveOpen">true to leave the <paramref name="reader"/> open after the StreamReader object is disposed; otherwise, false.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="reader"/> is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="bufferSize"/> is not positive.</exception>
+!!endif!!
+        public CsvReader(TextReader reader, int bufferSize = DefaultBufferSize, bool leaveOpen = false)
+        {
+#if NET7_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(reader);
+            ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 0);
+#else
+            if (reader == null)
+            {
+                throw new ArgumentNullException(nameof(reader));
+            }
+            if (bufferSize <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            }
+#endif  // NET7_0_OR_GREATER
+            Reader = reader;
+            _leaveOpen = leaveOpen;
+#if NET5_0_OR_GREATER
+            _buffer = GC.AllocateUninitializedArray<char>(bufferSize);
+#else
+            _buffer = new char[bufferSize];
+#endif  // NET5_0_OR_GREATER
+        }
+
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Read one record from the CSV file.
+        /// If EOF is encountered, return null.
+        /// </summary>
+        /// <returns>string list of the one CSV record.</returns>
+!!endif!!
+        public List<string> ReadRow()
+        {
+            var columnList = new List<string>();
+            return ReadRow(columnList) ? columnList : null;
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Read one record from the CSV file.
+        /// </summary>
+        /// <param name="columnList">Destination list.</param>
+        /// <returns>True if </returns>
+        /// <exception cref="ObjectDisposedException"></exception>
+        /// <exception cref="FormatException"></exception>
+!!endif!!
+        public bool ReadRow(List<string> columnList)
+        {
+#if NET7_0_OR_GREATER
+            ObjectDisposedException.ThrowIf(IsDisposed, nameof(CsvReader));
+#else
+            if (IsDisposed)
+            {
+                throw new ObjectDisposedException(nameof(CsvReader));
+            }
+#endif  // NET7_0_OR_GREATER
+
+            columnList.Clear();
+
+            var sb = new StringBuilder();
+            var state = ParseState.ColumnStart;
+            var recordStarted = false;
+
+            while (EnsureBuffer())
+            {
+                var c = _buffer[_position];
+
+                // If the previous record ended with a CR, skip the next character if it is an LF.
+                if (_shouldSkipLf)
+                {
+                    _shouldSkipLf = false;
+                    if (c == '\n')
+                    {
+                        _position++;
+                        continue;
+                    }
+                }
+
+                switch (state)
+                {
+                    case ParseState.ColumnStart:
+                        switch (c)
+                        {
+                            case '"':
+                                _position++;
+                                state = ParseState.QuotedColumn;
+                                recordStarted = true;
+                                break;
+                            case ',':
+                                _position++;
+                                columnList.Add(string.Empty);
+                                recordStarted = true;
+                                break;
+                            case '\r':
+                            case '\n':
+                                _position++;
+                                columnList.Add(string.Empty);
+                                SetLineEnding(c);
+                                return true;
+                            default:
+                                state = ParseState.UnquotedColumn;
+                                recordStarted = true;
+                                _position = AppendUnquotedRun(sb, _buffer, _position, _length);
+                                break;
+                        }
+                        break;
+                    case ParseState.UnquotedColumn:
+                        switch (c)
+                        {
+                            case '"':
+                                throw new FormatException("Unexpected quote in unquoted column.");
+                            case ',':
+                                _position++;
+                                columnList.Add(sb.ToString());
+                                sb.Clear();
+                                state = ParseState.ColumnStart;
+                                break;
+                            case '\r':
+                            case '\n':
+                                _position++;
+                                columnList.Add(sb.ToString());
+                                SetLineEnding(c);
+                                return true;
+                            default:
+                                _position = AppendUnquotedRun(sb, _buffer, _position, _length);
+                                break;
+                        }
+                        break;
+                    case ParseState.QuotedColumn:
+                        if (c == '"')
+                        {
+                            _position++;
+                            state = ParseState.QuoteClosed;
+                        }
+                        else
+                        {
+                            _position = AppendQuotedRun(sb, _buffer, _position, _length);
+                        }
+                        break;
+                    case ParseState.QuoteClosed:
+                        switch (c)
+                        {
+                            case '"':
+                                // "" is escaped double-quote.
+                                _position++;
+                                sb.Append('"');
+                                state = ParseState.QuotedColumn;
+                                break;
+                            case ',':
+                                _position++;
+                                columnList.Add(sb.ToString());
+                                sb.Clear();
+                                state = ParseState.ColumnStart;
+                                break;
+                            case '\r':
+                            case '\n':
+                                _position++;
+                                columnList.Add(sb.ToString());
+                                SetLineEnding(c);
+                                return true;
+                            default:
+                                throw new FormatException("Unexpected character after closing quote.");
+                        }
+                        break;
+                }
+            }
+
+            if (state == ParseState.QuotedColumn)
+            {
+                throw new FormatException("Unterminated quoted column.");
+            }
+
+            // An empty file, or EOF immediately following a record delimiter.
+            if (!recordStarted && columnList.Count == 0)
+            {
+                return false;
+            }
+
+            columnList.Add(sb.ToString());
+
+            return true;
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Release all resources used by the <see cref="CsvReader"/> object.
+        /// </summary>
+!!endif!!
+        public void Dispose()
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (!_leaveOpen)
+            {
+                Reader.Dispose();
+            }
+
+            IsDisposed = true;
+        }
+
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// If there is no data left in the buffer, load more data.
+        /// </summary>
+!!endif!!
+        private bool EnsureBuffer()
+        {
+            if (_position < _length)
+            {
+                return true;
+            }
+
+            if (_isEofDetected)
+            {
+                return false;
+            }
+
+            _length = Reader.Read(_buffer, 0, _buffer.Length);
+            _position = 0;
+
+            if (_length == 0)
+            {
+                _isEofDetected = true;
+                return false;
+            }
+
+            return true;
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// When a CR is detected, skip the next LF.
+        /// </summary>
+!!endif!!
+        private void SetLineEnding(char c)
+        {
+            if (c == '\r')
+            {
+                _shouldSkipLf = true;
+            }
+        }
+
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Add all non-quoted column characters at once.
+        /// Stop scanning at commas, quotation marks, CR, or LF.
+        /// </summary>
+        /// <param name="sb"><see cref="StringBuilder"/> for one CSV column.</param>
+        /// <param name="buffer">Read buffer.</param>
+        /// <param name="position">Read position in the <paramref name="buffer"/>.</param>
+        /// <param name="length">Length of the data in the <paramref name="buffer"/>.</param>
+        /// <returns>The new position after appending the unquoted run.</returns>
+!!endif!!
+        private static int AppendUnquotedRun(StringBuilder sb, char[] buffer, int position, int length)
+        {
+            var start = position;
+
+            while (position < length)
+            {
+                var c = buffer[position];
+                if (c == ',' || c == '"' || c == '\r' || c == '\n')
+                {
+                    break;
+                }
+                position++;
+            }
+
+            var count = position - start;
+            ValidateCharacters(buffer, start, count, false);
+            sb.Append(buffer, start, count);
+            return position;
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Add quoted column characters at once.
+        /// Stop scanning at double quotes.
+        /// CR and LF are kept as part of the column content.
+        /// </summary>
+        /// <param name="sb"><see cref="StringBuilder"/> for one CSV column.</param>
+        /// <param name="buffer">Read buffer.</param>
+        /// <param name="position">Read position in the <paramref name="buffer"/>.</param>
+        /// <param name="length">Length of the data in the <paramref name="buffer"/>.</param>
+        /// <returns>The new position after appending the quoted run.</returns>
+!!endif!!
+        private static int AppendQuotedRun(StringBuilder sb, char[] buffer, int position, int length)
+        {
+            int start = position;
+
+            while (position < length)
+            {
+                if (buffer[position] == '"')
+                {
+                    break;
+                }
+                position++;
+            }
+
+            int count = position - start;
+            ValidateCharacters(buffer, start, count, true);
+            sb.Append(buffer, start, count);
+            return position;
+        }
+
+!!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
+        /// <summary>
+        /// Validate control characters within the text range.
+        /// </summary>
+        /// <param name="buffer">Read buffer.</param>
+        /// <param name="offset">The offset in the <paramref name="buffer"/>.</param>
+        /// <param name="count">Number of characters to validate.</param>
+        /// <param name="isQuoted">True to validate quoted column, false otherwise.</param>
+        /// <exception cref="FormatException">Thrown when an invalid control character is found.</exception>
+!!endif!!
+        private static void ValidateCharacters(char[] buffer, int offset, int count, bool isQuoted)
+        {
+            var end = offset + count;
+            for (int i = offset; i < end; i++)
+            {
+                var c = buffer[i];
+                if (!char.IsControl(c)
+                    || (isQuoted && (c == '\r' || c == '\n')))
+                {
+                    continue;
+                }
+                throw new FormatException("Invalid control character in CSV column.");
+            }
+        }
+    }
+}
