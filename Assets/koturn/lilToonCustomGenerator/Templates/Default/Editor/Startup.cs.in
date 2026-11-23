@@ -450,7 +450,7 @@ namespace %%NAMESPACE%%
         /// </summary>
 !!  endif!!
         [Serializable]
-        private class LilToonVersion
+        private static class LilToonVersion
         {
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
             /// <summary>
