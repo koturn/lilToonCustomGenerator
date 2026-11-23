@@ -1,0 +1,16 @@
+// This file is used by Code Analysis to maintain SuppressMessage
+// attributes that are applied to this project.
+// Project-level suppressions either have no target or are given
+// a specific target and scoped to a namespace, type, member, etc.
+
+using System.Diagnostics.CodeAnalysis;
+
+!!ifnotempty:GLOBAL_SUPPRESS_IDE0063!!
+[assembly: SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
+!!ifnotempty:GLOBAL_SUPPRESS_IDE0066!!
+[assembly: SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
+!!ifnotempty:GLOBAL_SUPPRESS_IDE0090!!
+[assembly: SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!endif!!

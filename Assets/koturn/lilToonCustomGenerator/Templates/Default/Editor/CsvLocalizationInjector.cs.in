@@ -8,6 +8,10 @@ using UnityEditor;
 using lilToon;
 !!  endif!!
 !!endif!!
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+
+#pragma warning disable IDE0063 // Use simple 'using' statement
+!!endif!!
 
 
 namespace %%NAMESPACE%%
@@ -180,8 +184,14 @@ namespace %%NAMESPACE%%
         /// <param name="csvAssetPath">CSV language file to load.</param>
         /// <returns>Dictionary of localization dictionaries.</returns>
 !!endif!!
+!!ifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "Use C# 7.3 compiler (Unity 2018.3 ~ 2020.1)")]
+!!endif!!
         private static Dictionary<string, Dictionary<string, string>> LoadLanguageCsvFile(string csvAssetPath)
         {
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0063 // Use simple 'using' statement
+!!endif!!
             using (var csvReader = new CsvReader(csvAssetPath))
             {
                 var localizationDictDict = new Dictionary<string, Dictionary<string, string>>();
@@ -242,6 +252,9 @@ namespace %%NAMESPACE%%
 
                 return localizationDictDict;
             }
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma restore disable IDE0063 // Use simple 'using' statement
+!!endif!!
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!

@@ -1,0 +1,16 @@
+[*.cs]
+!!ifnotempty:GLOBAL_SUPPRESS_IDE0063!!
+
+# IDE0063: Use simple 'using' statement
+dotnet_diagnostic.IDE0063.severity = none
+!!endif!!
+!!ifnotempty:GLOBAL_SUPPRESS_IDE0066!!
+
+# IDE0066: Convert switch statement to expression
+dotnet_diagnostic.IDE0066.severity = none
+!!endif!!
+!!ifnotempty:GLOBAL_SUPPRESS_IDE0090!!
+
+# IDE0090: Use 'new(...)'
+dotnet_diagnostic.IDE0090.severity = none
+!!endif!!

@@ -9,6 +9,10 @@ using UnityEngine;
 using lilToon;
 !!  endif!!
 !!endif!!
+!!ifnotempty:PRAGMA_WARNING_DISABLE_TOP!!
+
+#pragma warning disable IDE0066 // Convert switch statement to expression
+!!endif!!
 
 
 namespace %%NAMESPACE%%
@@ -146,8 +150,14 @@ namespace %%NAMESPACE%%
         /// <param name="langName">Target language name.</param>
         /// <returns>Locale code.</returns>
 !!endif!!
+!!ifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
         private static string ToLocaleCode(string langName)
         {
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0066 // Convert switch statement to expression
+!!endif!!
             switch (langName)
             {
                 case "English":
@@ -173,6 +183,9 @@ namespace %%NAMESPACE%%
                 default:
                     return FallbackLocaleCode;
             }
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0066 // Convert switch statement to expression
+!!endif!!
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!

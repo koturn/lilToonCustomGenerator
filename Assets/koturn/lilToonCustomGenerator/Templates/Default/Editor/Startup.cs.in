@@ -11,6 +11,10 @@ using lilToon;
 !!    endif!!
 !!  endif!!
 !!endif!!
+!!ifnotempty:PRAGMA_WARNING_DISABLE_TOP!!
+
+#pragma warning disable IDE0063 // Use simple 'using' statement
+!!endif!!
 
 
 namespace %%NAMESPACE%%
@@ -108,8 +112,14 @@ namespace %%NAMESPACE%%
         /// <param name="bufferSize">Buffer size for temporary buffer and <see cref="FileStream"/>,
         /// and initial capacity of <see cref="MemoryStream"/>.</param>
 !!endif!!
+!!ifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
         public static void UpdateVersionDefFile(string filePath, int bufferSize = DefaultBufferSize)
         {
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0063 // Use simple 'using' statement
+!!endif!!
             using (var ms = new MemoryStream(bufferSize))
             {
                 WriteVersionFileBytes(ms);
@@ -128,6 +138,9 @@ namespace %%NAMESPACE%%
 
                 Debug.LogFormat("Update {0}", filePath);
             }
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0063 // Use simple 'using' statement
+!!endif!!
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -137,8 +150,14 @@ namespace %%NAMESPACE%%
         /// <param name="s">Destination stream.</param>
         /// <param name="bufferSize">Buffer size for <see cref="StreamWriter"/>.</param>
 !!endif!!
+!!ifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
         private static void WriteVersionFileBytes(Stream s, int bufferSize = DefaultBufferSize)
         {
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0063 // Use simple 'using' statement
+!!endif!!
             using (var writer = new StreamWriter(s, Encoding.ASCII, bufferSize, true)
             {
                 NewLine = "\n"
@@ -177,6 +196,9 @@ namespace %%NAMESPACE%%
                 writer.WriteLine();
                 writer.WriteLine("#endif  // LIL_CURRENT_VERSION_INCLUDED");
             }
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0063 // Use simple 'using' statement
+!!endif!!
         }
 
 !!ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -190,6 +212,9 @@ namespace %%NAMESPACE%%
         /// <param name="bufferSize">Buffer size for temporary buffer and <see cref="FileStream"/>.</param>
         /// <returns>True if file content is same to <see cref="contentData"/>, otherwise false.</returns>
 !!endif!!
+!!ifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
         private static bool CompareFileBytes(string filePath, byte[] contentData, int offset, int count, int bufferSize = DefaultBufferSize)
         {
             if (!File.Exists(filePath))
@@ -202,6 +227,9 @@ namespace %%NAMESPACE%%
             }
 
             var minBufferSize = Math.Min(count, bufferSize);
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0063 // Use simple 'using' statement
+!!endif!!
             using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, minBufferSize, FileOptions.SequentialScan))
             {
                 var buffer = new byte[minBufferSize];
@@ -215,6 +243,9 @@ namespace %%NAMESPACE%%
                     offset += nRead;
                 }
             }
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0063 // Use simple 'using' statement
+!!endif!!
 
             return true;
         }

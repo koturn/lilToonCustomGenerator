@@ -1,5 +1,9 @@
 using System;
 using UnityEngine;
+!!ifnotempty:PRAGMA_WARNING_DISABLE_TOP!!
+
+#pragma warning disable IDE0066 // Convert switch statement to expression
+!!endif!!
 
 
 namespace %%NAMESPACE%%
@@ -23,10 +27,16 @@ namespace %%NAMESPACE%%
         /// Get <see cref="LocalizationEntry"/> instance.
         /// </summary>
 !!endif!!
+!!ifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
         public LocalizationEntry this[string langName]
         {
             get
             {
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0066 // Convert switch statement to expression
+!!endif!!
                 switch (langName)
                 {
                     case "en-US":
@@ -42,6 +52,9 @@ namespace %%NAMESPACE%%
                     default:
                         throw new InvalidOperationException("Language translation map not found: \"" + langName + "\"");
                 }
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0066 // Convert switch statement to expression
+!!endif!!
             }
         }
 

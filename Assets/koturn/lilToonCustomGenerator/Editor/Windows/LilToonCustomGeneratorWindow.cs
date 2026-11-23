@@ -49,6 +49,18 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
             "C# source code (string dictionaries)"
         };
         /// <summary>
+        /// Candidates of suppress suggestion type popup.
+        /// </summary>
+        private static readonly string[] _suppressSuggestionTypeNames =
+        {
+            "None",
+            "Suppression File (GlobalSuppressions.cs)",
+            "Editor config (.editorconfig)",
+            "#pragma directive on the top of each source file",
+            "#pragma at each locations",
+            "[SuppressMessage] at each locations"
+        };
+        /// <summary>
         /// Invalid characters for shader name.
         /// </summary>
         private static readonly char[] _invalidShaderNameChars = { '\n', '\r', '"' };
@@ -394,6 +406,10 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
         /// True to edit value for <see cref="System.Reflection.AssemblyInformationalVersionAttribute"/>.
         /// </summary>
         private bool _isAssemblyInformationalVersionEditable = false;
+        /// <summary>
+        /// Suppress suggestion type.
+        /// </summary>
+        private SuppressSuggestionType _suppressSuggestionType;
         /// <summary>
         /// True to emit documentation comments.
         /// </summary>
@@ -1084,6 +1100,23 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                         }
                     }
 
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        using (new EditorGUILayout.HorizontalScope())
+                        {
+                            _suppressSuggestionType = (SuppressSuggestionType)CustomEditorGUILayout.PopupAdjusted(
+                                "Suppress suggestion on Visual Studio",
+                                (int)_suppressSuggestionType,
+                                _suppressSuggestionTypeNames);
+                            if (_languageResourceType == LanguageResourceTypes.PortableObject)
+                            {
+                                GUILayout.FlexibleSpace();
+                                CustomEditorGUILayout.WebButton("Suppress code analysis violations", "https://learn.microsoft.com/en-us/visualstudio/code-quality/in-source-suppression-overview");
+                                GUILayout.Space(4.0f);
+                            }
+                        }
+                    }
+
                     using (new EditorGUILayout.HorizontalScope())
                     {
                         _shouldEmitDocComments = CustomEditorGUILayout.ToggleLeftAdjusted("Emit documentation comments", _shouldEmitDocComments);
@@ -1764,6 +1797,15 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 RemoveByDestination(templates, "Editor/EmbeddedLocalizationInjector.cs");
             }
 
+            if (_suppressSuggestionType != SuppressSuggestionType.GlobalSuppressionFile)
+            {
+                RemoveByDestination(templates, "Editor/GlobalSuppressions.cs");
+            }
+            if (_suppressSuggestionType != SuppressSuggestionType.EditorConfig)
+            {
+                RemoveByDestination(templates, "Editor/.editorconfig");
+            }
+
             if (!_shouldGenerateInsert
                 && (!_shouldDeclareVRChatVariables || _vrchatVariableFlagBits.Value == 0)
                 && (!_shouldDeclareAudioLinkVariables || _audioLinkVariableFlagBits.Value == 0)
@@ -1968,6 +2010,7 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
 #endif  // NETSTANDARD2_1_OR_GREATER
                 tagDict.Add("ASSEMBLY_INFORMATIONAL_VERSION", EscapeString(_assemblyInformationalVersion));
             }
+
             if (_shouldEmitDocComments)
             {
                 tagDict.Add("SHOULD_EMIT_DOC_COMMENTS", "true");
@@ -2668,6 +2711,43 @@ namespace Koturn.LilToonCustomGenerator.Editor.Windows
                 {
                     tagDict.Add("SHOULD_DECLARE_UDON_VIDEO_DATA", "true");
                 }
+            }
+
+            switch (_suppressSuggestionType)
+            {
+                case SuppressSuggestionType.None:
+                    // Do nothing.
+                    break;
+                case SuppressSuggestionType.GlobalSuppressionFile:
+                case SuppressSuggestionType.EditorConfig:
+                    if (_shouldGenerateVersionDetectionScript
+                        || (_shouldGenerateLanguageFile && _languageResourceType != LanguageResourceTypes.CSV))
+                    {
+                        tagDict.Add("GLOBAL_SUPPRESS_IDE0063", "true");
+                    }
+                    if (_templateIndex == 1 && _shouldGenerateConversionMenu
+                        || (_shouldGenerateLanguageFile && _languageResourceType != LanguageResourceTypes.TSV))
+                    {
+                        tagDict.Add("GLOBAL_SUPPRESS_IDE0066", "true");
+                    }
+                    if (_shouldDrawMenuButton
+                        || (_isLilToon0102XXSupported && _isPropertySearchSupported)
+                        || tagDict.ContainsKey("SHADER_KEYWORD_CASES")
+                        || (_shouldGenerateLanguageFile
+                            && (_languageResourceType == LanguageResourceTypes.PortableObject || _languageResourceType == LanguageResourceTypes.ResX)))
+                    {
+                        tagDict.Add("GLOBAL_SUPPRESS_IDE0090", "true");
+                    }
+                    break;
+                case SuppressSuggestionType.PragmaOnTop:
+                    tagDict.Add("PRAGMA_WARNING_DISABLE_TOP", "true");
+                    break;
+                case SuppressSuggestionType.PragmaEachLocation:
+                    tagDict.Add("PRAGMA_WARNING_DISABLE_EACH_LOCATION", "true");
+                    break;
+                case SuppressSuggestionType.AttributeEachLocation:
+                    tagDict.Add("SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION", "true");
+                    break;
             }
 
             var newLine = _newLineType == NewLineType.CrLf ? "\n\r" : _newLineType == NewLineType.Cr ? "\r" : "\n";

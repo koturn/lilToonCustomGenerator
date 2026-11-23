@@ -12,6 +12,10 @@
           "destination": "Editor/%%NAMESPACE%%.asmdef"
         },
         {
+          "guid": "fe4b6210beee1e44f9486282a5a90716",
+          "destination": "Editor/.editorconfig"
+        },
+        {
           "guid": "b8614b177cb140b40b76c5f54f829010",
           "destination": "Editor/AssemblyInfo.cs"
         },
@@ -34,6 +38,10 @@
         {
           "guid": "15da2c86c200ef94ca7b5a9d3f24d958",
           "destination": "Editor/FieldAccessor.cs"
+        },
+        {
+          "guid": "1e5e624a12a261542baf531cd207e2bf",
+          "destination": "Editor/GlobalSuppressions.cs"
         },
         {
           "guid": "30fa3cf12edc65e4daafb64163e6937c",

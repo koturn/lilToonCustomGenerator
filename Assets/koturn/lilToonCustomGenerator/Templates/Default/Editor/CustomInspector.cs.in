@@ -17,20 +17,56 @@ using UnityEngine;
 !!ifnotempty:SHOULD_EMIT_USING_LILTOON!!
 using lilToon;
 !!endif!!
+!!ifnotempty:PRAGMA_WARNING_DISABLE_TOP!!
+!!  ifnotempty:SHADER_KEYWORD_CASES!!
+
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:REQUIRE_PROPERTY_LIST!!
+
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SHOULD_DRAW_MENU_BUTTON!!
+
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  endif!!
+!!endif!!
 
 namespace %%NAMESPACE%%
 {
     public class %%INSPECTOR_NAME%% : lilToonInspector
     {
 !!ifnotempty:SHADER_KEYWORD_CASES!!
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!  endif!!
         private readonly List<string> allowedKeywordList = new List<string>();
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0090 // Use 'new(...)'
+!!  endif!!
 !!endif!!
 !!ifnotempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
         private bool shouldLoadLanguage;
 !!endif!!
 !!ifnotempty:REQUIRE_PROPERTY_LIST!!
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!  endif!!
         private readonly List<MaterialProperty> propertyList = new List<MaterialProperty>();
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0090 // Use 'new(...)'
+!!  endif!!
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!  endif!!
         private readonly List<MaterialProperty> allPropertyList = new List<MaterialProperty>();
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0090 // Use 'new(...)'
+!!  endif!!
 !!endif!!
         // Custom properties
 !!ifempty:DECLARE_MATERIAL_PROPERTIES!!
@@ -44,7 +80,15 @@ namespace %%NAMESPACE%%
         private static string prevLanguageName;
 !!endif!!
 !!ifnotempty:SHOULD_DRAW_MENU_BUTTON!!
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!  endif!!
         private static readonly Dictionary<string, MaterialProperty> copySourcePropertyDict = new Dictionary<string, MaterialProperty>();
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0090 // Use 'new(...)'
+!!  endif!!
 !!endif!!
 !!ifempty:SHOULD_GENERATE_VERSION_DEF_FILE!!
         private const string shaderName = "%%SHADER_NAME%%";

@@ -35,6 +35,28 @@ using UnityEngine;
 !!ifnotempty:SHOULD_EMIT_USING_LILTOON!!
 using lilToon;
 !!endif!!
+!!ifnotempty:PRAGMA_WARNING_DISABLE_TOP!!
+!!  ifnotempty:SHOULD_GENERATE_CONVERSION_MENU!!
+
+#pragma warning disable IDE0066 // Convert switch statement to expression
+!!  endif!!
+!!  ifnotempty:SHADER_KEYWORD_CASES!!
+!!    ifempty:SHOULD_GENERATE_CONVERSION_MENU!!
+
+!!    endif!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:REQUIRE_PROPERTY_LIST!!
+!!    ifempty:SHOULD_GENERATE_CONVERSION_MENU!!
+
+!!    endif!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SHOULD_DRAW_MENU_BUTTON!!
+!!    ifempty:SHOULD_GENERATE_CONVERSION_MENU!!
+
+!!    endif!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  endif!!
+!!endif!!
 
 
 namespace %%NAMESPACE%%
@@ -81,7 +103,15 @@ namespace %%NAMESPACE%%
         /// Copy target material property dictionary.
         /// </summary>
 !!  endif!!
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!  endif!!
         private static readonly Dictionary<string, MaterialProperty> copySourcePropertyDict = new Dictionary<string, MaterialProperty>();
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0090 // Use 'new(...)'
+!!  endif!!
 !!endif!!
 
 !!ifnotempty:PREVENT_LANGUAGE_LOADING_EVERY_RENDERING!!
@@ -98,13 +128,29 @@ namespace %%NAMESPACE%%
         /// <see cref="List{T}"/> of the <see cref="MaterialProperty"/> specific to the custom shader.
         /// </summary>
 !!  endif!!
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!  endif!!
         private readonly List<MaterialProperty> _propertyList = new List<MaterialProperty>();
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0090 // Use 'new(...)'
+!!  endif!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
         /// <summary>
         /// <see cref="List{T}"/> of the <see cref="MaterialProperty"/> specific to the custom shader.
         /// </summary>
 !!  endif!!
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!  endif!!
         private readonly List<MaterialProperty> _allPropertyList = new List<MaterialProperty>();
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0090 // Use 'new(...)'
+!!  endif!!
 !!endif!!
 !!ifnotempty:SHADER_KEYWORD_CASES!!
 !!  ifnotempty:SHOULD_EMIT_DOC_COMMENTS!!
@@ -112,7 +158,15 @@ namespace %%NAMESPACE%%
         /// Keywords to preserve.
         /// </summary>
 !!  endif!!
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0090 // Use 'new(...)'
+!!  elifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0090:Use 'new(...)'", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 9.0 features.")]
+!!  endif!!
         private readonly List<string> _allowedKeywordList = new List<string>();
+!!  ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0090 // Use 'new(...)'
+!!  endif!!
 !!endif!!
 !!ifempty:DECLARE_MATERIAL_PROPERTIES!!
 
@@ -1041,8 +1095,14 @@ namespace %%NAMESPACE%%
         /// <param name="originalShaderName">Original lilToon shader name.</param>
         /// <returns>null if no custom lilToon shader name is found, otherwise the one found.</returns>
 !!  endif!!
+!!ifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
         private static string GetCorrespondingCustomShaderName(string originalShaderName)
         {
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0066 // Convert switch statement to expression
+!!endif!!
             switch (originalShaderName)
             {
                 case "lilToon": return ShaderName + "/lilToon";
@@ -1099,6 +1159,9 @@ namespace %%NAMESPACE%%
                 case "Hidden/lilToonMultiGem": return "Hidden/" + ShaderName + "/MultiGem";
                 default: return null;
             }
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0066 // Convert switch statement to expression
+!!endif!!
         }
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_REVERSE_CONVERSION_MENU!!
@@ -1123,8 +1186,14 @@ namespace %%NAMESPACE%%
         /// <param name="customShaderName">Custom lilToon shader name.</param>
         /// <returns>null if no original lilToon shader name is found, otherwise the one found.</returns>
 !!  endif!!
+!!ifnotempty:SUPPRESS_MESSAGE_ATTRIBUTE_EACH_LOCATION!!
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0066:Convert switch statement to expression", Justification = "To support the C# 7.3 compiler (Unity 2018.3 ~ 2020.1), avoid using C# 8.0 features.")]
+!!endif!!
         private static string GetCorrespondingOriginalShaderName(string customShaderName)
         {
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning disable IDE0066 // Convert switch statement to expression
+!!endif!!
             switch (customShaderName)
             {
                 case ShaderName + "/lilToon": return "lilToon";
@@ -1181,6 +1250,9 @@ namespace %%NAMESPACE%%
                 case "Hidden/" + ShaderName + "/MultiGem": return "Hidden/lilToonMultiGem";
                 default: return null;
             }
+!!ifnotempty:PRAGMA_WARNING_DISABLE_EACH_LOCATION!!
+#pragma warning restore IDE0066 // Convert switch statement to expression
+!!endif!!
         }
 !!endif!!
 !!ifnotempty:SHOULD_GENERATE_CONVERSION_MENU!!
